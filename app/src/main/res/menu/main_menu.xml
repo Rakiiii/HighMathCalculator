@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/matrixCalcBtn" android:title="Matrix Calculation"/>
+    <item android:id="@+id/polinomicCalculationBtn" android:title="Polinomic Calculation"/>
+    <item android:id="@+id/aboutBtn" android:title="About"/>
+</menu>

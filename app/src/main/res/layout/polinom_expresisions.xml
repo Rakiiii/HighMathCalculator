@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/polCardView"
+        style="@style/cardStyle">
+    <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="1"
+            android:contextClickable="true">
+        <TextView
+                android:id="@+id/polLeftPolinom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:layout_gravity="fill_horizontal"/>
+
+        <TextView
+                android:id="@+id/polSignPolinom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:layout_gravity="fill_horizontal"/>
+
+        <TextView
+                android:id="@+id/polRightPolinom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:layout_gravity="fill_horizontal"/>
+
+        <TextView
+                android:id="@+id/polResPolinom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:layout_gravity="fill_horizontal"/>
+        <TextView
+                android:id="@+id/polOstPolinom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:layout_gravity="fill_horizontal"/>
+
+    </GridLayout>
+
+</android.support.v7.widget.CardView>

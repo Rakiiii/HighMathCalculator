@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">High Math Calculator</string>
+    <string name="btnCalculator">Calculator</string>
+    <string name="btnSettings">Settings</string>
+    <string name="btnquadraticreduction">quadratic reduction</string>
+    <string name="Exit">Exit</string>
+    <string name="determinant">Determinant</string>
+    <string name="txtinputBackA">Add your matrix there : A</string>
+    <string name="txtinputBackB">Add your matrix there : B</string>
+    <string name="btnPolinom">Polinomic Calculator</string>
+    <string name="btnPlus">+</string>
+    <string name="btnMinus">-</string>
+    <string name="btnFirstTimesSecond">A*B</string>
+    <string name="btnSecondTimesFirst">B*A</string>
+    <string name="btnInvers">Invers</string>
+    <string name="hintPolinomA">write cofs with spaces of polinom A here</string>
+    <string name="hintPolinomB">write cofs with spaces of polinom B here</string>
+    <string name="btnTimes">x</string>
+    <string name="btnRootsA">roots of A</string>
+    <string name="btnRootsB">roots of B</string>
+    <string name="btnDivision">/</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
