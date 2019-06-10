@@ -8,3 +8,6 @@ data class polGroup( var polLeftPolinom : polinom,
                      var polResPolinom : polinom,
                      var polOstPolinom : polinom? = null,
                      var symb : Char = 'x')
+{
+    constructor() : this(polinom(0),polinom(0),"_",polinom(0))
+}

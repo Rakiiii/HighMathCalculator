@@ -10,4 +10,7 @@ interface PolinomViewInterface : MvpView
 {
     //добавить в recycler view с полиномами новый элемент
     fun addToPolinomRecyclerView( obj : polGroup)
+
+    //вывести что-то в тост
+    fun showToast(obj : String)
 }

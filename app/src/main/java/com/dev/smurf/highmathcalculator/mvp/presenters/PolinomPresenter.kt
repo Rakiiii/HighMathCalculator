@@ -11,22 +11,39 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
 
     //нажатие кнопки плюс
     fun onPlusClick(left : String , right : String ) : polGroup
-    {}
+    {
+
+        var obj = polGroup()
+        return obj
+
+    }
 
     //нажатие на кнопку минус
     fun onMinusClick(left : String , right : String) : polGroup
-    {}
+    {
+        var obj = polGroup()
+        return obj
+    }
 
     //нажатие на кнопку умножения
     fun onTimesClick(left: String, right: String) : polGroup
-    {}
+    {
+        var obj = polGroup()
+        return obj
+    }
 
     //нажатие на кнопку деления
     fun onDivisionClick(left: String , right: String) : polGroup
-    {}
+    {
+        var obj = polGroup()
+        return obj
+    }
 
-    //
+    //нажатие на кнопку решения
     fun onRootsOfClick(left : String) : polGroup
-    {}
+    {
+        var obj = polGroup()
+        return obj
+    }
 
 }

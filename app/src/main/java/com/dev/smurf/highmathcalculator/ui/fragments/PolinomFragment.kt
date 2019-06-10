@@ -23,6 +23,7 @@ import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.example.smurf.mtarixcalc.polAdapter
 import com.example.smurf.mtarixcalc.polGroup
 import kotlinx.android.synthetic.main.fragment_polinom.*
+import org.jetbrains.anko.toast
 
 
 class PolinomFragment : MvpFragment() , PolinomViewInterface
@@ -45,14 +46,16 @@ class PolinomFragment : MvpFragment() , PolinomViewInterface
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View?
+    {
         // Inflate the layout for this fragment
 
 
         return inflater.inflate(R.layout.fragment_polinom, container, false)
     }
 
-    override fun onStart() {
+    override fun onStart()
+    {
         super.onStart()
         //инициализация viewModel для полиномов
         mPolinomRecyclerViewModel = ViewModelProviders.of(activity as FragmentActivity).get(PolinomRecyclerViewModel::class.java)
@@ -65,9 +68,14 @@ class PolinomFragment : MvpFragment() , PolinomViewInterface
 
         //востанавливаемя из view model
         if(!mPolinomRecyclerViewModel.isEmpty())polAdapter.setList(mPolinomRecyclerViewModel.getList())
+
+        btnPolPlus.setOnClickListener {
+            v -> mPolinomPresenter.onPlusClick(firstPolinom.text.toString() , secondPolinom.text.toString())
+        }
     }
 
-    override fun onAttach(context: Context) {
+    override fun onAttach(context: Context)
+    {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
             listener = context
@@ -76,13 +84,15 @@ class PolinomFragment : MvpFragment() , PolinomViewInterface
         }
     }
 
-    override fun onDetach() {
+    override fun onDetach()
+    {
         super.onDetach()
         listener = null
     }
 
 
-    interface OnFragmentInteractionListener {
+    interface OnFragmentInteractionListener
+    {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
@@ -131,5 +141,10 @@ class PolinomFragment : MvpFragment() , PolinomViewInterface
     override fun addToPolinomRecyclerView(obj: polGroup)
     {
         polAdapter.addElement(mPolinomRecyclerViewModel.add(obj))
+    }
+
+    override fun showToast(obj: String)
+    {
+        toast(obj)
     }
 }
