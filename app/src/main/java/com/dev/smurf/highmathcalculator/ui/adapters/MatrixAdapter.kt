@@ -15,41 +15,57 @@ import java.text.SimpleDateFormat
 class matrixAdapter(val context: Context , val firstMatrix : EditText , val secondMatrix : EditText ) : RecyclerView.Adapter<matrixAdapter.matrixViewHolder>()
 {
 
+        //списое элементов
         private var listOfMatrices : ArrayList<MatrixGroup> = ArrayList()
 
+        //добавление нового элеменат
         fun addNewElem(group : MatrixGroup)
         {
             listOfMatrices.add(0 ,group)
             notifyDataSetChanged()
         }
 
-        fun clearList()
+        //очистка списка элементов
+        fun clear()
         {
             listOfMatrices.clear()
             notifyDataSetChanged()
         }
 
+
+        //удаление элемента на позици position
         fun removeElement( position: Int)
         {
             listOfMatrices.removeAt(position)
             notifyDataSetChanged()
         }
 
+        //получить элемент из позиции position
         fun getData( position: Int) = listOfMatrices[position]
 
+        //вставить элемент MatrixGroup в позицию position
         fun restoreItem(position: Int, MatrixGroup: MatrixGroup)
         {
             listOfMatrices.add(position , MatrixGroup)
             notifyItemInserted(position)
         }
 
+        //установить новый список элементов
         fun setList( newArray : ArrayList<MatrixGroup>)
         {
             listOfMatrices = newArray
             notifyDataSetChanged()
         }
 
+        //получение всего списка элементов
         fun getList() = listOfMatrices
+
+    //получить количество элементов
+    override fun getItemCount(): Int
+    {
+        return listOfMatrices.size
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): matrixViewHolder
     {
@@ -171,12 +187,6 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
         })
     }
 
-
-
-    override fun getItemCount(): Int
-    {
-        return listOfMatrices.size
-    }
 
 
 

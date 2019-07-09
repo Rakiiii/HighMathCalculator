@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.R
 
+//TODO: сделать рефакторинг
 
+//класс удаления по свайпу
 abstract class SwipeToDeleteCallback(context : Context) : ItemTouchHelper.Callback()
 {
     var mContext : Context = context

@@ -1,33 +1,31 @@
 package com.dev.smurf.highmathcalculator.ui.fragments
 
-import androidx.lifecycle.ViewModelProviders
-import android.content.Context
-import android.graphics.Color
-import android.net.Uri
-import android.os.Bundle
 //import android.support.design.widget.Snackbar
 //import androidx.fragment.app.FragmentActivity
 //import androidx.appcompat.widget.LinearLayoutManager
 //import androidx.appcompat.widget.RecyclerView
 //import androidx.appcompat.widget.helper.ItemTouchHelper
+//import com.arellomobile.mvp.MvpFragment
+import android.content.Context
+import android.graphics.Color
+import android.net.Uri
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arellomobile.mvp.MvpAppCompatFragment
-//import com.arellomobile.mvp.MvpFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.R.id.*
 import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
+import com.example.smurf.mtarixcalc.MatrixGroup
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.example.smurf.mtarixcalc.matrixAdapter
-import com.example.smurf.mtarixcalc.MatrixGroup
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_matrix.*
 import org.jetbrains.anko.toast
@@ -201,7 +199,7 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
         itemTouchhelper.attachToRecyclerView(matrixRecycler)
     }
 
-    override fun addLoaded(ar: ArrayList<MatrixGroup>)
+    override fun setRecyclerViewArrayList(ar: ArrayList<MatrixGroup>)
     {
         matrixRecyclerAdapter.setList(ar)
         mMatrixRecyclerViewModel.updateList(ar)

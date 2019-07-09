@@ -1,48 +1,49 @@
 package com.dev.smurf.highmathcalculator.ui.fragments
 
-import androidx.lifecycle.ViewModelProviders
-import android.content.Context
-import android.graphics.Color
-import android.net.Uri
-import android.os.Bundle
 //import android.support.design.widget.Snackbar
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 //import com.arellomobile.mvp.MvpFragment
-import com.arellomobile.mvp.presenter.InjectPresenter
-import com.dev.smurf.highmathcalculator.mvp.presenters.PolinomPresenter
-import com.dev.smurf.highmathcalculator.mvp.views.PolinomViewInterface
-import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
-import com.example.smurf.mtarixcalc.PolinomRecyclerViewModel
-import com.example.smurf.mtarixcalc.polAdapter
 //import androidx.fragment.app.FragmentActivity
 //import androidx.recyclerview.widget.RecyclerView
 //import androidx.recyclerview.widget.ItemTouchHelper
-import android.text.Editable
-import android.text.SpannableStringBuilder
-import android.text.TextWatcher
 //import android.view.LayoutInflater
-import android.view.View
 //import android.view.ViewGroup
 //import com.arellomobile.mvp.MvpFragment
 //import com.arellomobile.mvp.presenter.InjectPresenter
-import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.R.id.*
-import com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.MvpAppCompatFragment
 //import com.dev.smurf.highmathcalculator.mvp.presenters.PolinomPresenter
 //import com.dev.smurf.highmathcalculator.mvp.views.PolinomViewInterface
 //import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 //import com.example.smurf.mtarixcalc.PolinomRecyclerViewModel
-import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 //import com.example.smurf.mtarixcalc.polAdapter
+import android.content.Context
+import android.graphics.Color
+import android.net.Uri
+import android.os.Bundle
+import android.text.Editable
+import android.text.SpannableStringBuilder
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.arellomobile.mvp.presenter.InjectPresenter
+import com.dev.smurf.highmathcalculator.R
+import com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.MvpAppCompatFragment
+import com.dev.smurf.highmathcalculator.mvp.presenters.PolinomPresenter
+import com.dev.smurf.highmathcalculator.mvp.views.PolinomViewInterface
+import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.example.smurf.mtarixcalc.PolinomGroup
+import com.example.smurf.mtarixcalc.PolinomRecyclerViewModel
+import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
+import com.example.smurf.mtarixcalc.polAdapter
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_polinom.*
 import org.jetbrains.anko.toast
+
+//TODO: добавить созранение в базу данных
 
 
 class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface

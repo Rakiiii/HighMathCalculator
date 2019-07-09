@@ -14,9 +14,61 @@ import java.text.SimpleDateFormat
 class polAdapter( val context: Context , val polFirstPolinom : EditText, val polSecPolinom : EditText) : RecyclerView.Adapter<polAdapter.polViewHolder>()
 {
 
-    //TODO : переписать viewHolder на фрагменты для нормального отображения
 
+    //список элементов
     private var listOfPolinoms : ArrayList<PolinomGroup> = ArrayList()
+
+
+    //получить количество элементов в списке
+    override fun getItemCount(): Int
+    {
+        return listOfPolinoms.size
+    }
+
+
+    //добавить новый элемент
+    fun addElement(PolinomGroup: PolinomGroup)
+    {
+        listOfPolinoms.add( 0 , PolinomGroup)
+        notifyDataSetChanged()
+    }
+
+    //очиститть список элементов
+    fun clear()
+    {
+        listOfPolinoms.clear()
+        notifyDataSetChanged()
+    }
+
+    //удалить элемент на позиции
+    fun removeElement(position: Int)
+    {
+        listOfPolinoms.removeAt(position)
+        notifyDataSetChanged()
+    }
+
+
+    //получить элемент на похиции
+    fun getData( pos : Int) : PolinomGroup = listOfPolinoms[pos]
+
+
+    //востановить элемент item на позицию position
+    fun restoreItem(item : PolinomGroup, position : Int)
+    {
+        listOfPolinoms.add(position , item)
+        notifyItemInserted(position)
+    }
+
+
+    //получить список элементов
+    fun getList() : ArrayList<PolinomGroup> = listOfPolinoms
+
+    //заменить список элементов
+    fun setList( newArrayList: ArrayList<PolinomGroup>)
+    {
+        listOfPolinoms = newArrayList
+        notifyDataSetChanged()
+    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): polViewHolder {
@@ -26,6 +78,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
     override fun onBindViewHolder(holder: polViewHolder, position: Int) {
         holder.bind(listOfPolinoms[position])
 
+        //контекстное  меню для левого полинома
         holder.leftPolinom.setOnCreateContextMenuListener( object : View.OnCreateContextMenuListener
         {
             override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -71,6 +124,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
             }
         })
 
+        //контестное меню для праавого элемента
         holder.rightPolinom.setOnCreateContextMenuListener( object : View.OnCreateContextMenuListener
         {
             override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -116,6 +170,8 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
             }
         })
 
+
+        //контекстное меню для результирующего полинома
         holder.resPolinom.setOnCreateContextMenuListener( object : View.OnCreateContextMenuListener
         {
             override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -160,6 +216,8 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                 }
             }
         })
+
+        //контекстное меню для остаточное полинома
         holder.ostPolinom.setOnCreateContextMenuListener( object : View.OnCreateContextMenuListener
         {
             override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -227,43 +285,6 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
 
     }
 
-    override fun getItemCount(): Int {
-        return listOfPolinoms.size
-    }
-
-    fun addElement(PolinomGroup: PolinomGroup)
-    {
-        listOfPolinoms.add( 0 , PolinomGroup)
-        notifyDataSetChanged()
-    }
-
-    fun clear()
-    {
-        listOfPolinoms.clear()
-        notifyDataSetChanged()
-    }
-
-    fun removeElement(position: Int)
-    {
-        listOfPolinoms.removeAt(position)
-        notifyDataSetChanged()
-    }
-
-    fun getData( pos : Int) = listOfPolinoms[pos]
-
-    fun restoreItem(item : PolinomGroup, position : Int)
-    {
-        listOfPolinoms.add(position , item)
-        notifyItemInserted(position)
-    }
-
-    fun getList() = listOfPolinoms
-
-    fun setList( newArrayList: ArrayList<PolinomGroup>)
-    {
-        listOfPolinoms = newArrayList
-        notifyDataSetChanged()
-    }
 
     class polViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView)
     {

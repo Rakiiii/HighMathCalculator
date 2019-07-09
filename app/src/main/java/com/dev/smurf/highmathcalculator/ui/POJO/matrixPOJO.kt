@@ -3,11 +3,11 @@ package com.example.smurf.mtarixcalc
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.dev.smurf.highmathcalculator.RoomConverters.MatrixConverter
+import com.dev.smurf.highmathcalculator.RoomConverters.POJOСonverter
 import java.util.*
 
 @Entity()
-@TypeConverters(MatrixConverter::class)
+@TypeConverters(POJOСonverter::class)
 data class MatrixGroup(
     var leftMatrix : Matrix,
     var rightMatrix : Matrix,

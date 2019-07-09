@@ -17,35 +17,27 @@ import kotlinx.android.synthetic.main.fragment_setting.*
 import org.jetbrains.anko.doAsync
 
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [SettingFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [SettingFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
+
 class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
 {
+
+    /*
+     * состояние свитчей на момент запуска фрагмента
+     */
 
     var matrixSwitchPreviousConsistent : Boolean = false
     var polinomSwitchPreviousConsistent : Boolean = false
 
 
+    //вставляем презентер
     @InjectPresenter
     lateinit var mSettingsPresenter: SettingsPresenter
 
 
     private var listener: OnFragmentInteractionListener? = null
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
 
 
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,10 +51,13 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
     override fun onStart() {
         super.onStart()
 
+        //загружаем состояние настроек
         mSettingsPresenter.update()
 
+        //сохраняем установленный на момент запуска настройки
         matrixSwitchPreviousConsistent = swtchMatrixMode.isChecked
         polinomSwitchPreviousConsistent = swtchPolinomMode.isChecked
+
 
         swtchMatrixMode.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked)mSettingsPresenter.matrixModeSetOn()
@@ -122,6 +117,8 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
+
+
 
     override fun setMatrixModeOff()
     {

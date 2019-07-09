@@ -43,9 +43,6 @@ class MainActivity : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.Mv
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //supportActionBar?.hide()
-
-
         initFragments()
 
         mToggler  = ActionBarDrawerToggle(this, matrixDrawerLayout, R.string.open ,R.string.close)
@@ -103,47 +100,83 @@ class MainActivity : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.Mv
         mFragmentTransaction.commit()
     }
 
+
+    //Установка фрагмента с матрицами
     override fun setMatrixFragment()
     {
 
+        //если фрагмент не утсновлен
         if(!mMatrixFragment.isInLayout)
         {
+            //начинаем транзакцию
             mFragmentTransaction = supportFragmentManager.beginTransaction()
                     //fragmentManager.beginTransaction()
+
+            //заменем установленный фрагмент на матричный фрагмент
             mFragmentTransaction.replace(R.id.fragmentFrame, mMatrixFragment)
+
+            //добавляем заменный фрагмент в стек
             mFragmentTransaction.addToBackStack(null)
+
+            //применяем транзакцию
             mFragmentTransaction.commit()
-            matrixDrawerLayout.closeDrawers()
         }
+
+        //закрываем дровер
+        matrixDrawerLayout.closeDrawers()
     }
 
+    //установка фрагмента с полиномами
     override fun setPolinomFragment()
     {
+        //если фрагмент не установлен
         if (!mPolinomFragment.isInLayout)
         {
+            //начинаем транзакцию
             mFragmentTransaction = supportFragmentManager.beginTransaction()
                     //fragmentManager.beginTransaction()
+
+            //заменяем установленный фрагмент на фрагмент с полиномами
             mFragmentTransaction.replace(R.id.fragmentFrame, mPolinomFragment)
+
+            //добавляем заменяемый фрагмент в стек
             mFragmentTransaction.addToBackStack(null)
+
+            //применяем транзакцию
             mFragmentTransaction.commit()
-            matrixDrawerLayout.closeDrawers()
         }
+
+        //закрываем дровер
+        matrixDrawerLayout.closeDrawers()
     }
 
+
+    //утсановка фрагмента с настройками
     override fun setSettingsFragment()
     {
+        //если фрагмент не установлен
         if(!mSettingFragment.isInLayout)
         {
+            //начинаем транзакцию
             mFragmentTransaction = supportFragmentManager.beginTransaction()
                     //fragmentManager.beginTransaction()
+
+            //заменем установленный фрагмент на фрагмент настроек
             mFragmentTransaction.replace(R.id.fragmentFrame, mSettingFragment)
+
+            //добовляем заменный фрагмент в бэкстек
             mFragmentTransaction.addToBackStack(null)
+
+            //применяем транзакцию
             mFragmentTransaction.commit()
-            matrixDrawerLayout.closeDrawers()
         }
+
+        //закрываем дровер
+        matrixDrawerLayout.closeDrawers()
     }
 
 
+    //выбор комнонета в дровере
     override fun onOptionsItemSelected(item: MenuItem?): Boolean
     {
         if(mToggler.onOptionsItemSelected(item)) return true
