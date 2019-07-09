@@ -7,19 +7,24 @@ import com.example.smurf.mtarixcalc.Matrix
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MatrixConverter
+
+//преобразование
+class POJOСonverter
 {
     companion object
     {
 
+        //конвертация матрицы в строку
         @TypeConverter
         @JvmStatic
         fun fromMatrix(matrix: Matrix): String = matrix.toString()
 
+        //конвертация строки в матрицу
         @TypeConverter
         @JvmStatic
         fun toMatrix(matrix: String): Matrix = Matrix(matrix)
 
+        //конвертация времени в строку
         @TypeConverter
         @JvmStatic
         fun fromTime(time : java.util.GregorianCalendar? ) : String
@@ -32,6 +37,8 @@ class MatrixConverter
             }else return ""
         }
 
+
+        //конвертация строки во время
         @TypeConverter
         @JvmStatic
         fun toTime(time : String) : java.util.GregorianCalendar?
@@ -47,6 +54,7 @@ class MatrixConverter
             }
         }
 
+        //конвертация полинома в строку
         @TypeConverter
         @JvmStatic
         fun fromPolinom(polinom : PolinomBase) : String
@@ -58,6 +66,8 @@ class MatrixConverter
             else return polinom.toString()
         }
 
+
+        //конвертация строки к полиному
         @TypeConverter
         @JvmStatic
         fun toPolinom(polinom : String) : PolinomBase
