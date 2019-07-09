@@ -12,10 +12,13 @@ class MatrixDatabaseModel(val context: Context)
 
     //кэш базы данных
     private var cache : ArrayList<MatrixGroup> = ArrayList()
-
     //база данных
     private val mMatrixDatabase : MatrixDataBase =
-        Room.databaseBuilder( context ,MatrixDataBase::class.java , "matrix_db").build()
+        Room.
+            databaseBuilder( context ,MatrixDataBase::class.java , "matrix_db").
+            //fallbackToDestructiveMigration().
+            //allowMainThreadQueries().
+            build()
 
 
     //вставка в бд

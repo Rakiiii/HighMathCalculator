@@ -1,10 +1,18 @@
 package com.dev.smurf.highmathcalculator.Polinoms
 
 import android.util.Log
-import com.example.smurf.mtarixcalc.*
+import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
+import com.dev.smurf.highmathcalculator.Utils.amountOfCofsInPolinom
+import com.dev.smurf.highmathcalculator.Utils.countWords
+import com.dev.smurf.highmathcalculator.Utils.removePluses
+import com.dev.smurf.highmathcalculator.Utils.toComplex
 
 class DiofantPolinom : PolinomBase
 {
+
+    private var population : ArrayList<Gene> = ArrayList()
+
+
     constructor(obj : String)
     {
         var str = ""
@@ -67,7 +75,7 @@ class DiofantPolinom : PolinomBase
                             polinom[i.key] = i.value
                         }
                     }
-                    _root.withDefault { s -> complexNumber() }
+                    _root.withDefault { s -> ComplexNumber() }
                     _isSolved = false
                     return this
                 }
@@ -92,7 +100,7 @@ class DiofantPolinom : PolinomBase
                         polinom[i.key] = i.value
                     }
                 }
-                _root.withDefault { s -> complexNumber() }
+                _root.withDefault { s -> ComplexNumber() }
                 _isSolved = false
                 return this
             }
@@ -125,7 +133,7 @@ class DiofantPolinom : PolinomBase
         return result
     }
 
-    override fun getRoots(): MutableMap<String, complexNumber>
+    override fun getRoots(): MutableMap<String, ComplexNumber>
     {
         return _root
     }
@@ -141,5 +149,11 @@ class DiofantPolinom : PolinomBase
     }
 
     override fun isSolved(): Boolean = _isSolved
+
+
+    protected  fun Fitness( gene : Gene ) : Int
+    {
+        TODO("Add realesation")
+    }
 
 }

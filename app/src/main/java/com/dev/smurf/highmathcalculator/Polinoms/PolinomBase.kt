@@ -1,12 +1,12 @@
 package com.dev.smurf.highmathcalculator.Polinoms
 
-import com.example.smurf.mtarixcalc.complexNumber
+import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 
 abstract class PolinomBase
 {
-    protected var polinom : MutableMap<String , complexNumber> = mutableMapOf()
+    protected var polinom : MutableMap<String , ComplexNumber> = mutableMapOf()
 
-    protected var _root : MutableMap<String , complexNumber> = mutableMapOf()
+    protected var _root : MutableMap<String , ComplexNumber> = mutableMapOf()
 
     protected var _isSolved = false
 
@@ -22,7 +22,7 @@ abstract class PolinomBase
 
     abstract fun solve()
 
-    abstract fun getRoots() : MutableMap<String,complexNumber>
+    abstract fun getRoots() : MutableMap<String, ComplexNumber>
 
     abstract operator fun plus(obj : Any) : Any
 

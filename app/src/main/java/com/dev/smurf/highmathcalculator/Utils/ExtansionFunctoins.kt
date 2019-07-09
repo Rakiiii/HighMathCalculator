@@ -1,6 +1,8 @@
-package com.example.smurf.mtarixcalc
+package com.dev.smurf.highmathcalculator.Utils
 
 import android.util.Log
+import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
+import com.dev.smurf.highmathcalculator.Numbers.Fraction
 
 fun gcd( a : Int , b : Int) : Int
 {
@@ -8,15 +10,15 @@ fun gcd( a : Int , b : Int) : Int
     else return gcd( b ,a % b )
 }
 
-fun String.toFraction():fraction
+fun String.toFraction(): Fraction
 {
     when
     {
-        (this.contains('.'))->return fraction(this.filterNot{s -> (s == '.' )}.filterNot { s -> (s ==')' && (s == '(')) }.toInt() ,
+        (this.contains('.'))->return Fraction(this.filterNot{ s -> (s == '.' )}.filterNot { s -> (s ==')' && (s == '(')) }.toInt() ,
             10.pow( this.substringAfter('.').filterNot { s -> (s == ')') }.length))
-        (this.contains('/')) -> return fraction(this.substringBefore('/').filterNot { s -> (s == '(') }.toInt(),
+        (this.contains('/')) -> return Fraction(this.substringBefore('/').filterNot { s -> (s == '(') }.toInt(),
             this.substringAfter('/').filterNot { s -> (s == ')') }.toInt())
-        else -> return fraction(this.filterNot { s -> (s == '(' && s == ')' ) }.toInt(), 1)
+        else -> return Fraction(this.filterNot { s -> (s == '(' && s == ')' ) }.toInt(), 1)
     }
 }
 
@@ -29,22 +31,22 @@ fun Int.pow(x : Int) : Int
     return res
 }
 
-fun String.translateToComplex(signIm : Char = '+' , signRe : Char = '+'  ) : complexNumber
+fun String.translateToComplex(signIm : Char = '+' , signRe : Char = '+'  ) : ComplexNumber
 {
     var line = this
     if((signIm != '+' && signIm != '-') || (signRe != '+' && signRe != '-'))throw Exception("unnown char in complex amountOfRoots translation")
     //разбиваем текущий столбец на отдельные цифры
-    var subIm = fraction()
-    if(line.substringAfter(signIm).filterNot { s->(s == 'i') }.isBlank())subIm = fraction(1,1)
+    var subIm = Fraction()
+    if(line.substringAfter(signIm).filterNot { s->(s == 'i') }.isBlank())subIm = Fraction(1,1)
     else subIm = line.substringAfter(signIm).filterNot { s -> (s == 'i') }.toFraction()
     var subRe = line.substringBefore(signIm).toFraction()
 
-    if(signRe == '-')subRe*=fraction(-1,1)
-    if(signIm == '-')subIm*= fraction(-1,1)
-    return complexNumber(subRe , subIm)
+    if(signRe == '-')subRe*= Fraction(-1,1)
+    if(signIm == '-')subIm*= Fraction(-1,1)
+    return ComplexNumber(subRe , subIm)
 }
 
-fun String.toComplex() : complexNumber
+fun String.toComplex() : ComplexNumber
 {
     var line = this
     var signRe = '+'
@@ -65,17 +67,17 @@ fun String.toComplex() : complexNumber
         }
         line.contains('i')->
         {
-            var subIm = fraction()
-            if(line.filterNot { s->(s == 'i') }.isBlank())subIm = fraction(1,1)
+            var subIm = Fraction()
+            if(line.filterNot { s->(s == 'i') }.isBlank())subIm = Fraction(1,1)
             else subIm = line.filterNot { s -> (s == 'i') }.toFraction()
-            if(signRe == '-')subIm*= fraction(-1,1)
-            return complexNumber(im = subIm)
+            if(signRe == '-')subIm*= Fraction(-1,1)
+            return ComplexNumber(im = subIm)
         }
         else->
         {
             var subRe = line.toFraction()
-            if(signRe == '-')subRe *= fraction(-1,1)
-            return complexNumber(re = subRe)
+            if(signRe == '-')subRe *= Fraction(-1,1)
+            return ComplexNumber(re = subRe)
         }
     }
 }
@@ -121,7 +123,7 @@ fun Int.comb( leng : Int) : Int
     return res
 }
 
-fun Int.equals (other : fraction) : Boolean
+fun Int.equals (other : Fraction) : Boolean
 {
     if ( (other.upper % other.lower) == 0) return ( (other.upper/other.lower) == this)
     else return false

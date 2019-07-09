@@ -1,6 +1,7 @@
 package com.dev.smurf.highmathcalculator.Polinoms
 
-import com.example.smurf.mtarixcalc.*
+import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
+import com.dev.smurf.highmathcalculator.Utils.*
 
 class ExponensialPolinom : PolinomBase
 {
@@ -67,7 +68,7 @@ class ExponensialPolinom : PolinomBase
                         polinom[i.key] = i.value
                     }
                 }
-                _root.withDefault { s -> complexNumber() }
+                _root.withDefault { s -> ComplexNumber() }
                 _isSolved = false
                 return this
             }
@@ -92,7 +93,7 @@ class ExponensialPolinom : PolinomBase
                         polinom[i.key] = i.value
                     }
                 }
-                _root.withDefault { s -> complexNumber() }
+                _root.withDefault { s -> ComplexNumber() }
                 _isSolved = false
                 return this
             }
@@ -108,7 +109,7 @@ class ExponensialPolinom : PolinomBase
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getRoots(): MutableMap<String, complexNumber> {
+    override fun getRoots(): MutableMap<String, ComplexNumber> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

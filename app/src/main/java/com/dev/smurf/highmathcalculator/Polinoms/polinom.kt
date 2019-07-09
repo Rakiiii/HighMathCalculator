@@ -1,14 +1,19 @@
 package com.example.smurf.mtarixcalc
 
 import android.widget.EditText
+import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
+import com.dev.smurf.highmathcalculator.Numbers.Fraction
+import com.dev.smurf.highmathcalculator.Utils.countWords
+import com.dev.smurf.highmathcalculator.Utils.toComplex
+import com.dev.smurf.highmathcalculator.Utils.toDegree
 
 class polinom( _size : Int)
 {
     val size : Int = _size
 
-    private val cofs : Array<complexNumber> = Array(_size , { s -> complexNumber() })
+    private val cofs : Array<ComplexNumber> = Array(_size , { s -> ComplexNumber() })
 
-    var roots : Array<complexNumber> = Array(size , { i-> complexNumber() } )
+    var roots : Array<ComplexNumber> = Array(size , { i-> ComplexNumber() } )
     private set
 
     //количество уже найденных корней
@@ -38,17 +43,17 @@ class polinom( _size : Int)
 
     constructor(matrix : Matrix):this(matrix.width + 1)
     {
-        cofs[0] = complexNumber(fraction(1,1))
+        cofs[0] = ComplexNumber(Fraction(1,1))
         when(size)
         {
             3->
             {
-                cofs[1] = (matrix.matrix[0][0]*-1) + (matrix.matrix[1][1]*-1)
+                cofs[1] = (matrix.matrices[0][0]*-1) + (matrix.matrices[1][1]*-1)
                 cofs[2] = matrix.determinant()
             }
             4->
             {
-                cofs[1] = (matrix.matrix[0][0] * -1) + (matrix.matrix[1][1] * -1) + (matrix.matrix[2][2] * -1)
+                cofs[1] = (matrix.matrices[0][0] * -1) + (matrix.matrices[1][1] * -1) + (matrix.matrices[2][2] * -1)
                 cofs[2] = matrix.minor(0,0).determinant()+
                           matrix.minor(1,1).determinant()+
                           matrix.minor(2,2).determinant()
@@ -106,7 +111,7 @@ class polinom( _size : Int)
                     return res
                 }
             }
-            is complexNumber ->
+            is ComplexNumber ->
             {
                 val res = polinom(this)
                 res.cofs[size] = res.cofs[size] + other
@@ -118,7 +123,7 @@ class polinom( _size : Int)
                 res.cofs[size] = res.cofs[size] + other
                 return res
             }
-            is fraction->
+            is Fraction ->
             {
                 val res = polinom(this)
                 res.cofs[size] = res.cofs[size] + other
@@ -150,7 +155,7 @@ class polinom( _size : Int)
                     return res
                 }
             }
-            is complexNumber ->
+            is ComplexNumber ->
             {
                 val res = polinom(this)
                 res.cofs[size] = res.cofs[size] - other
@@ -162,7 +167,7 @@ class polinom( _size : Int)
                 res.cofs[size] = res.cofs[size] - other
                 return res
             }
-            is fraction->
+            is Fraction ->
             {
                 val res = polinom(this)
                 res.cofs[size] = res.cofs[size] - other
@@ -200,13 +205,13 @@ class polinom( _size : Int)
                 for (i in 0 until res.size)cofs[i] = cofs[i] / other
                 return arrayOf(res , polinom(1))
             }
-            is complexNumber ->
+            is ComplexNumber ->
             {
                 var res = polinom(this)
                 for (i in 0 until res.size)cofs[i] = cofs[i] / other
                 return arrayOf(res , polinom(1))
             }
-            is fraction ->
+            is Fraction ->
             {
                 var res = polinom(this)
                 for (i in 0 until res.size)cofs[i] = cofs[i] / other
@@ -240,13 +245,13 @@ class polinom( _size : Int)
                 for (i in 0 until res.size)cofs[i] = cofs[i] * other
                 return res
             }
-            is complexNumber ->
+            is ComplexNumber ->
             {
                 var res = polinom(this)
                 for (i in 0 until res.size)cofs[i] = cofs[i] * other
                 return res
             }
-            is fraction ->
+            is Fraction ->
             {
                 var res = polinom(this)
                 for (i in 0 until res.size)cofs[i] = cofs[i] * other
@@ -278,8 +283,8 @@ class polinom( _size : Int)
                     //перебор всех знаменателей мнимой части
                     for(l in  0..100)
                     {
-                        if (rightPol(complexNumber( fraction(i,k), fraction(j,l) ) ) && amountOfRoots != size - 1)
-                        roots[amountOfRoots++] = complexNumber( fraction(i,k) , fraction(j,l) )
+                        if (rightPol(ComplexNumber( Fraction(i,k), Fraction(j,l) ) ) && amountOfRoots != size - 1)
+                        roots[amountOfRoots++] = ComplexNumber( Fraction(i,k) , Fraction(j,l) )
 
                     }
                 }
@@ -288,14 +293,14 @@ class polinom( _size : Int)
     }
 
     //проверка корня
-    fun rightPol( test : complexNumber) : Boolean
+    fun rightPol( test : ComplexNumber) : Boolean
     {
-        var res = complexNumber()
+        var res = ComplexNumber()
         for ( i in 0 until size)
         {
             res+=this.cofs[i]*test.pow(size - i)
         }
-        if(res == complexNumber() )return true
+        if(res == ComplexNumber() )return true
         else return false
     }
 
@@ -303,7 +308,7 @@ class polinom( _size : Int)
     {
         var i = 0
         var counter = 0
-        while( this.cofs[i] == complexNumber() )
+        while( this.cofs[i] == ComplexNumber() )
         {
             counter ++
             i ++

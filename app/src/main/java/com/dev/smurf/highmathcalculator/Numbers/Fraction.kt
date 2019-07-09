@@ -1,8 +1,9 @@
-package com.example.smurf.mtarixcalc
+package com.dev.smurf.highmathcalculator.Numbers
 
+import com.dev.smurf.highmathcalculator.Utils.gcd
 import kotlin.math.absoluteValue
 
-class fraction (_upper : Int = 0 , _lower : Int = 1)
+class Fraction(_upper : Int = 0, _lower : Int = 1)
 {
 
     var upper = _upper
@@ -11,15 +12,15 @@ class fraction (_upper : Int = 0 , _lower : Int = 1)
     var lower = _lower
     private set
 
-    operator fun plus(right : Any?) : fraction
+    operator fun plus(right : Any?) : Fraction
     {
         when(right)
         {
-            is fraction ->
+            is Fraction ->
             {
                 if(right.upper == 0)return this
                 if(this.upper == 0)return right
-                val res = fraction ( this.upper*right.lower + this.lower*right.upper , this.lower*right.lower)
+                val res = Fraction ( this.upper*right.lower + this.lower*right.upper , this.lower*right.lower)
                 if(res.lower < 0)
                 {
                     res.upper *= -1
@@ -29,70 +30,71 @@ class fraction (_upper : Int = 0 , _lower : Int = 1)
             }
             is Int ->
             {
-                return fraction(this.upper+right*this.lower , this.lower)
+                return Fraction(this.upper+right*this.lower , this.lower)
             }
             else -> throw Exception("Unnown type for plus opartion")
         }
     }
 
-    operator fun minus(right : Any?) : fraction
+    operator fun minus(right : Any?) : Fraction
     {
         when(right)
         {
-            is fraction->
+            is Fraction ->
             {
                 if (right.upper == 0) return this
                 if (this.upper == 0)
-                    return fraction( _upper = - right.upper , _lower = right.lower)
-                val res = fraction(this.upper * right.lower - this.lower * right.upper, this.lower * right.lower)
+                    return Fraction( _upper = - right.upper , _lower = right.lower)
+                val res = Fraction(this.upper * right.lower - this.lower * right.upper, this.lower * right.lower)
                 if (res.lower < 0) {
                     res.upper *= -1
                     res.lower *= -1
                 }
                 return res.cut()
             }
-            is Int -> return fraction(this.upper-right*this.lower , this.lower)
+            is Int -> return Fraction(this.upper-right*this.lower , this.lower)
             else -> throw Exception("Unknown type")
         }
     }
 
-    operator fun div(right: Any?) : fraction
+    operator fun div(right: Any?) : Fraction
     {
         when(right)
         {
-            is fraction->
+            is Fraction ->
             {
 
-                if (this.upper == 0) return fraction()
+                if (this.upper == 0) return Fraction()
                 if (right.upper == 0) throw Exception("Can't divide by zero")
-                val res = fraction(this.upper * right.lower, this.lower * right.upper)
+                val res = Fraction(this.upper * right.lower, this.lower * right.upper)
                 if (res.lower < 0) {
                     res.upper *= -1
                     res.lower *= -1
                 }
                 return res.cut()
             }
-            is Int -> return fraction(this.upper , this.lower*right)
+            is Int -> return Fraction(this.upper , this.lower*right)
             else -> throw Exception("Unknown type")
         }
     }
 
-    operator fun times(right: Any?) : fraction {
+    operator fun times(right: Any?) : Fraction
+    {
         when (right)
         {
-            is fraction ->
+            is Fraction ->
             {
 
 
-                if (this.upper == 0 || right.upper == 0) return fraction()
-                val res = fraction(this.upper * right.upper, this.lower * right.lower)
+                if (this.upper == 0 || right.upper == 0) return Fraction()
+                val res = Fraction(this.upper * right.upper, this.lower * right.lower)
                 if (res.lower < 0) {
                     res.upper *= -1
                     res.lower *= -1
                 }
                 return res.cut()
             }
-            is Int -> return fraction(this.upper*right , this.lower)
+            is Int -> return Fraction(this.upper*right , this.lower)
             else -> throw Exception("Unknown type")
         }
     }
@@ -101,7 +103,7 @@ class fraction (_upper : Int = 0 , _lower : Int = 1)
     {
         when(other)
         {
-            is fraction ->
+            is Fraction ->
             {
                 if(this.upper == 0 && other.upper == 0)return true
                 else return (this.upper == other.upper && this.lower == other.lower)
@@ -135,14 +137,14 @@ class fraction (_upper : Int = 0 , _lower : Int = 1)
         }
     }
 
-    operator fun compareTo(other : fraction) : Int
+    operator fun compareTo(other : Fraction) : Int
     {
         if( this == other )return 0
         else
         {
             when
             {
-                ( other == fraction() )->if(this.upper > 0)return 1 else return -1
+                ( other == Fraction() )->if(this.upper > 0)return 1 else return -1
                 (this.upper >= other.upper && this.lower <= other.lower)->return 1
                 (this.upper <= other.upper && this.lower >= other.lower)->return -1
                 else -> if ( ( this.upper.toDouble() / this.lower.toDouble() ) > (other.upper.toDouble() / other.lower.toDouble() ) ) return 1
@@ -152,7 +154,7 @@ class fraction (_upper : Int = 0 , _lower : Int = 1)
     }
 
 
-    private fun cut() : fraction
+    private fun cut() : Fraction
     {
         val _gcd = gcd(this.upper.absoluteValue , this.lower.absoluteValue)
         this.upper /= _gcd
