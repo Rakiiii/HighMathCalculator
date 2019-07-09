@@ -306,6 +306,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     {
         doAsync {
             mMatrixDataBaseModel.delete(matrixGroup)
+            mMatrixDataBaseModel.deleteFromDbCache(matrixGroup)
         }
     }
 

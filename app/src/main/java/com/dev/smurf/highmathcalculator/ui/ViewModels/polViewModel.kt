@@ -2,6 +2,8 @@ package com.example.smurf.mtarixcalc
 
 import androidx.lifecycle.ViewModel
 
+
+//View model для recyclerView.list
 class PolinomRecyclerViewModel : ViewModel()
 {
     private var valueArrayList : ArrayList<PolinomGroup> = ArrayList()

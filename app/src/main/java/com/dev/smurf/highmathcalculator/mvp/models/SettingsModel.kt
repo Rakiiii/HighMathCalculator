@@ -9,13 +9,9 @@ class SettingsModel(val context: Context)
 {
 
     //SharedPreferences с настройками
-    private val mPrefs : SharedPreferences
+    private val mPrefs : SharedPreferences = context.defaultSharedPreferences
 
-    init
-    {
-        //получение из контекста
-        mPrefs = context.defaultSharedPreferences
-    }
+
 
     //получить настройки сохранения матриц
     fun getMatrixConsisten() : Boolean

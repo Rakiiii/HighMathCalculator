@@ -4,6 +4,7 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
+import com.dev.smurf.highmathcalculator.mvp.models.PolinomDataBaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.SettingsViewInterface
 import org.jetbrains.anko.doAsync
@@ -27,8 +28,18 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
         CalculatorApplication.graph.inject(this)
     }
 
+    //модель базы данных матриц
     @Inject
     lateinit var mMatrixDatabaseModel: MatrixDatabaseModel
+
+    init
+    {
+        CalculatorApplication.graph.inject(this)
+    }
+
+    //модель бызы данных полиномов
+    @Inject
+    lateinit var mPolinomDatabaseModel: PolinomDataBaseModel
 
     init
     {
@@ -87,11 +98,31 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
     {
         doAsync {
             mMatrixDatabaseModel.deleteDb()
-
         }
     }
 
     //сохранение кэша бд матриц
-    fun saveMatrixCache() = mMatrixDatabaseModel.saveCache()
+    fun saveMatrixCache()
+    {
+        doAsync {
+            mMatrixDatabaseModel.saveCache()
+        }
+    }
+
+    //очистка бд полиномов
+    fun deletePolinomDb()
+    {
+        doAsync {
+            mPolinomDatabaseModel.deleteDb()
+        }
+    }
+
+    //сохранение кэша бд полиномов
+    fun savePolinomCache()
+    {
+        doAsync {
+            mPolinomDatabaseModel.saveCache()
+        }
+    }
 
 }

@@ -14,7 +14,6 @@ import com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.MvpAppCompatFrag
 import com.dev.smurf.highmathcalculator.mvp.presenters.SettingsPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.SettingsViewInterface
 import kotlinx.android.synthetic.main.fragment_setting.*
-import org.jetbrains.anko.doAsync
 
 
 
@@ -72,6 +71,10 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
         btnDeleteMatrixDb.setOnClickListener {
             mSettingsPresenter.deleteMatrixDb()
         }
+
+        btnDeletePolinomDb.setOnClickListener {
+            mSettingsPresenter.deletePolinomDb()
+        }
     }
 
 
@@ -93,11 +96,13 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
     {
         super.onPause()
 
-        if(matrixSwitchPreviousConsistent != swtchMatrixMode.isChecked)
+        if(matrixSwitchPreviousConsistent != swtchMatrixMode.isChecked && swtchMatrixMode.isChecked)
         {
-            doAsync {
-                mSettingsPresenter.saveMatrixCache()
-            }
+            mSettingsPresenter.saveMatrixCache()
+        }
+        if(polinomSwitchPreviousConsistent != swtchPolinomMode.isChecked && swtchPolinomMode.isChecked)
+        {
+            mSettingsPresenter.savePolinomCache()
         }
 
     }

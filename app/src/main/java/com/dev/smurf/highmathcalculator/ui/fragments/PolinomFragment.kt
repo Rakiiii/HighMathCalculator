@@ -49,6 +49,7 @@ import org.jetbrains.anko.toast
 class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
 {
 
+    //вставляем презентер
     @InjectPresenter
     lateinit var mPolinomPresenter: PolinomPresenter
 
@@ -63,6 +64,8 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
     private lateinit var mPolinomRecyclerViewModel: PolinomRecyclerViewModel
 
     private lateinit var mPolinomEditTextViewModel : EditTextViewModel
+
+    private var isLoaded : Boolean = false
 
 
     override fun onCreateView(
@@ -93,6 +96,12 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
 
         //востанавливаемя из view model
         if(!mPolinomRecyclerViewModel.isEmpty())mPolinomRecyclerViewAdapter.setList(mPolinomRecyclerViewModel.getList())
+
+        if(!isLoaded)
+        {
+            mPolinomPresenter.onLoadSavedInstance()
+            isLoaded = true
+        }
 
         firstPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.firstValue)
         secondPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.secondValue)
@@ -155,6 +164,8 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
 
             }
         })
+
+
     }
 
     override fun onAttach(context: Context)

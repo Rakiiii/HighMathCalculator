@@ -24,10 +24,7 @@ interface MatrixDao
     @Transaction
     fun insertArrayList(ar : ArrayList<MatrixGroup>)
     {
-        for(i in  ar)
-        {
-            insert(i)
-        }
+        for(i in  ar)insert(i)
     }
 
 }

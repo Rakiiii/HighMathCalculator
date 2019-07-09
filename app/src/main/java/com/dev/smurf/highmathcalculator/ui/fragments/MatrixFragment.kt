@@ -132,6 +132,13 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
         listener = null
     }
 
+    //утсановка нового списка элементов для recycler view
+    override fun setRecyclerViewArrayList(ar: ArrayList<MatrixGroup>)
+    {
+        matrixRecyclerAdapter.setList(ar)
+        mMatrixRecyclerViewModel.updateList(ar)
+    }
+
 
     interface OnFragmentInteractionListener
     {
@@ -198,12 +205,4 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
         val itemTouchhelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchhelper.attachToRecyclerView(matrixRecycler)
     }
-
-    override fun setRecyclerViewArrayList(ar: ArrayList<MatrixGroup>)
-    {
-        matrixRecyclerAdapter.setList(ar)
-        mMatrixRecyclerViewModel.updateList(ar)
-    }
-
-
 }

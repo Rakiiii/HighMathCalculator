@@ -7,8 +7,10 @@ import com.arellomobile.mvp.MvpPresenter
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.mvp.models.PolinomDataBaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolinomModel
+import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.PolinomViewInterface
 import com.example.smurf.mtarixcalc.PolinomGroup
+import org.jetbrains.anko.doAsync
 import javax.inject.Inject
 
 @InjectViewState
@@ -27,6 +29,14 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
 
     @Inject
     lateinit var mPolinomModel : PolinomModel
+
+    init
+    {
+        CalculatorApplication.graph.inject(this)
+    }
+
+    @Inject
+    lateinit var mSettingsModel: SettingsModel
 
     init
     {
@@ -57,6 +67,24 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
 
                   //устанавливаем время страта операции
                   result.time = time
+
+                  doAsync {
+
+                      //если включена запись в бд
+                      if(mSettingsModel.getPolinomConsisten())
+                      {
+
+                          //записываем в бд
+                          mPolinomDataBaseModel.insert(result)
+
+                      }
+                      else
+                      {
+                          //пишем в сache бд
+                          mPolinomDataBaseModel.addToCache(result)
+
+                      }
+                  }
 
                   return result
               }
@@ -92,6 +120,25 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     //устанавливаем время старта операции
                     result.time = time
 
+                    doAsync {
+
+                        //если включена запись в бд
+                        if(mSettingsModel.getPolinomConsisten())
+                        {
+
+                            //записываем в бд
+                            mPolinomDataBaseModel.insert(result)
+
+                        }
+                        else
+                        {
+                            //пишем в сache бд
+                            mPolinomDataBaseModel.addToCache(result)
+
+                        }
+                    }
+
+
                     return result
                 }
 
@@ -125,6 +172,24 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
 
                     //устанавливаем врема старта операции
                     result.time = time
+
+                    doAsync {
+
+                        //если включена запись в бд
+                        if(mSettingsModel.getPolinomConsisten())
+                        {
+
+                            //записываем в бд
+                            mPolinomDataBaseModel.insert(result)
+
+                        }
+                        else
+                        {
+                            //пишем в сache бд
+                            mPolinomDataBaseModel.addToCache(result)
+
+                        }
+                    }
 
                     return result
                 }
@@ -160,6 +225,24 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     //устанавливаем время начала операции
                     result.time = time
 
+                    doAsync {
+
+                        //если включена запись в бд
+                        if(mSettingsModel.getPolinomConsisten())
+                        {
+
+                            //записываем в бд
+                            mPolinomDataBaseModel.insert(result)
+
+                        }
+                        else
+                        {
+                            //пишем в сache бд
+                            mPolinomDataBaseModel.addToCache(result)
+
+                        }
+                    }
+
                     return result
                 }
 
@@ -194,6 +277,24 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     //устанавливаем время начала выполнения операции
                     result.time = time
 
+                    doAsync {
+
+                        //если включена запись в бд
+                        if(mSettingsModel.getPolinomConsisten())
+                        {
+
+                            //записываем в бд
+                            mPolinomDataBaseModel.insert(result)
+
+                        }
+                        else
+                        {
+                            //пишем в сache бд
+                            mPolinomDataBaseModel.addToCache(result)
+
+                        }
+                    }
+
                     return result
                 }
 
@@ -208,5 +309,37 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
             viewState.showToast(e.toString().substringAfter(':'))
         }
     }
+
+    /*
+     * Реализация работы с бд
+     */
+
+    //удаление из базы данных
+    fun deleteFromDb(polinomGroup: PolinomGroup)
+    {
+        doAsync {
+            mPolinomDataBaseModel.delete(polinomGroup)
+            mPolinomDataBaseModel.deleteFromDbCache(polinomGroup)
+        }
+    }
+
+    //загрузка созраненного в бд состояния
+    @SuppressLint(value = ["StaticFieldLeak"])
+    fun onLoadSavedInstance()
+    {
+        object : AsyncTask<Void,Void,List<PolinomGroup>>(){
+
+            override fun doInBackground(vararg params: Void?): List<PolinomGroup>
+            {
+                return mPolinomDataBaseModel.selectAll()
+            }
+
+            override fun onPostExecute(result: List<PolinomGroup>?)
+            {
+                viewState.setRecyclerViewList(ArrayList(result!!))
+            }
+        }.execute()
+    }
+
 
 }

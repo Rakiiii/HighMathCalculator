@@ -14,13 +14,9 @@ class MatrixDatabaseModel(val context: Context)
     private var cache : ArrayList<MatrixGroup> = ArrayList()
 
     //база данных
-    private val mMatrixDatabase : MatrixDataBase
+    private val mMatrixDatabase : MatrixDataBase =
+        Room.databaseBuilder( context ,MatrixDataBase::class.java , "matrix_db").build()
 
-    init
-    {
-        //инициализируем базу дынных
-        mMatrixDatabase = Room.databaseBuilder( context ,MatrixDataBase::class.java , "matrix_db").build()
-    }
 
     //вставка в бд
     fun insert(matrixGroup: MatrixGroup) = mMatrixDatabase.getMatrixDao().insert(matrixGroup)
@@ -29,12 +25,8 @@ class MatrixDatabaseModel(val context: Context)
     fun delete(matrixGroup: MatrixGroup) = mMatrixDatabase.getMatrixDao().delete(matrixGroup)
 
     //получение всех элементов бд
-    fun selectAll() : List<MatrixGroup>
-    {
-        var tmp = mMatrixDatabase.getMatrixDao().selectAll()
-        cache = ArrayList(tmp)
-        return tmp
-    }
+    fun selectAll() : List<MatrixGroup> = mMatrixDatabase.getMatrixDao().selectAll()
+
 
     //втсавка целого листа транзакцией
     fun insertArrayList(ar : ArrayList<MatrixGroup>) = mMatrixDatabase.getMatrixDao().insertArrayList(ar)
@@ -46,9 +38,12 @@ class MatrixDatabaseModel(val context: Context)
     //сохранить кэш в бд и очистить кэш
     fun saveCache()
     {
-        insertArrayList(cache)
+        mMatrixDatabase.getMatrixDao().insertArrayList(cache)
         cache.clear()
     }
+
+    //удаление из кэша бд
+    fun deleteFromDbCache(matrixGroup: MatrixGroup) = cache.remove(matrixGroup)
 
     //очистить бд
     fun deleteDb() = mMatrixDatabase.clearAllTables()

@@ -13,4 +13,7 @@ interface PolinomViewInterface : MvpView
 
     //вывести что-то в тост
     fun showToast(obj : String)
+
+    //установить новый список элементов RecyclerView
+    fun setRecyclerViewList(ar : ArrayList<PolinomGroup>)
 }
