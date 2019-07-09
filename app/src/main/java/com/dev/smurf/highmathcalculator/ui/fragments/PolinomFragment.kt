@@ -55,10 +55,10 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
 
     private var listener: OnFragmentInteractionListener? = null
 
-    //recycler view для полиномов\
-    private lateinit var polRecycler : RecyclerView
-    private lateinit var polAdapter: polAdapter
-    private lateinit var polLayoutManager: LinearLayoutManager
+    //recycler view для полиномов
+    private lateinit var mPolinomRecyclerView : RecyclerView
+    private lateinit var mPolinomRecyclerViewAdapter : polAdapter
+    private lateinit var mPolinomRecyclerViewLayoutManager: LinearLayoutManager
 
     private lateinit var mPolinomRecyclerViewModel: PolinomRecyclerViewModel
 
@@ -92,7 +92,7 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
         enableSwipeToDeleteAndUndo()
 
         //востанавливаемя из view model
-        if(!mPolinomRecyclerViewModel.isEmpty())polAdapter.setList(mPolinomRecyclerViewModel.getList())
+        if(!mPolinomRecyclerViewModel.isEmpty())mPolinomRecyclerViewAdapter.setList(mPolinomRecyclerViewModel.getList())
 
         firstPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.firstValue)
         secondPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.secondValue)
@@ -182,11 +182,11 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
 
     fun initRecyclerView()
     {
-        polLayoutManager = LinearLayoutManager(this.context)
-        polAdapter = polAdapter( this.context!! , firstPolinom , secondPolinom)
-        polRecycler = view!!.findViewById(R.id.polinomRecycler)
-        polRecycler.adapter = polAdapter
-        polRecycler.layoutManager = polLayoutManager
+        mPolinomRecyclerViewLayoutManager = LinearLayoutManager(this.context)
+        mPolinomRecyclerViewAdapter = polAdapter( this.context!! , firstPolinom , secondPolinom)
+        mPolinomRecyclerView = view!!.findViewById(R.id.polinomRecycler)
+        mPolinomRecyclerView.adapter = mPolinomRecyclerViewAdapter
+        mPolinomRecyclerView.layoutManager = mPolinomRecyclerViewLayoutManager
     }
 
     private fun enableSwipeToDeleteAndUndo()
@@ -196,40 +196,42 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
 
 
                 val position = viewHolder.adapterPosition
-                val item = polAdapter.getData(position)
+                val item = mPolinomRecyclerViewAdapter.getData(position)
 
-                polAdapter.removeElement(position)
+                mPolinomRecyclerViewAdapter.removeElement(position)
 
 
                 val snackbar = Snackbar
                     .make( polinomFrame , "Item was removed from the list.", Snackbar.LENGTH_LONG)
                 snackbar.setAction("UNDO") {
-                    polAdapter.restoreItem(item, position)
-                    polRecycler.scrollToPosition(position)
+                    mPolinomRecyclerViewAdapter.restoreItem(item, position)
+                    mPolinomRecyclerView.scrollToPosition(position)
                 }
 
                 snackbar.setActionTextColor(Color.YELLOW)
                 snackbar.show()
-
-                //mPolinomRecyclerViewModel.updateList( polAdapter.getList())
-
             }
 
         }
 
         val itemTouchhelper = ItemTouchHelper(swipeToDeleteCallback)
-        itemTouchhelper.attachToRecyclerView(polRecycler)
+        itemTouchhelper.attachToRecyclerView(mPolinomRecyclerView)
     }
 
 
     override fun addToPolinomRecyclerView(obj: PolinomGroup)
     {
-        polAdapter.addElement(mPolinomRecyclerViewModel.add(obj))
+        mPolinomRecyclerViewAdapter.addElement(mPolinomRecyclerViewModel.add(obj))
     }
 
     override fun showToast(obj: String)
     {
         this.context!!.toast(obj)
-        //toast(obj)
+    }
+
+    override fun setRecyclerViewList(ar: ArrayList<PolinomGroup>)
+    {
+        mPolinomRecyclerViewModel.updateList(ar)
+        mPolinomRecyclerViewAdapter.setList(ar)
     }
 }
