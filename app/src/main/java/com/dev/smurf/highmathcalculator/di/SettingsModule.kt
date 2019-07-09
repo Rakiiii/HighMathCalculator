@@ -6,14 +6,19 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
+
+//класс инициалищатор  для SettingsModel
 @Module
 class SettingsModule(val context: Context)
 {
 
+    //Метод предоставления SettingsModel
     @Provides
     @Singleton
     fun provideSettings() : SettingsModel = SettingsModel(context)
 
+
+    //метод предоставления ApplicationContext
     @Provides
     @Singleton
     fun provideApplicationContext() : Context = context
