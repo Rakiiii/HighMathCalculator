@@ -5,6 +5,8 @@ import androidx.room.RoomDatabase
 import com.example.smurf.mtarixcalc.MatrixGroup
 
 
+
+//получение интерфейса для работы с бд
 @Database(entities = [MatrixGroup::class] , version = 1)
 abstract class MatrixDataBase : RoomDatabase()
 {

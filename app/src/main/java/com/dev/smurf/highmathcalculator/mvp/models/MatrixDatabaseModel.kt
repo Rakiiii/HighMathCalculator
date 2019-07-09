@@ -31,7 +31,7 @@ class MatrixDatabaseModel(val context: Context)
         return tmp
     }
 
-    fun insertArrayList(ar : ArrayList<MatrixGroup>) = mMatrixDatabase.getMatrixDao().insertList(ar)
+    fun insertArrayList(ar : ArrayList<MatrixGroup>) = mMatrixDatabase.getMatrixDao().insertArrayList(ar)
 
     fun addToCache(matrixGroup: MatrixGroup) = cache.add(matrixGroup)
 

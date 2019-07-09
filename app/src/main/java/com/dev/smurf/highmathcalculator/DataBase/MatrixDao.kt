@@ -22,7 +22,7 @@ interface MatrixDao
 
     //записать целый список транзакцией
     @Transaction
-    fun insertList(ar : ArrayList<MatrixGroup>)
+    fun insertArrayList(ar : ArrayList<MatrixGroup>)
     {
         for(i in  ar)
         {
