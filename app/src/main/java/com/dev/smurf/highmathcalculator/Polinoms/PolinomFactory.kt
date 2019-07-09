@@ -6,7 +6,7 @@ class PolinomFactory
     {
         if(obj.contains('^'))
         {
-            throw Exception("NeedToAddExponentialPolinom")
+            return ExponensialPolinom(obj)
         }
         else return DiofantPolinom(obj)
     }

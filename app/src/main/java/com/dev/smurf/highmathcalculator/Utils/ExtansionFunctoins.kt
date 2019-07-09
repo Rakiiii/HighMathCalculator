@@ -201,7 +201,31 @@ fun String.translateDegree():String
     return res
 }
 
-fun String.AmountOfCofsInPolinom() : Int
+fun String.degreesToNormalForm() : String
+{
+    var result = ""
+    var flag = false
+    for( i in this)
+    {
+        if(i in '⁰'..'⁹')
+        {
+            if(!flag)
+            {
+                result += '^'
+                flag = true
+            }
+            result += i.toString().translateDegree()
+        }
+        else
+        {
+            flag = false
+            result += i
+        }
+    }
+    return result
+}
+
+fun String.amountOfCofsInPolinom() : Int
 {
     var counter = 0
     var flagOfClose = true
@@ -212,6 +236,7 @@ fun String.AmountOfCofsInPolinom() : Int
             '('-> flagOfClose = false
             ')'->flagOfClose = true
             '+'->if(flagOfClose)counter++
+            '-'->if(flagOfClose)counter++
             else->false
         }
     }
@@ -253,9 +278,9 @@ fun String.toPolinomCofsString( symb : Char) : String
     var tmp = this.translateDegree().removePluses() + symb + '0' + ' '
     var finalString = tmp.substringBefore(' ').substringBefore(symb).substringAfter('(').substringBefore(')') + ' '
     Log.d("DEGUB@" , "Init Strings")
-    for(i in 0 until this.AmountOfCofsInPolinom())
+    for(i in 0 until this.amountOfCofsInPolinom())
     {
-        Log.d("DEBUG@" , "Cycle Starts _" + this.AmountOfCofsInPolinom().toString())
+        Log.d("DEBUG@" , "Cycle Starts _" + this.amountOfCofsInPolinom().toString())
         //throw Exception("Cycle started")
         var word1 = tmp.substringBefore(' ')
         var word2 = tmp.substringAfter(' ').substringBefore(' ')
@@ -282,4 +307,47 @@ fun String.toPolinomCofsString( symb : Char) : String
     Log.d("DEBUG@" , "Cycle finished")
 
     return finalString
+}
+
+fun String.substringBeforSymbol() : String
+{
+    for(i in this)
+    {
+        if( (i in 'a'..'z') || (i in 'A'..'Z') )
+        {
+            return this.substringBefore(i)
+        }
+    }
+    return this
+}
+
+fun String.substringAfterSymbol() : String
+{
+    for(i in this)
+    {
+        if( (i in 'a'..'z') || (i in 'A'..'Z'))
+        {
+            return this.substringAfter(i)
+
+        }
+    }
+    return this
+}
+
+fun String.substringAfterSymbolIncluded() : String
+{
+    for(i in this)
+    {
+        if( (i in 'a'..'z') || (i in 'A'..'Z'))
+        {
+            return (i+this.substringAfter(i))
+
+        }
+    }
+    return this
+}
+
+fun String.separateCofsWithSpaces() : String
+{
+    TODO("not implemented")
 }

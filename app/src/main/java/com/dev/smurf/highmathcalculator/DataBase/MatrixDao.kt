@@ -1,5 +1,33 @@
 package com.dev.smurf.highmathcalculator.DataBase
 
+import androidx.room.*
+import com.example.smurf.mtarixcalc.MatrixGroup
+
+
+@Dao
 interface MatrixDao
 {
+
+    //вставка результатов в бд
+    @Insert
+    fun insert(MatrixGroup: MatrixGroup)
+
+    //удаление из бд
+    @Delete
+    fun delete(MatrixGroup: MatrixGroup)
+
+    //получить все данные из бд
+    @Query("SELECT *    FROM MatrixGroup")
+    fun selectAll() : List<MatrixGroup>
+
+    //записать целый список транзакцией
+    @Transaction
+    fun insertList(ar : ArrayList<MatrixGroup>)
+    {
+        for(i in  ar)
+        {
+            insert(i)
+        }
+    }
+
 }

@@ -1,21 +1,22 @@
 package com.dev.smurf.highmathcalculator
 
-import android.app.FragmentTransaction
+//import android.support.design.widget.NavigationView
+//import com.google.android.material.navigation.NavigationView
 import android.os.Bundle
-import android.support.design.widget.NavigationView
-import android.support.v7.app.ActionBarDrawerToggle
 import android.view.MenuItem
-import com.arellomobile.mvp.MvpAppCompatActivity
+import androidx.appcompat.app.ActionBarDrawerToggle
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.dev.smurf.highmathcalculator.R.id.*
 import com.dev.smurf.highmathcalculator.mvp.presenters.MainPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
 import com.dev.smurf.highmathcalculator.ui.fragments.MatrixFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.PolinomFragment
+import com.dev.smurf.highmathcalculator.ui.fragments.SettingFragment
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : MvpAppCompatActivity() , MainViewInterface {
+class MainActivity : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.MvpAppCompatActivity(), MainViewInterface {
 
     //добовляем mainPresenter
     @InjectPresenter
@@ -27,8 +28,11 @@ class MainActivity : MvpAppCompatActivity() , MainViewInterface {
     //фрагмент с полиномом
     private lateinit var mPolinomFragment : PolinomFragment
 
+    //фрагмент с настройками
+    private lateinit var mSettingFragment: SettingFragment
+
     //менеджер фрагментов
-    private lateinit var mFragmentTransaction: FragmentTransaction
+    private lateinit var mFragmentTransaction: androidx.fragment.app.FragmentTransaction
 
     //переменная для выезжающего дровера
     private lateinit var mToggler : ActionBarDrawerToggle
@@ -39,10 +43,12 @@ class MainActivity : MvpAppCompatActivity() , MainViewInterface {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //supportActionBar?.hide()
+
 
         initFragments()
 
-        mToggler  = ActionBarDrawerToggle(this , matrixDrawerLayout , R.string.open ,R.string.close)
+        mToggler  = ActionBarDrawerToggle(this, matrixDrawerLayout, R.string.open ,R.string.close)
 
         matrixDrawerLayout.addDrawerListener(mToggler)
 
@@ -69,6 +75,11 @@ class MainActivity : MvpAppCompatActivity() , MainViewInterface {
                         mMainPresenter.setPolinonFragment()
                         return true
                     }
+                    settingsBtn->
+                    {
+                        mMainPresenter.setSettingsFragment()
+                        return true
+                    }
                     aboutBtn->
                     {
                         return true
@@ -85,7 +96,9 @@ class MainActivity : MvpAppCompatActivity() , MainViewInterface {
     {
         mMatrixFragment = MatrixFragment()
         mPolinomFragment = PolinomFragment()
-        mFragmentTransaction = fragmentManager.beginTransaction()
+        mSettingFragment = SettingFragment()
+        mFragmentTransaction = supportFragmentManager.beginTransaction()
+                //fragmentManager.beginTransaction()
         mFragmentTransaction.add(R.id.fragmentFrame,mMatrixFragment)
         mFragmentTransaction.commit()
     }
@@ -95,7 +108,8 @@ class MainActivity : MvpAppCompatActivity() , MainViewInterface {
 
         if(!mMatrixFragment.isInLayout)
         {
-            mFragmentTransaction = fragmentManager.beginTransaction()
+            mFragmentTransaction = supportFragmentManager.beginTransaction()
+                    //fragmentManager.beginTransaction()
             mFragmentTransaction.replace(R.id.fragmentFrame, mMatrixFragment)
             mFragmentTransaction.addToBackStack(null)
             mFragmentTransaction.commit()
@@ -107,8 +121,22 @@ class MainActivity : MvpAppCompatActivity() , MainViewInterface {
     {
         if (!mPolinomFragment.isInLayout)
         {
-            mFragmentTransaction = fragmentManager.beginTransaction()
+            mFragmentTransaction = supportFragmentManager.beginTransaction()
+                    //fragmentManager.beginTransaction()
             mFragmentTransaction.replace(R.id.fragmentFrame, mPolinomFragment)
+            mFragmentTransaction.addToBackStack(null)
+            mFragmentTransaction.commit()
+            matrixDrawerLayout.closeDrawers()
+        }
+    }
+
+    override fun setSettingsFragment()
+    {
+        if(!mSettingFragment.isInLayout)
+        {
+            mFragmentTransaction = supportFragmentManager.beginTransaction()
+                    //fragmentManager.beginTransaction()
+            mFragmentTransaction.replace(R.id.fragmentFrame, mSettingFragment)
             mFragmentTransaction.addToBackStack(null)
             mFragmentTransaction.commit()
             matrixDrawerLayout.closeDrawers()

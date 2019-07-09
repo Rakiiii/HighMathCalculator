@@ -1,4 +1,9 @@
 package com.dev.smurf.highmathcalculator.ui.ViewModels
 
-class EditTextViewModel {
+import androidx.lifecycle.ViewModel
+
+class EditTextViewModel : ViewModel()
+{
+    var firstValue = ""
+    var secondValue = ""
 }

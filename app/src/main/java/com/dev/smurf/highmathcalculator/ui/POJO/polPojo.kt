@@ -1,13 +1,20 @@
 package com.example.smurf.mtarixcalc
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.dev.smurf.highmathcalculator.Polinoms.PolinomBase
+import com.dev.smurf.highmathcalculator.RoomConverters.MatrixConverter
+import java.util.*
 
-
-data class polGroup( var polLeftPolinom : polinom,
-                     var polRightPolinom : polinom,
-                     var polSignPolinom : String,
-                     var polResPolinom : polinom,
-                     var polOstPolinom : polinom? = null,
-                     var symb : Char = 'x')
-{
-    constructor() : this(polinom(0),polinom(0),"_",polinom(0))
-}
+@Entity
+@TypeConverters(MatrixConverter::class)
+data class PolinomGroup(var polLeftPolinom : PolinomBase,
+                        var polRightPolinom : PolinomBase?,
+                        var polSignPolinom : String,
+                        var polResPolinom : PolinomBase?,
+                        var polOstPolinom : PolinomBase? = null,
+                        var isRoots : Boolean = false,
+                        var roots : String? = null,
+                        @PrimaryKey var time : java.util.GregorianCalendar = GregorianCalendar()
+)

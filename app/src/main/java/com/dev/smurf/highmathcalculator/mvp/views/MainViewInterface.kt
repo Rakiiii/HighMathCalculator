@@ -14,4 +14,7 @@ interface MainViewInterface : MvpView
     //установить фрагмент с матрицами
     fun setMatrixFragment()
 
+    //установить фрагмент с настройками
+    fun setSettingsFragment()
+
 }

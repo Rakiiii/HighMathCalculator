@@ -1,33 +1,43 @@
 package com.dev.smurf.highmathcalculator.ui.fragments
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.FragmentActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+//import android.support.design.widget.Snackbar
+//import androidx.fragment.app.FragmentActivity
+//import androidx.appcompat.widget.LinearLayoutManager
+//import androidx.appcompat.widget.RecyclerView
+//import androidx.appcompat.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.arellomobile.mvp.MvpFragment
+import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.arellomobile.mvp.MvpAppCompatFragment
+//import com.arellomobile.mvp.MvpFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.dev.smurf.highmathcalculator.R
+import com.dev.smurf.highmathcalculator.R.id.*
 import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.example.smurf.mtarixcalc.matrixAdapter
-import com.example.smurf.mtarixcalc.matrixGroup
+import com.example.smurf.mtarixcalc.MatrixGroup
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_matrix.*
+import org.jetbrains.anko.toast
 
 
-class MatrixFragment : MvpFragment(),MatrixViewInterface
+class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.MvpAppCompatFragment(),MatrixViewInterface
 {
     private var listener: OnFragmentInteractionListener? = null
+
+    private var loaded : Boolean = false
 
     @InjectPresenter
     lateinit var mMatrixPresenter: MatrixPresenter
@@ -96,6 +106,12 @@ class MatrixFragment : MvpFragment(),MatrixViewInterface
 
         //востонавливаемся из view model
         if(!mMatrixRecyclerViewModel.isEmpty())matrixRecyclerAdapter.setList(mMatrixRecyclerViewModel.getList())
+
+        if(!loaded)
+        {
+            mMatrixPresenter.onLoadSavedInstance()
+            loaded = true
+        }
     }
 
 
@@ -130,9 +146,9 @@ class MatrixFragment : MvpFragment(),MatrixViewInterface
         matrixRecyclerLayoutManager = LinearLayoutManager(context)
 
 
-        matrixRecyclerAdapter =  matrixAdapter(context , firstMatrix , secondMatrix)
+        matrixRecyclerAdapter =  matrixAdapter(context!! , firstMatrix , secondMatrix)
 
-        matrixRecycler = view.findViewById( R.id.matrixRecycler)
+        matrixRecycler = view!!.findViewById( R.id.matrixRecycler)
 
         matrixRecycler.layoutManager = matrixRecyclerLayoutManager
 
@@ -140,17 +156,23 @@ class MatrixFragment : MvpFragment(),MatrixViewInterface
 
     }
 
-    override fun addToRecyclerView(obj: matrixGroup)
+    override fun addToRecyclerView(obj: MatrixGroup)
     {
         matrixRecyclerAdapter.addNewElem(mMatrixRecyclerViewModel.add(obj))
 
     }
 
+    override fun showToast(obj: String)
+    {
+        this.context!!.toast(obj)
+    }
+
     private fun enableSwipeToDeleteAndUndo()
     {
-        val swipeToDeleteCallback = object : SwipeToDeleteCallback(context) {
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback(context!!) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
 
+                var isUnded = false
 
                 val position = viewHolder.adapterPosition
                 val item = matrixRecyclerAdapter.getData(position)
@@ -162,6 +184,7 @@ class MatrixFragment : MvpFragment(),MatrixViewInterface
                     .make( matrixFrame , "Item was removed from the list.", Snackbar.LENGTH_LONG)
                 snackbar.setAction("UNDO") {
                     matrixRecyclerAdapter.restoreItem(position , item)
+                    isUnded = true
                     matrixRecycler.scrollToPosition(position)
                 }
 
@@ -169,6 +192,7 @@ class MatrixFragment : MvpFragment(),MatrixViewInterface
                 snackbar.show()
 
                 mMatrixRecyclerViewModel.updateList(matrixRecyclerAdapter.getList())
+                if(!isUnded)mMatrixPresenter.deleteFromDb(item)
 
             }
         }
@@ -176,5 +200,12 @@ class MatrixFragment : MvpFragment(),MatrixViewInterface
         val itemTouchhelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchhelper.attachToRecyclerView(matrixRecycler)
     }
+
+    override fun addLoaded(ar: ArrayList<MatrixGroup>)
+    {
+        matrixRecyclerAdapter.setList(ar)
+        mMatrixRecyclerViewModel.updateList(ar)
+    }
+
 
 }

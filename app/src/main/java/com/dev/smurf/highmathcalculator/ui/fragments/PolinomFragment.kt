@@ -1,32 +1,51 @@
 package com.dev.smurf.highmathcalculator.ui.fragments
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.FragmentActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+//import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import com.arellomobile.mvp.MvpFragment
+import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+//import com.arellomobile.mvp.MvpFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
-import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.PolinomPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.PolinomViewInterface
+import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.example.smurf.mtarixcalc.PolinomRecyclerViewModel
-import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.example.smurf.mtarixcalc.polAdapter
-import com.example.smurf.mtarixcalc.polGroup
+//import androidx.fragment.app.FragmentActivity
+//import androidx.recyclerview.widget.RecyclerView
+//import androidx.recyclerview.widget.ItemTouchHelper
+import android.text.Editable
+import android.text.SpannableStringBuilder
+import android.text.TextWatcher
+//import android.view.LayoutInflater
+import android.view.View
+//import android.view.ViewGroup
+//import com.arellomobile.mvp.MvpFragment
+//import com.arellomobile.mvp.presenter.InjectPresenter
+import com.dev.smurf.highmathcalculator.R
+import com.dev.smurf.highmathcalculator.R.id.*
+import com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.MvpAppCompatFragment
+//import com.dev.smurf.highmathcalculator.mvp.presenters.PolinomPresenter
+//import com.dev.smurf.highmathcalculator.mvp.views.PolinomViewInterface
+//import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
+//import com.example.smurf.mtarixcalc.PolinomRecyclerViewModel
+import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
+//import com.example.smurf.mtarixcalc.polAdapter
+import com.example.smurf.mtarixcalc.PolinomGroup
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_polinom.*
 import org.jetbrains.anko.toast
 
 
-class PolinomFragment : MvpFragment() , PolinomViewInterface
+class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
 {
 
     @InjectPresenter
@@ -41,6 +60,8 @@ class PolinomFragment : MvpFragment() , PolinomViewInterface
     private lateinit var polLayoutManager: LinearLayoutManager
 
     private lateinit var mPolinomRecyclerViewModel: PolinomRecyclerViewModel
+
+    private lateinit var mPolinomEditTextViewModel : EditTextViewModel
 
 
     override fun onCreateView(
@@ -60,6 +81,9 @@ class PolinomFragment : MvpFragment() , PolinomViewInterface
         //инициализация viewModel для полиномов
         mPolinomRecyclerViewModel = ViewModelProviders.of(activity as FragmentActivity).get(PolinomRecyclerViewModel::class.java)
 
+        //инициализация view model для содержимого edittext
+        mPolinomEditTextViewModel = ViewModelProviders.of(activity as FragmentActivity).get(EditTextViewModel::class.java)
+
         //инициализация recyclerView для полиномов
         initRecyclerView()
 
@@ -69,9 +93,67 @@ class PolinomFragment : MvpFragment() , PolinomViewInterface
         //востанавливаемя из view model
         if(!mPolinomRecyclerViewModel.isEmpty())polAdapter.setList(mPolinomRecyclerViewModel.getList())
 
+        firstPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.firstValue)
+        secondPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.secondValue)
+
+
+
         btnPolPlus.setOnClickListener {
             v -> mPolinomPresenter.onPlusClick(firstPolinom.text.toString() , secondPolinom.text.toString())
         }
+
+        btnPolMinus.setOnClickListener {
+            v -> mPolinomPresenter.onMinusClick(firstPolinom.text.toString() , secondPolinom.text.toString())
+        }
+
+        btnPolTimes.setOnClickListener {
+            v -> mPolinomPresenter.onTimesClick(firstPolinom.text.toString() , secondPolinom.text.toString())
+        }
+
+        btnPolDiv.setOnClickListener {
+            v -> mPolinomPresenter.onDivisionClick(firstPolinom.text.toString() , secondPolinom.text.toString())
+        }
+
+        btnPolRootsA.setOnClickListener {
+            v -> mPolinomPresenter.onRootsOfClick(firstPolinom.text.toString())
+        }
+
+        btnPolRootsB.setOnClickListener {
+            v -> mPolinomPresenter.onRootsOfClick(secondPolinom.text.toString())
+        }
+
+        firstPolinom.addTextChangedListener( object : TextWatcher
+        {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int)
+            {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int)
+            {
+
+            }
+            override fun afterTextChanged(s: Editable?)
+            {
+                mPolinomEditTextViewModel.firstValue = firstPolinom.text.toString()
+            }
+        })
+
+        secondPolinom.addTextChangedListener( object  : TextWatcher
+        {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?)
+            {
+                mPolinomEditTextViewModel.secondValue = secondPolinom.text.toString()
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+        })
     }
 
     override fun onAttach(context: Context)
@@ -100,15 +182,15 @@ class PolinomFragment : MvpFragment() , PolinomViewInterface
     fun initRecyclerView()
     {
         polLayoutManager = LinearLayoutManager(this.context)
-        polAdapter = polAdapter( this.context , firstPolinom , secondPolinom)
-        polRecycler = view.findViewById(R.id.polinomRecycler)
+        polAdapter = polAdapter( this.context!! , firstPolinom , secondPolinom)
+        polRecycler = view!!.findViewById(R.id.polinomRecycler)
         polRecycler.adapter = polAdapter
         polRecycler.layoutManager = polLayoutManager
     }
 
     private fun enableSwipeToDeleteAndUndo()
     {
-        val swipeToDeleteCallback = object : SwipeToDeleteCallback(this.context) {
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback(this.context!!) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
 
 
@@ -131,6 +213,7 @@ class PolinomFragment : MvpFragment() , PolinomViewInterface
                 //mPolinomRecyclerViewModel.updateList( polAdapter.getList())
 
             }
+
         }
 
         val itemTouchhelper = ItemTouchHelper(swipeToDeleteCallback)
@@ -138,13 +221,14 @@ class PolinomFragment : MvpFragment() , PolinomViewInterface
     }
 
 
-    override fun addToPolinomRecyclerView(obj: polGroup)
+    override fun addToPolinomRecyclerView(obj: PolinomGroup)
     {
         polAdapter.addElement(mPolinomRecyclerViewModel.add(obj))
     }
 
     override fun showToast(obj: String)
     {
-        toast(obj)
+        this.context!!.toast(obj)
+        //toast(obj)
     }
 }

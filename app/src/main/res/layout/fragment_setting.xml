@@ -5,10 +5,56 @@
              android:layout_height="match_parent"
              tools:context=".ui.fragments.SettingFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment"/>
+            android:layout_height="wrap_content"
+            android:id="@+id/SettingLinearLayout"
+            android:orientation="vertical">
+        <TextView
+                style="@style/settingsHeadlineTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/savingHeadline"/>
+
+            <Switch
+                    style="@style/settingsTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/matrixSettings"
+                    android:id="@+id/swtchMatrixMode"
+            />
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/darker_gray"/>
+
+
+            <Switch
+                    style="@style/settingsTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/polinomSettings"
+                    android:id="@+id/swtchPolinomMode"
+            />
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/darker_gray"/>
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnDeleteMatrixDb"
+                android:text="@string/deleteMatrixInsatnce"
+        />
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/darker_gray"/>
+
+
+    </LinearLayout>
 
 </FrameLayout>

@@ -1,18 +1,52 @@
 package com.dev.smurf.highmathcalculator.Polinoms
 
-import com.example.smurf.mtarixcalc.complexNumber
-import com.example.smurf.mtarixcalc.countWords
-import com.example.smurf.mtarixcalc.toComplex
+import android.util.Log
+import com.example.smurf.mtarixcalc.*
 
 class DiofantPolinom : PolinomBase
 {
     constructor(obj : String)
     {
-        var str = obj.trim().filter { s -> (s != '+') }
-        for(i in 0 until str.countWords())
+        var str = ""
+        var res = ""
+        if(obj.contains('|'))
         {
-            var tmp = str.substringBefore(' ')
-            polinom[tmp.last().toString()] = tmp.substringBefore(tmp.last()).toComplex()
+            str = obj.substringBefore('|').filter { s -> (s != ' ') }.removePluses()
+            res = obj.substringAfter('|')
+        }
+        else
+        {
+            str = obj.filter { s -> (s != ' ') }.removePluses()
+        }
+
+            Log.d("DEBUG@" , str)
+            for(i in 0 until obj.amountOfCofsInPolinom())
+            {
+                var tmp = str.substringBefore(' ')
+                Log.d("DEBUG@" , tmp)
+                if(polinom.containsKey(tmp.last().toString()))
+                {
+                    val tmpValue = polinom[tmp.last().toString()]?.plus(tmp.substringBefore(tmp.last()).toComplex())
+                    polinom[tmp.last().toString()] = tmpValue!!
+                }
+                else
+                {
+                    polinom[tmp.last().toString()] = tmp.substringBefore(tmp.last()).toComplex()
+                }
+                str = str.substringAfter(' ')
+                Log.d("DEBUG@" , str)
+            }
+        if(res != "")
+        {
+            _isSolved = true
+            var am = res.countWords()
+            for(i in 0 until am)
+            {
+                var tmp = res.substringBefore(' ')
+                var key = tmp.substringBefore(':')
+                var value = tmp.substringAfter(':')
+                _root[key] = value.toComplex()
+            }
         }
     }
 
@@ -34,6 +68,7 @@ class DiofantPolinom : PolinomBase
                         }
                     }
                     _root.withDefault { s -> complexNumber() }
+                    _isSolved = false
                     return this
                 }
                 else -> throw Exception("UnknownTypeForPolinomPlus")
@@ -58,6 +93,7 @@ class DiofantPolinom : PolinomBase
                     }
                 }
                 _root.withDefault { s -> complexNumber() }
+                _isSolved = false
                 return this
             }
             else -> throw Exception("UnknownTypeForPolinomMinus")
@@ -74,9 +110,36 @@ class DiofantPolinom : PolinomBase
         throw Exception("NoOperationDivisionForDiofantPolinom")
     }
 
-    override fun root(): Map<String, complexNumber>
+    override fun solve()
+    {
+        _isSolved = true
+    }
+
+    override fun stringWithRoots(): String
+    {
+        var result = ""
+        for(i in _root)
+        {
+            result += i.key + ":" + i.value.toString() + " "
+        }
+        return result
+    }
+
+    override fun getRoots(): MutableMap<String, complexNumber>
     {
         return _root
     }
+
+    override fun toString(): String
+    {
+        var res = ""
+        for(i in polinom)
+        {
+            res += i.value.toString()+i.key+"+"
+        }
+        return res
+    }
+
+    override fun isSolved(): Boolean = _isSolved
 
 }

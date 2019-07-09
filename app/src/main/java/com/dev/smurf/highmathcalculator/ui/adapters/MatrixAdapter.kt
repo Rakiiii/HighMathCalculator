@@ -3,52 +3,53 @@ package com.example.smurf.mtarixcalc
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.text.SpannableStringBuilder
 import android.view.*
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.R
+import java.text.SimpleDateFormat
 
 
 class matrixAdapter(val context: Context , val firstMatrix : EditText , val secondMatrix : EditText ) : RecyclerView.Adapter<matrixAdapter.matrixViewHolder>()
 {
 
-        private var listOfMatrix : ArrayList<matrixGroup> = ArrayList()
+        private var listOfMatrices : ArrayList<MatrixGroup> = ArrayList()
 
-        fun addNewElem(group : matrixGroup)
+        fun addNewElem(group : MatrixGroup)
         {
-            listOfMatrix.add(0 ,group)
+            listOfMatrices.add(0 ,group)
             notifyDataSetChanged()
         }
 
         fun clearList()
         {
-            listOfMatrix.clear()
+            listOfMatrices.clear()
             notifyDataSetChanged()
         }
 
         fun removeElement( position: Int)
         {
-            listOfMatrix.removeAt(position)
+            listOfMatrices.removeAt(position)
             notifyDataSetChanged()
         }
 
-        fun getData( position: Int) = listOfMatrix[position]
+        fun getData( position: Int) = listOfMatrices[position]
 
-        fun restoreItem(position: Int , matrixGroup: matrixGroup)
+        fun restoreItem(position: Int, MatrixGroup: MatrixGroup)
         {
-            listOfMatrix.add(position , matrixGroup)
+            listOfMatrices.add(position , MatrixGroup)
             notifyItemInserted(position)
         }
 
-        fun setList( newArray : ArrayList<matrixGroup>)
+        fun setList( newArray : ArrayList<MatrixGroup>)
         {
-            listOfMatrix = newArray
+            listOfMatrices = newArray
             notifyDataSetChanged()
         }
 
-        fun getList() = listOfMatrix
+        fun getList() = listOfMatrices
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): matrixViewHolder
     {
@@ -57,7 +58,7 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
 
     override fun onBindViewHolder(holder: matrixViewHolder, position: Int)
     {
-        holder.bind(listOfMatrix[position])
+        holder.bind(listOfMatrices[position])
 
 
         //листенер для контекстного меню на левую матрицу
@@ -174,7 +175,7 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
 
     override fun getItemCount(): Int
     {
-        return listOfMatrix.size
+        return listOfMatrices.size
     }
 
 
@@ -193,9 +194,10 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
                 private set
             var sign : TextView = itemView.findViewById(R.id.operationSignm)
                 private set
+            var timeMatrix : TextView = itemView.findViewById(R.id.timeMatrix)
 
 
-            fun bind(group : matrixGroup)
+            fun bind(group : MatrixGroup)
             {
                 leftMatrix.text = group.leftMatrix.toString('|')
                 if(!group.rightMatrix.isEmpty()) rightMatrix.text =(group.rightMatrix.toString('|').substringBefore('\n') +
@@ -204,6 +206,12 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
                         group.rightMatrix.toString('|').substringAfter('\n'))
                 resMatrix.text = group.resMatrix.toString('|')
                 sign.text = group.sign
+
+                group.time.let{
+                    var fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
+                    fmt.calendar = it
+                    timeMatrix.text = fmt.format(it?.time)
+                }
             }
 
         }

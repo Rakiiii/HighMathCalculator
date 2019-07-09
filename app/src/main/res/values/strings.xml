@@ -21,6 +21,11 @@
     <string name="btnDivision">/</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
+    <string name="matrixSettings">Save matrix results</string>
+    <string name="polinomSettings">Save polinom results</string>
+    <string name="savingHeadline">Saving settings</string>
+    <string name="highMathHeadline">High Math Calculator</string>
+    <string name="deleteMatrixInsatnce">Delete instance of matrix results</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

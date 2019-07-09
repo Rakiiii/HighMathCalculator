@@ -1,44 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<androidx.cardview.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/matrixCardView"
+        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/matrixCardView"
         style="@style/cardStyle">
-    <GridLayout
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="4"
-            android:contextClickable="true">
-        <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/leftMatrix"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="25sp"
-                android:layout_gravity="fill_horizontal"
-                android:layout_columnWeight="30"
-        />
-        <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/operationSignm"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:textSize="25sp"
-                android:layout_gravity="fill_horizontal"
-                android:layout_columnWeight="5"
-        />
-        <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/rightMatrix"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="25sp"
-                android:layout_gravity="fill_horizontal"
-                android:layout_columnWeight="30"
-        />
-        <TextView
-                android:id="@+id/resMatrix"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="25sp"
-                android:layout_gravity="fill_horizontal"
-                android:layout_columnWeight="30"
-        />
-    </GridLayout>
-</android.support.v7.widget.CardView>
+            android:orientation="vertical">
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/timeMatrix"
+                        android:gravity="end"
+                        android:layout_marginEnd="5dp"/>
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="3dp"
+                        android:alpha="1"
+                        android:background="@android:color/darker_gray"/>
+            <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="4"
+                    android:contextClickable="true">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/leftMatrix"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:layout_gravity="fill_horizontal"
+                        android:layout_columnWeight="30"
+                />
+                <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/operationSignm"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:textSize="25sp"
+                        android:layout_gravity="fill_horizontal"
+                        android:layout_columnWeight="5"
+                />
+                <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/rightMatrix"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:layout_gravity="fill_horizontal"
+                        android:layout_columnWeight="30"
+                />
+                <TextView
+                        android:id="@+id/resMatrix"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:layout_gravity="fill_horizontal"
+                        android:layout_columnWeight="30"
+                />
+            </GridLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

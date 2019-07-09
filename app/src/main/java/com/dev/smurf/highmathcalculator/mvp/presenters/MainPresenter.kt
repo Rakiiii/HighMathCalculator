@@ -17,4 +17,9 @@ class MainPresenter : MvpPresenter<MainViewInterface>()
         viewState.setPolinomFragment()
     }
 
+    fun setSettingsFragment()
+    {
+        viewState.setSettingsFragment()
+    }
+
 }

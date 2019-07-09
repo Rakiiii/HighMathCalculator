@@ -3,17 +3,20 @@ package com.example.smurf.mtarixcalc
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.text.SpannableStringBuilder
 import android.view.*
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.R
+import java.text.SimpleDateFormat
 
 class polAdapter( val context: Context , val polFirstPolinom : EditText, val polSecPolinom : EditText) : RecyclerView.Adapter<polAdapter.polViewHolder>()
 {
 
-    private var listOfPolinoms : ArrayList<polGroup> = ArrayList()
+    //TODO : переписать viewHolder на фрагменты для нормального отображения
+
+    private var listOfPolinoms : ArrayList<PolinomGroup> = ArrayList()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): polViewHolder {
@@ -32,7 +35,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                             setOnMenuItemClickListener( object : MenuItem.OnMenuItemClickListener
                             {
                                 override fun onMenuItemClick(item: MenuItem?): Boolean {
-                                    polFirstPolinom.text = SpannableStringBuilder(holder.leftPolinom.text.toString().toPolinomCofsString(holder.symb))
+                                    polFirstPolinom.text = SpannableStringBuilder(holder.leftPolinom.text.toString())
                                     return true
                                 }
                             })
@@ -40,7 +43,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                         setOnMenuItemClickListener( object : MenuItem.OnMenuItemClickListener
                         {
                             override fun onMenuItemClick(item: MenuItem?): Boolean {
-                                polSecPolinom.text = SpannableStringBuilder(holder.leftPolinom.text.toString().toPolinomCofsString(holder.symb))
+                                polSecPolinom.text = SpannableStringBuilder(holder.leftPolinom.text.toString())
                                 return true
                             }
                         })
@@ -49,7 +52,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                         {
                             override fun onMenuItemClick(item: MenuItem?): Boolean {
                                 var clipboardManager = context.getSystemService( Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                var clip = ClipData.newPlainText("some" , holder.leftPolinom.text.toString().toPolinomCofsString(holder.symb))
+                                var clip = ClipData.newPlainText("some" , holder.leftPolinom.text.toString())
                                 clipboardManager.primaryClip = clip
                                 return true
                             }
@@ -77,7 +80,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                         setOnMenuItemClickListener( object : MenuItem.OnMenuItemClickListener
                         {
                             override fun onMenuItemClick(item: MenuItem?): Boolean {
-                                polFirstPolinom.text = SpannableStringBuilder(holder.rightPolinom.text.toString().toPolinomCofsString(holder.symb))
+                                polFirstPolinom.text = SpannableStringBuilder(holder.rightPolinom.text.toString())
                                 return true
                             }
                         })
@@ -85,7 +88,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                         setOnMenuItemClickListener( object : MenuItem.OnMenuItemClickListener
                         {
                             override fun onMenuItemClick(item: MenuItem?): Boolean {
-                                polSecPolinom.text = SpannableStringBuilder(holder.rightPolinom.text.toString().toPolinomCofsString(holder.symb))
+                                polSecPolinom.text = SpannableStringBuilder(holder.rightPolinom.text.toString())
                                 return true
                             }
                         })
@@ -94,7 +97,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                         {
                             override fun onMenuItemClick(item: MenuItem?): Boolean {
                                 var clipboardManager = context.getSystemService( Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                var clip = ClipData.newPlainText("some" , holder.rightPolinom.text.toString().toPolinomCofsString(holder.symb))
+                                var clip = ClipData.newPlainText("some" , holder.rightPolinom.text.toString())
                                 clipboardManager.primaryClip = clip
                                 return true
                             }
@@ -122,7 +125,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                         setOnMenuItemClickListener( object : MenuItem.OnMenuItemClickListener
                         {
                             override fun onMenuItemClick(item: MenuItem?): Boolean {
-                                polFirstPolinom.text = SpannableStringBuilder(holder.resPolinom.text.toString().toPolinomCofsString(holder.symb))
+                                polFirstPolinom.text = SpannableStringBuilder(holder.resPolinom.text.toString())
                                 return true
                             }
                         })
@@ -130,7 +133,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                         setOnMenuItemClickListener( object : MenuItem.OnMenuItemClickListener
                         {
                             override fun onMenuItemClick(item: MenuItem?): Boolean {
-                                polSecPolinom.text = SpannableStringBuilder(holder.resPolinom.text.toString().toPolinomCofsString(holder.symb))
+                                polSecPolinom.text = SpannableStringBuilder(holder.resPolinom.text.toString())
                                 return true
                             }
                         })
@@ -139,7 +142,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                         {
                             override fun onMenuItemClick(item: MenuItem?): Boolean {
                                 var clipboardManager = context.getSystemService( Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                var clip = ClipData.newPlainText("some" , holder.resPolinom.text.toString().toPolinomCofsString(holder.symb))
+                                var clip = ClipData.newPlainText("some" , holder.resPolinom.text.toString())
                                 clipboardManager.primaryClip = clip
                                 return true
                             }
@@ -171,7 +174,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                                                     s!='s' ||
                                                     s!='t' ||
                                                     s!='=')
-                                }.trim().toPolinomCofsString(holder.symb))
+                                }.trim())
                                 return true
                             }
                         })
@@ -184,7 +187,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                                             s!='s' ||
                                             s!='t' ||
                                             s!='=')
-                                    }.trim().toPolinomCofsString(holder.symb))
+                                    }.trim())
                                 return true
                             }
                         })
@@ -198,7 +201,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
                                             s!='s' ||
                                             s!='t' ||
                                             s!='=')
-                                    }.trim().toPolinomCofsString(holder.symb))
+                                    }.trim())
                                 clipboardManager.primaryClip = clip
                                 return true
                             }
@@ -228,9 +231,9 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
         return listOfPolinoms.size
     }
 
-    fun addElement(polinomGroup: polGroup)
+    fun addElement(PolinomGroup: PolinomGroup)
     {
-        listOfPolinoms.add( 0 , polinomGroup)
+        listOfPolinoms.add( 0 , PolinomGroup)
         notifyDataSetChanged()
     }
 
@@ -248,7 +251,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
 
     fun getData( pos : Int) = listOfPolinoms[pos]
 
-    fun restoreItem( item : polGroup , position : Int)
+    fun restoreItem(item : PolinomGroup, position : Int)
     {
         listOfPolinoms.add(position , item)
         notifyItemInserted(position)
@@ -256,7 +259,7 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
 
     fun getList() = listOfPolinoms
 
-    fun setList( newArrayList: ArrayList<polGroup>)
+    fun setList( newArrayList: ArrayList<PolinomGroup>)
     {
         listOfPolinoms = newArrayList
         notifyDataSetChanged()
@@ -274,24 +277,29 @@ class polAdapter( val context: Context , val polFirstPolinom : EditText, val pol
         private set
         var ostPolinom : TextView = itemView.findViewById(R.id.polOstPolinom)
         private set
-        var symb : Char = 'x'
+        var timePolinom : TextView = itemView.findViewById(R.id.timePolinom)
 
-        fun bind( polinomGroup : polGroup)
+        fun bind(PolinomGroup : PolinomGroup)
         {
-            leftPolinom.text = polinomGroup.polLeftPolinom.toString()
-            symb = polinomGroup.symb
-            if(polinomGroup.polLeftPolinom.amountOfRoots == 0)
+            leftPolinom.text = PolinomGroup.polLeftPolinom.toString()
+            if(!PolinomGroup.isRoots && PolinomGroup.polRightPolinom != null && PolinomGroup.polResPolinom != null)
             {
-                rightPolinom.text = (polinomGroup.polRightPolinom.toString() + '\n' + '=')
-                signPolinom.text = polinomGroup.polSignPolinom
-                resPolinom.text = polinomGroup.polResPolinom.toString()
-                if (polinomGroup.polOstPolinom != null)
-                    ostPolinom.text = "Ost = " + polinomGroup.polOstPolinom.toString()
+                rightPolinom.text = (PolinomGroup.polRightPolinom.toString() + '\n' + '=')
+                signPolinom.text = PolinomGroup.polSignPolinom
+                resPolinom.text = PolinomGroup.polResPolinom.toString()
+                if (PolinomGroup.polOstPolinom != null)
+                    ostPolinom.text = "Ost = " + PolinomGroup.polOstPolinom.toString()
                 else ostPolinom.text = ""
             }
             else
             {
-                resPolinom.text = polinomGroup.polLeftPolinom.stringWithRoots()
+                if(PolinomGroup.roots != null) resPolinom.text = PolinomGroup.roots
+            }
+
+            PolinomGroup.time.let{
+                var fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
+                fmt.calendar = it
+                timePolinom.text = fmt.format(it?.time)
             }
         }
     }

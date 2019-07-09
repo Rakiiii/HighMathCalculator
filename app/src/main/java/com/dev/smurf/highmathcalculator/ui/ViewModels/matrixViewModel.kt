@@ -1,6 +1,6 @@
 package com.example.smurf.mtarixcalc
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 
 
 /*class recyclerViewModel<T> : ViewModel()
@@ -27,17 +27,17 @@ import android.arch.lifecycle.ViewModel
 
 class MatrixRecyclerViewModel : ViewModel()
 {
-    private var valueArrayList : ArrayList<matrixGroup> = ArrayList()
+    private var valueArrayList : ArrayList<MatrixGroup> = ArrayList()
 
     fun getList() = valueArrayList
 
-    fun add( value : matrixGroup) : matrixGroup
+    fun add( value : MatrixGroup) : MatrixGroup
     {
         valueArrayList.add(value)
         return value
     }
 
-    fun updateList( newArrayList : ArrayList<matrixGroup>)
+    fun updateList( newArrayList : ArrayList<MatrixGroup>)
     {
         valueArrayList = newArrayList
     }

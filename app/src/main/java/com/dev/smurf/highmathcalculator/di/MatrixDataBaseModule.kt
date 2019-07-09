@@ -1,5 +1,16 @@
 package com.dev.smurf.highmathcalculator.di
 
-class MatrixDataBaseModule
+import android.content.Context
+import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
+import dagger.Module
+import dagger.Provides
+import javax.inject.Singleton
+
+@Module
+class MatrixDataBaseModule(val context : Context)
 {
+
+    @Provides
+    @Singleton
+    fun provideMatrixDataBaseModel(context: Context) : MatrixDatabaseModel = MatrixDatabaseModel(context)
 }
