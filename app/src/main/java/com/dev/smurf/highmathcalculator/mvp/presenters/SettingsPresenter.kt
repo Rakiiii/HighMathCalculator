@@ -13,6 +13,11 @@ import javax.inject.Inject
 class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
 {
 
+    /*
+     * Вставка зависимостей
+     */
+
+
     //модель настроек
     @Inject
     lateinit var mSettingsModel : SettingsModel
@@ -30,6 +35,12 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
         CalculatorApplication.graph.inject(this)
     }
 
+
+    /*
+     * Операции обраюотки изменения состояния фрагмента
+     */
+
+
     //обновить режимы
     fun update()
     {
@@ -42,26 +53,36 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
         else viewState.setPolinomModeOff()
     }
 
+    //ВКЛ созранение матриц
     fun matrixModeSetOn()
     {
         mSettingsModel.onMatrixSaving()
     }
 
+    //ВЫКЛ сохранение матриц
     fun matrixModeSetOff()
     {
         mSettingsModel.offMatrixSaving()
     }
 
+    //ВКЛ сохранение полиномов
     fun polinomModeSetOn()
     {
         mSettingsModel.onPolinomSaving()
     }
 
+    //ВЫКЛ сохранение полиномов
     fun polinomModeSetOff()
     {
         mSettingsModel.offPolinomSaving()
     }
 
+
+    /*
+     * Функции работы с базами данных
+     */
+
+    //очистка бд матриц
     fun deleteMatrixDb()
     {
         doAsync {
@@ -70,6 +91,7 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
         }
     }
 
+    //сохранение кэша бд матриц
     fun saveMatrixCache() = mMatrixDatabaseModel.saveCache()
 
 }

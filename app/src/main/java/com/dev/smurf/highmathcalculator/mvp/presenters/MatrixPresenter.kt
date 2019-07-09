@@ -215,7 +215,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                     time.timeInMillis = System.currentTimeMillis()
 
                     //инвертируем матрицу
-                    val result = mMatrixModel.invers(mMatrixModel.createMatrix(firstMatrix))
+                    val result = mMatrixModel.inverse(mMatrixModel.createMatrix(firstMatrix))
 
                     //утсанавливаем время начала операции
                     result.time = time
@@ -322,7 +322,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
             override fun onPostExecute(result: List<MatrixGroup>?)
             {
-                viewState.addLoaded(ArrayList(result))
+                viewState.setRecyclerViewArrayList(ArrayList(result))
             }
         }.execute()
 

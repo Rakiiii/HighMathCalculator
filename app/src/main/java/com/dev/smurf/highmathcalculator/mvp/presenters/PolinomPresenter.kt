@@ -1,5 +1,6 @@
 package com.dev.smurf.highmathcalculator.mvp.presenters
 
+import android.annotation.SuppressLint
 import android.os.AsyncTask
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
@@ -13,6 +14,9 @@ import javax.inject.Inject
 @InjectViewState
 class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
 {
+    /*
+     * вставка зависимостей
+     */
 
     @Inject
     lateinit var mPolinomDataBaseModel: PolinomDataBaseModel
@@ -29,7 +33,13 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
         CalculatorApplication.graph.inject(this)
     }
 
+
+    /*
+     * Релизация операций с полиномами
+     */
+
     //нажатие кнопки плюс
+    @SuppressLint("StaticFieldLeak")
     fun onPlusClick(left : String , right : String )
     {
         try
@@ -38,10 +48,16 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
           object : AsyncTask<Void , Void , PolinomGroup>(){
               override fun doInBackground(vararg params: Void?): PolinomGroup
               {
+                  //сохранение время начала операции
                   val time = java.util.GregorianCalendar()
                   time.timeInMillis = System.currentTimeMillis()
+
+                  //складываем полиномы
                   val result = mPolinomModel.plus(left = left , right = right)
+
+                  //устанавливаем время страта операции
                   result.time = time
+
                   return result
               }
 
@@ -50,8 +66,6 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                   viewState.addToPolinomRecyclerView(result)
               }
           }
-
-            //viewState.addToPolinomRecyclerView( mPolinomModel.plus(left = left , right = right) )
         }
         catch (e : Exception)
         {
@@ -60,6 +74,7 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
     }
 
     //нажатие на кнопку минус
+    @SuppressLint("StaticFieldLeak")
     fun onMinusClick(left : String , right : String)
     {
         try
@@ -67,10 +82,16 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
             object : AsyncTask<Void , Void , PolinomGroup>() {
                 override fun doInBackground(vararg params: Void?): PolinomGroup
                 {
+                    //сохранеяем время страта операции
                     val time = java.util.GregorianCalendar()
                     time.timeInMillis = System.currentTimeMillis()
+
+                    //вычитаем полиномы
                     val result = mPolinomModel.minus(left = left , right = right)
+
+                    //устанавливаем время старта операции
                     result.time = time
+
                     return result
                 }
 
@@ -79,7 +100,6 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     viewState.addToPolinomRecyclerView(result)
                 }
             }.execute()
-            //viewState.addToPolinomRecyclerView( mPolinomModel.minus(left = left , right = right) )
         }
         catch (e : Exception)
         {
@@ -88,6 +108,7 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
     }
 
     //нажатие на кнопку умножения
+    @SuppressLint("StaticFieldLeak")
     fun onTimesClick(left: String, right: String)
     {
         try
@@ -95,10 +116,16 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
             object : AsyncTask<Void , Void , PolinomGroup>() {
                 override fun doInBackground(vararg params: Void?): PolinomGroup
                 {
+                    //сохраняем время начала операции
                     val time = java.util.GregorianCalendar()
                     time.timeInMillis = System.currentTimeMillis()
+
+                    //умножаем полиномы
                     val result = mPolinomModel.times(left = left , right = right)
+
+                    //устанавливаем врема старта операции
                     result.time = time
+
                     return result
                 }
 
@@ -107,7 +134,6 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     viewState.addToPolinomRecyclerView(result)
                 }
             }.execute()
-            //viewState.addToPolinomRecyclerView( mPolinomModel.times(left = left , right = right) )
         }
         catch (e : Exception)
         {
@@ -116,6 +142,7 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
     }
 
     //нажатие на кнопку деления
+    @SuppressLint("StaticFieldLeak")
     fun onDivisionClick(left: String , right: String)
     {
         try
@@ -123,10 +150,16 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
             object : AsyncTask<Void , Void , PolinomGroup>() {
                 override fun doInBackground(vararg params: Void?): PolinomGroup
                 {
+                    //сохраняем время начала операции
                     val time = java.util.GregorianCalendar()
                     time.timeInMillis = System.currentTimeMillis()
+
+                    //делим полиномы
                     val result = mPolinomModel.division(left = left , right = right)
+
+                    //устанавливаем время начала операции
                     result.time = time
+
                     return result
                 }
 
@@ -135,7 +168,6 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     viewState.addToPolinomRecyclerView(result)
                 }
             }.execute()
-            //viewState.addToPolinomRecyclerView( mPolinomModel.division(left = left , right = right) )
         }
         catch (e : Exception)
         {
@@ -144,6 +176,7 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
     }
 
     //нажатие на кнопку решения
+    @SuppressLint("StaticFieldLeak")
     fun onRootsOfClick(left : String)
     {
         try
@@ -151,10 +184,16 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
             object : AsyncTask<Void , Void , PolinomGroup>() {
                 override fun doInBackground(vararg params: Void?): PolinomGroup
                 {
+                    //сохраняем время начала операции
                     val time = java.util.GregorianCalendar()
                     time.timeInMillis = System.currentTimeMillis()
+
+                    //решаем уравнение описываеммое полиномом
                     val result = mPolinomModel.getSolved(left)
+
+                    //устанавливаем время начала выполнения операции
                     result.time = time
+
                     return result
                 }
 
@@ -163,7 +202,6 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     viewState.addToPolinomRecyclerView(result)
                 }
             }.execute()
-           // viewState.addToPolinomRecyclerView( mPolinomModel.getSolved(left) )
         }
         catch (e : Exception)
         {

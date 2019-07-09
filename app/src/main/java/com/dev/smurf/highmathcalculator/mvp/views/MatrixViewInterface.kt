@@ -9,6 +9,7 @@ import com.example.smurf.mtarixcalc.MatrixGroup
 @StateStrategyType(value = AddToEndStrategy::class)
 interface MatrixViewInterface : MvpView
 {
+    //добавить в recycler view новый элемент obj
     @StateStrategyType(SkipStrategy::class)
     fun addToRecyclerView(obj : MatrixGroup)
 
@@ -16,7 +17,8 @@ interface MatrixViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun showToast(obj : String)
 
+    //установить новый список в Recycler view
     @StateStrategyType(SkipStrategy::class)
-    fun addLoaded(ar : ArrayList<MatrixGroup>)
+    fun setRecyclerViewArrayList(ar : ArrayList<MatrixGroup>)
 
 }
