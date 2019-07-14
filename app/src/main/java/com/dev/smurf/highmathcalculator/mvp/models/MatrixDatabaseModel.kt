@@ -16,8 +16,8 @@ class MatrixDatabaseModel(val context: Context)
     private val mMatrixDatabase : MatrixDataBase =
         Room.
             databaseBuilder( context ,MatrixDataBase::class.java , "matrix_db").
-            //fallbackToDestructiveMigration().
-            //allowMainThreadQueries().
+            fallbackToDestructiveMigration().
+            allowMainThreadQueries().
             build()
 
 

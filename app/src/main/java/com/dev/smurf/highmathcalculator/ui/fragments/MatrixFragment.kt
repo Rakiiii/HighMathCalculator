@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,7 +61,7 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
         super.onStart()
 
         //view model для сохранения содержимого recycler view
-        mMatrixRecyclerViewModel = ViewModelProviders.of(activity as FragmentActivity).get(MatrixRecyclerViewModel::class.java)
+        mMatrixRecyclerViewModel = ViewModelProviders.of(this.activity!!).get(MatrixRecyclerViewModel::class.java)
 
         //инициализация recycler view
         initRecyclerView()
@@ -136,7 +135,7 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
     override fun setRecyclerViewArrayList(ar: ArrayList<MatrixGroup>)
     {
         matrixRecyclerAdapter.setList(ar)
-        mMatrixRecyclerViewModel.updateList(ar)
+        mMatrixRecyclerViewModel.updateList(ar.clone() as ArrayList<MatrixGroup>)
     }
 
 
@@ -163,7 +162,8 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
     override fun addToRecyclerView(obj: MatrixGroup)
     {
-        matrixRecyclerAdapter.addNewElem(mMatrixRecyclerViewModel.add(obj))
+        matrixRecyclerAdapter.addNewElem(
+            mMatrixRecyclerViewModel.add(obj))
 
     }
 

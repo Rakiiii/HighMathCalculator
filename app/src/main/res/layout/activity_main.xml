@@ -1,27 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.drawerlayout.widget.DrawerLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context=".MainActivity"
-        android:id="@+id/matrixDrawerLayout"
-        style="@style/drawerLayoutStyle">
+        style="@style/frameLayoutStyle"
+        android:id="@+id/fragmentFrame">
 
-    <FrameLayout
-            style="@style/frameLayoutStyle"
-            android:id="@+id/fragmentFrame">
-    </FrameLayout>
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/matrixNavigationView"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:itemTextColor="@android:color/darker_gray"
-        android:layout_gravity = "start"
-        app:headerLayout="@layout/drawer_header_layout"
-        app:menu="@menu/main_menu"
-        >
-</com.google.android.material.navigation.NavigationView>
 
-</androidx.drawerlayout.widget.DrawerLayout>
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/fragmentWrapperLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/bottomNavView"
+                android:layout_alignParentTop="true">
+
+            <fragment
+                    android:id="@+id/nav_host_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:name="androidx.navigation.fragment.NavHostFragment"
+                    app:defaultNavHost="true"
+                    app:navGraph="@navigation/navigation_graph"/>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:id="@+id/bottomNavView"
+                android:layout_gravity="bottom"
+                android:background="@color/dark"
+                app:itemIconTint="@color/nav_bottom_background_selector"
+                app:itemTextColor="@color/nav_bottom_background_selector"
+                app:menu="@menu/main_menu"
+                android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

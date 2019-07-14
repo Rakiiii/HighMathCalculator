@@ -7,7 +7,7 @@ import com.example.smurf.mtarixcalc.MatrixGroup
 
 
 //получение интерфейса для работы с бд
-@Database(entities = [MatrixGroup::class] , version = 1)
+@Database(entities = [MatrixGroup::class] , version = 2)
 abstract class MatrixDataBase : RoomDatabase()
 {
     abstract fun getMatrixDao() : MatrixDao

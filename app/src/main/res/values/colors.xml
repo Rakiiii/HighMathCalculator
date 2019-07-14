@@ -6,5 +6,21 @@
     <color name="darker_gray">#17170432</color>
     <color name="black">#000000</color>
     <color name="blue">#00CCFF</color>
+    <color name="botomNavViewBackBlue">#000080</color>
+    <color name="dark">#c2c2c2</color>
+    <color name="prime">#F5F5F5</color>
+
+    <color name="white">@android:color/white</color>
+
+    <color name="navselector">
+        <selector xmlns:android="http://schemas.android.com/apk/res/android">
+            <item
+                    android:color="@android:color/darker_gray"
+                    android:state_checked="false"/>
+            <item
+                    android:color="@android:color/white"
+                    android:state_checked="true"/>
+        </selector>
+    </color>
 </resources>
 

@@ -43,6 +43,7 @@
                 android:layout_height="2dp"
                 android:background="@color/darker_gray"/>
         <Button
+                style="@style/btnStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnDeleteMatrixDb"
@@ -55,6 +56,7 @@
                 android:background="@color/darker_gray"/>
 
         <Button
+                style="@style/btnStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnDeletePolinomDb"

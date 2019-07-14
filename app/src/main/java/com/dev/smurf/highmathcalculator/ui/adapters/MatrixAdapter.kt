@@ -22,6 +22,7 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
         fun addNewElem(group : MatrixGroup)
         {
             listOfMatrices.add(0 ,group)
+                //Log.d("RV@" , "adding new elem")
             notifyDataSetChanged()
         }
 
@@ -29,6 +30,7 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
         fun clear()
         {
             listOfMatrices.clear()
+            //Log.d("RV@" , "clear list")
             notifyDataSetChanged()
         }
 
@@ -37,16 +39,22 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
         fun removeElement( position: Int)
         {
             listOfMatrices.removeAt(position)
+            //Log.d("RV@" , "remove from position")
             notifyDataSetChanged()
         }
 
         //получить элемент из позиции position
-        fun getData( position: Int) = listOfMatrices[position]
+        fun getData( position: Int) : MatrixGroup
+        {
+            //Log.d("RV@" , "get data")
+            return listOfMatrices[position]
+        }
 
         //вставить элемент MatrixGroup в позицию position
         fun restoreItem(position: Int, MatrixGroup: MatrixGroup)
         {
             listOfMatrices.add(position , MatrixGroup)
+            //Log.d("RV@" , "restore item")
             notifyItemInserted(position)
         }
 
@@ -54,6 +62,7 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
         fun setList( newArray : ArrayList<MatrixGroup>)
         {
             listOfMatrices = newArray
+            //Log.d("RV@" , "set list")
             notifyDataSetChanged()
         }
 
@@ -65,6 +74,7 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
     {
         return listOfMatrices.size
     }
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): matrixViewHolder
@@ -210,10 +220,15 @@ class matrixAdapter(val context: Context , val firstMatrix : EditText , val seco
             fun bind(group : MatrixGroup)
             {
                 leftMatrix.text = group.leftMatrix.toString('|')
-                if(!group.rightMatrix.isEmpty()) rightMatrix.text =(group.rightMatrix.toString('|').substringBefore('\n') +
-                        "    =" +
-                        "\n"    +
-                        group.rightMatrix.toString('|').substringAfter('\n'))
+                if(!group.rightMatrix.isEmpty())
+                {
+                    rightMatrix.text =(group.rightMatrix.toString('|').substringBefore('\n') + "    =")
+                                if(!group.rightMatrix.isNumber())
+                                {
+                                    rightMatrix.text = rightMatrix.text.toString() + "\n"    +
+                                    group.rightMatrix.toString('|').substringAfter('\n')
+                                }
+                }
                 resMatrix.text = group.resMatrix.toString('|')
                 sign.text = group.sign
 

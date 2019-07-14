@@ -27,6 +27,7 @@
     <string name="highMathHeadline">High Math Calculator</string>
     <string name="deleteMatrixInsatnce">Delete instance of matrix results</string>
     <string name="deletePolinomInstance">Delete instance of polinom results</string>
+    <string name="search">Search on web</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

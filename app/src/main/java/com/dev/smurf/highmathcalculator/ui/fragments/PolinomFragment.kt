@@ -1,19 +1,5 @@
 package com.dev.smurf.highmathcalculator.ui.fragments
 
-//import android.support.design.widget.Snackbar
-//import com.arellomobile.mvp.MvpFragment
-//import androidx.fragment.app.FragmentActivity
-//import androidx.recyclerview.widget.RecyclerView
-//import androidx.recyclerview.widget.ItemTouchHelper
-//import android.view.LayoutInflater
-//import android.view.ViewGroup
-//import com.arellomobile.mvp.MvpFragment
-//import com.arellomobile.mvp.presenter.InjectPresenter
-//import com.dev.smurf.highmathcalculator.mvp.presenters.PolinomPresenter
-//import com.dev.smurf.highmathcalculator.mvp.views.PolinomViewInterface
-//import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
-//import com.example.smurf.mtarixcalc.PolinomRecyclerViewModel
-//import com.example.smurf.mtarixcalc.polAdapter
 import android.content.Context
 import android.graphics.Color
 import android.net.Uri
@@ -242,7 +228,7 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
 
     override fun setRecyclerViewList(ar: ArrayList<PolinomGroup>)
     {
-        mPolinomRecyclerViewModel.updateList(ar)
+        mPolinomRecyclerViewModel.updateList(ar.clone() as ArrayList<PolinomGroup>)
         mPolinomRecyclerViewAdapter.setList(ar)
     }
 }

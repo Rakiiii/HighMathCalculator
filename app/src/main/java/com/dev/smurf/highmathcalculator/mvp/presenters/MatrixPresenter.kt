@@ -2,6 +2,7 @@ package com.dev.smurf.highmathcalculator.mvp.presenters
 
 import android.annotation.SuppressLint
 import android.os.AsyncTask
+import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.dev.smurf.highmathcalculator.CalculatorApplication
@@ -10,6 +11,7 @@ import com.dev.smurf.highmathcalculator.mvp.models.MatrixModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.example.smurf.mtarixcalc.MatrixGroup
+import kotlinx.coroutines.*
 import org.jetbrains.anko.doAsync
 import javax.inject.Inject
 
@@ -44,6 +46,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     }
 
 
+    //корутин скоп для ui
+    val uiScope = CoroutineScope(Dispatchers.Main)
 
 
     /*
@@ -53,279 +57,277 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     @SuppressLint("StaticFieldLeak")
     fun onPlusClick(firstMatrix : String , secondMatrix : String)
     {
-        try
+
+        uiScope.launch(Dispatchers.Main + errorHandler)
         {
 
-            object : AsyncTask<Void , Void , MatrixGroup>(){
+                val task: Deferred<MatrixGroup> = async(Dispatchers.IO) {
 
-                override fun doInBackground(vararg params: Void?): MatrixGroup
-                {
-                    //сохранение время начала операции
-                    val time = java.util.GregorianCalendar()
-                    time.timeInMillis = System.currentTimeMillis()
-
-                    //складываем матрицы
-                    val result = mMatrixModel.plus(mMatrixModel.createMatrix(firstMatrix) , mMatrixModel.createMatrix(secondMatrix))
-
-                    //устанавливаем время старта операции
-                    result.time = time
-
-
-                    doAsync {
-                        //если включено сохранение в бд
-                        if (mSettingsModel.getMatrixConsisten())
-                        {
-                            //записываем в бд
-                            mMatrixDataBaseModel.insert(result)
-                        }
-                        else
-                        {
-
-                            //иначе записываем в кэщ бд
-                            mMatrixDataBaseModel.addToCache(result)
-                        }
-                    }
-                    return result
-                }
-
-                override fun onPostExecute(result: MatrixGroup)
-                {
-                    viewState.addToRecyclerView(result)
-                }
-            }.execute()
-        }catch (e : Exception)
-        {
-            viewState.showToast(e.toString())
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    fun onMinusClick(firstMatrix : String , secondMatrix : String)
-    {
-        try
-        {
-
-            object : AsyncTask<Void , Void , MatrixGroup>(){
-
-                override fun doInBackground(vararg params: Void?): MatrixGroup
-                {
-                    //сохраняем врема старта операции
-                    val time = java.util.GregorianCalendar()
-                    time.timeInMillis = System.currentTimeMillis()
-
-                    //вычитаем матрицы
-                    val result = mMatrixModel.minus(mMatrixModel.createMatrix(firstMatrix) , mMatrixModel.createMatrix(secondMatrix))
-
-                    //утсанавливаем время начала операции
-                    result.time = time
-
-                    doAsync {
-                        //если включено сохранение в бд
-                        if (mSettingsModel.getMatrixConsisten())
-                        {
-                            //записываем в бд
-                            mMatrixDataBaseModel.insert(result)
-                        }
-                        else
-                        {
-
-                            //иначе записываем в кэщ бд
-                            mMatrixDataBaseModel.addToCache(result)
-                        }
-                    }
-                    return result
-                }
-
-                override fun onPostExecute(result: MatrixGroup)
-                {
-                    viewState.addToRecyclerView(result)
-                }
-            }.execute()
-        }catch (e : Exception)
-        {
-            viewState.showToast(e.toString())
-        }
-    }
-
-
-    @SuppressLint("StaticFieldLeak")
-    fun onTimesClick(firstMatrix : String , secondMatrix : String)
-    {
-        try
-        {
-
-            object : AsyncTask<Void , Void , MatrixGroup>(){
-
-                override fun doInBackground(vararg params: Void?): MatrixGroup
-                {
                     //сохраняем время начала операции
                     val time = java.util.GregorianCalendar()
                     time.timeInMillis = System.currentTimeMillis()
 
-                    //умнажаем матрицы
-                    val result = mMatrixModel.times(mMatrixModel.createMatrix(firstMatrix) , mMatrixModel.createMatrix(secondMatrix))
+                    //складываем матрицы
+                    val result = mMatrixModel.plus(
+                        mMatrixModel.createMatrix(firstMatrix),
+                        mMatrixModel.createMatrix(secondMatrix)
+                    )
+
 
                     //устанавливаем время начала операции
                     result.time = time
 
-                    doAsync {
-                        //если включено сохранение в бд
-                        if (mSettingsModel.getMatrixConsisten())
-                        {
-                            //записываем в бд
-                            mMatrixDataBaseModel.insert(result)
-                        }
-                        else
-                        {
+                    result
+                }
 
-                            //иначе записываем в кэщ бд
-                            mMatrixDataBaseModel.addToCache(result)
-                        }
+                val mMatrixGroup = task.await()
+
+                async(Dispatchers.IO)
+                {
+                    if (mSettingsModel.getMatrixConsisten())
+                    {
+                        //записываем в бд
+                        mMatrixDataBaseModel.insert(mMatrixGroup)
                     }
-                    return result
-                    //return mMatrixModel.times(mMatrixModel.createMatrix(firstMatrix) , mMatrixModel.createMatrix(secondMatrix))
-                }
+                    else
+                    {
 
-                override fun onPostExecute(result: MatrixGroup)
-                {
-                    viewState.addToRecyclerView(result)
-                }
-            }.execute()
-
-        }catch (e : Exception)
-        {
-            viewState.showToast(e.toString())
-        }
-        //viewState.addToRecyclerView(mMatrixModel.times(mMatrixModel.createMatrix(firstMatrix) , mMatrixModel.createMatrix(secondMatrix)))
-    }
-
-
-    @SuppressLint("StaticFieldLeak")
-    fun onInversClick(firstMatrix: String)
-    {
-        try
-        {
-
-            object : AsyncTask<Void , Void , MatrixGroup>(){
-
-                override fun doInBackground(vararg params: Void?): MatrixGroup
-                {
-                    //сохраняем время
-                    val time = java.util.GregorianCalendar()
-                    time.timeInMillis = System.currentTimeMillis()
-
-                    //инвертируем матрицу
-                    val result = mMatrixModel.inverse(mMatrixModel.createMatrix(firstMatrix))
-
-                    //утсанавливаем время начала операции
-                    result.time = time
-
-                    doAsync {
-                        //если включено сохранение в бд
-                        if (mSettingsModel.getMatrixConsisten())
-                        {
-                            //записываем в бд
-                            mMatrixDataBaseModel.insert(result)
-                        }
-                        else
-                        {
-
-                            //иначе записываем в кэщ бд
-                            mMatrixDataBaseModel.addToCache(result)
-                        }
+                        //иначе записываем в кэщ бд
+                        mMatrixDataBaseModel.addToCache(mMatrixGroup)
                     }
-
-                    return result
                 }
 
-                override fun onPostExecute(result: MatrixGroup)
-                {
-                    viewState.addToRecyclerView(result)
-                }
-            }.execute()
-        }catch (e : Exception)
-        {
-            viewState.showToast(e.toString())
+                viewState.addToRecyclerView(mMatrixGroup)
+
         }
     }
 
 
     @SuppressLint("StaticFieldLeak")
-    fun onDeterminantClick(firstMatrix: String)
+    fun onMinusClick(firstMatrix : String , secondMatrix : String)
     {
-        try
-        {
-            object : AsyncTask<Void , Void , MatrixGroup>(){
 
-                override fun doInBackground(vararg params: Void?): MatrixGroup
-                {
-                    //сохраняем время операции
+        uiScope.launch(Dispatchers.Main + errorHandler)
+        {
+
+
+                val task: Deferred<MatrixGroup> = async(Dispatchers.IO) {
+
+                    //сохраняем время начала операции
                     val time = java.util.GregorianCalendar()
                     time.timeInMillis = System.currentTimeMillis()
 
-                    //считаем определитель
-                    val result = mMatrixModel.determinant(mMatrixModel.createMatrix(firstMatrix))
+                    //вычитаем матрицы
+                    val result = mMatrixModel.minus(
+                        mMatrixModel.createMatrix(firstMatrix),
+                        mMatrixModel.createMatrix(secondMatrix)
+                    )
 
-                    //устанавливаем время старта операции
+
+                    //устанавливаем время начала операции
                     result.time = time
 
-                    doAsync {
-                        //если включено сохранение в бд
-                        if(mSettingsModel.getMatrixConsisten())
+                    result
+                }
+
+                val mMatrixGroup = task.await()
+
+                async(Dispatchers.IO)
+                {
+                    if (mSettingsModel.getMatrixConsisten())
+                    {
+                        //записываем в бд
+                        mMatrixDataBaseModel.insert(mMatrixGroup)
+                    }
+                    else
+                    {
+
+                        //иначе записываем в кэщ бд
+                        mMatrixDataBaseModel.addToCache(mMatrixGroup)
+                    }
+                }
+
+                viewState.addToRecyclerView(mMatrixGroup)
+        }
+    }
+
+
+        @SuppressLint("StaticFieldLeak")
+        fun onTimesClick(firstMatrix: String, secondMatrix: String)
+        {
+            uiScope.launch(Dispatchers.Main + errorHandler)
+            {
+
+
+                    val task: Deferred<MatrixGroup> = async(Dispatchers.IO) {
+
+                        //сохраняем время начала операции
+                        val time = java.util.GregorianCalendar()
+                        time.timeInMillis = System.currentTimeMillis()
+
+                        //умнажаем матрицы
+                        val result = mMatrixModel.times(
+                            mMatrixModel.createMatrix(firstMatrix),
+                            mMatrixModel.createMatrix(secondMatrix)
+                        )
+
+                        //устанавливаем время начала операции
+                        result.time = time
+
+                        result
+                    }
+
+                    val mMatrixGroup = task.await()
+
+                    async(Dispatchers.IO)
+                    {
+                        if (mSettingsModel.getMatrixConsisten())
                         {
                             //записываем в бд
-                            mMatrixDataBaseModel.insert(result)
-                        }else
+                            mMatrixDataBaseModel.insert(mMatrixGroup)
+                        }
+                        else
                         {
 
                             //иначе записываем в кэщ бд
-                            mMatrixDataBaseModel.addToCache(result)
+                            mMatrixDataBaseModel.addToCache(mMatrixGroup)
                         }
                     }
-                    return result
-                }
 
-                override fun onPostExecute(result: MatrixGroup)
-                {
-                    viewState.addToRecyclerView(result)
-                }
-            }.execute()
-        }catch (e : Exception)
-        {
-            viewState.showToast(e.toString())
+                    viewState.addToRecyclerView(mMatrixGroup)
+            }
         }
-    }
+
+
+
+        @SuppressLint("StaticFieldLeak")
+        fun onInversClick(firstMatrix: String)
+        {
+
+            uiScope.launch(Dispatchers.Main + errorHandler)
+            {
+
+                    val task: Deferred<MatrixGroup> = async(Dispatchers.IO) {
+
+                        //сохраняем время начала операции
+                        val time = java.util.GregorianCalendar()
+                        time.timeInMillis = System.currentTimeMillis()
+
+                        //инвертируем матрицу
+                        val result = mMatrixModel.inverse(mMatrixModel.createMatrix(firstMatrix))
+
+
+                        //устанавливаем время начала операции
+                        result.time = time
+
+                        result
+                    }
+
+                    val mMatrixGroup = task.await()
+
+                    async(Dispatchers.IO)
+                    {
+                        if (mSettingsModel.getMatrixConsisten())
+                        {
+                            //записываем в бд
+                            mMatrixDataBaseModel.insert(mMatrixGroup)
+                        }
+                        else
+                        {
+
+                            //иначе записываем в кэщ бд
+                            mMatrixDataBaseModel.addToCache(mMatrixGroup)
+                        }
+                    }
+
+                    viewState.addToRecyclerView(mMatrixGroup)
+            }
+        }
+
+
+
+            @SuppressLint("StaticFieldLeak")
+            fun onDeterminantClick(firstMatrix: String)
+            {
+
+                uiScope.launch(Dispatchers.Main + errorHandler)
+                {
+
+                        val task: Deferred<MatrixGroup> = async(Dispatchers.IO) {
+
+                            //сохраняем время начала операции
+                            val time = java.util.GregorianCalendar()
+                            time.timeInMillis = System.currentTimeMillis()
+
+                            //считаем определитель
+                            val result = mMatrixModel.determinant(mMatrixModel.createMatrix(firstMatrix))
+
+
+                            //устанавливаем время начала операции
+                            result.time = time
+
+                            result
+                        }
+
+                        val mMatrixGroup = task.await()
+
+                        async(Dispatchers.IO)
+                        {
+                            if (mSettingsModel.getMatrixConsisten())
+                            {
+                                //записываем в бд
+                                mMatrixDataBaseModel.insert(mMatrixGroup)
+                            }
+                            else
+                            {
+
+                                //иначе записываем в кэщ бд
+                                mMatrixDataBaseModel.addToCache(mMatrixGroup)
+                            }
+                        }
+
+                        viewState.addToRecyclerView(mMatrixGroup)
+                }
+            }
 
 
     /*
      * Реализация работы с базой данных
      */
 
-    //удаление из бд элемента matrixGroup
-    fun deleteFromDb(matrixGroup: MatrixGroup)
-    {
-        doAsync {
-            mMatrixDataBaseModel.delete(matrixGroup)
-            mMatrixDataBaseModel.deleteFromDbCache(matrixGroup)
-        }
-    }
+                //удаление из бд элемента matrixGroup
+                fun deleteFromDb(matrixGroup: MatrixGroup)
+                {
+                    doAsync {
+                        mMatrixDataBaseModel.delete(matrixGroup)
+                        mMatrixDataBaseModel.deleteFromDbCache(matrixGroup)
+                    }
+                }
 
 
-    //загрузка из базы данных сохраненных результатов
-    @SuppressLint("StaticFieldLeak")
-    fun onLoadSavedInstance()
-    {
-        object : AsyncTask<Void,Void,List<MatrixGroup>>(){
-            override fun doInBackground(vararg params: Void?): List<MatrixGroup>
-            {
-                return mMatrixDataBaseModel.selectAll()
+                //загрузка из базы данных сохраненных результатов
+                @SuppressLint("StaticFieldLeak")
+                fun onLoadSavedInstance()
+                {
+                    object : AsyncTask<Void, Void, List<MatrixGroup>>()
+                    {
+                        override fun doInBackground(vararg params: Void?): List<MatrixGroup>
+                        {
+                            return mMatrixDataBaseModel.selectAll().reversed()
+                        }
+
+                        override fun onPostExecute(result: List<MatrixGroup>?)
+                        {
+                            viewState.setRecyclerViewArrayList(ArrayList(result))
+                        }
+                    }.execute()
+
+                }
+
+
+                //обработчик ошибок
+                val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
+                    Log.d("ExceptionHandler@" , error.toString())
+                    viewState.showToast(error.toString().substringAfter(':'))
+                })
             }
-
-            override fun onPostExecute(result: List<MatrixGroup>?)
-            {
-                viewState.setRecyclerViewArrayList(ArrayList(result))
-            }
-        }.execute()
-
-    }
-}

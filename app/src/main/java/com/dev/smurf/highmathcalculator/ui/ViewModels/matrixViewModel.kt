@@ -13,6 +13,7 @@ class MatrixRecyclerViewModel : ViewModel()
     fun add( value : MatrixGroup) : MatrixGroup
     {
         valueArrayList.add(value)
+        //Log.d("RVM@","add")
         return value
     }
 

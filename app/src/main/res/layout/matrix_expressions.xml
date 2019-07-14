@@ -12,11 +12,12 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/timeMatrix"
                         android:gravity="end"
-                        android:layout_marginEnd="5dp"/>
+                        android:layout_marginEnd="5dp"
+                        android:fontFamily="serif"/>
                 <View
                         android:layout_width="match_parent"
-                        android:layout_height="3dp"
-                        android:alpha="1"
+                        android:layout_height="1dp"
+
                         android:background="@android:color/darker_gray"/>
             <GridLayout
                     android:layout_width="match_parent"

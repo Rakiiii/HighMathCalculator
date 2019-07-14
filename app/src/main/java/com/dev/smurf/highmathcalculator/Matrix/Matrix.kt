@@ -1,6 +1,12 @@
 package com.example.smurf.mtarixcalc
 
 import android.widget.EditText
+import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
+import com.dev.smurf.highmathcalculator.Numbers.Fraction
+import com.dev.smurf.highmathcalculator.Utils.countLines
+import com.dev.smurf.highmathcalculator.Utils.countWords
+import com.dev.smurf.highmathcalculator.Utils.pow
+import com.dev.smurf.highmathcalculator.Utils.toComplex
 
 //реализация работы с матрицей
 class Matrix( _width : Int = 2,
@@ -17,7 +23,7 @@ class Matrix( _width : Int = 2,
     private var _empty : Boolean = true
 
     //матрца
-    var matrix : Array<Array<complexNumber>>
+    var matrices : Array<Array<ComplexNumber>>
     private set
 
 
@@ -27,7 +33,7 @@ class Matrix( _width : Int = 2,
     {
         if(height == 0 || width == 0)throw Exception("MatrixSizeIs0x0")
         //инициализируем матрицу 0
-        matrix  = Array<Array<complexNumber>>(height , { m -> Array<complexNumber>(width , { n -> complexNumber() }) })
+        matrices  = Array<Array<ComplexNumber>>(height , { m -> Array<ComplexNumber>(width , { n -> ComplexNumber() }) })
     }
 
 
@@ -40,29 +46,35 @@ class Matrix( _width : Int = 2,
         //запоминаем содержимое поля ввода
         var info : String = txt.filterNot { s -> (s == '|') }
 
+        if(isNumber())matrices[0][0] = info.trim().toComplex()
+        else
+        {
         //проходим все строки матрицы
-        for(i in 0 until height) {
-            //запоминаем текущую строку
-            var subLine = info.substringBefore('\n').trim()
+            for(i in 0 until height)
+            {
+                //запоминаем текущую строку
+                var subLine = info.substringBefore('\n').trim()
 
-            //удаляем текущую строку из скопированного текста
-            info = info.substringAfter('\n')
+                //удаляем текущую строку из скопированного текста
+                info = info.substringAfter('\n')
 
-            //проверяем полная ли матрица
-            if (width != subLine.countWords())
-            //если не полна кидаем ощибку
-                throw Exception("amount of elemnts in line is different")
+                //проверяем полная ли матрица
+                if (width != subLine.countWords())
+                //если не полна кидаем ощибку
+                    throw Exception("amount of elemnts in line is different")
 
-            //проходим все столбцы
-            for (j in 0 until width) {
-                //запоминаем текущий столбец
-                val subWord = subLine.substringBefore(' ').trim()
+                //проходим все столбцы
+                for (j in 0 until width)
+                {
+                    //запоминаем текущий столбец
+                    val subWord = subLine.substringBefore(' ').trim()
 
-                //удаляем текущий столбец из текущей строки
-                subLine = subLine.substringAfter(' ').trim()
+                    //удаляем текущий столбец из текущей строки
+                    subLine = subLine.substringAfter(' ').trim()
 
-                //добовляем элемент в матрицу
-                matrix[i][j] = subWord.toComplex()
+                    //добовляем элемент в матрицу
+                    matrices[i][j] = subWord.toComplex()
+                }
             }
         }
         //матрица не пуста
@@ -75,10 +87,10 @@ class Matrix( _width : Int = 2,
 
 
     //инициализация диагональной матрцы размера size*size и elem по диагонали
-    constructor(size : Int, elem : complexNumber) : this(size , size)
+    constructor(size : Int, elem : ComplexNumber) : this(size , size)
     {
         //заполняем матрицу
-        for(i in 0 until size)matrix[i][i] = elem
+        for(i in 0 until size)matrices[i][i] = elem
 
         //матрице заполнена
         _empty = false
@@ -93,7 +105,7 @@ class Matrix( _width : Int = 2,
         {
             for(j in 0 until width)
             {
-                matrix[i][j] = m.matrix[i][j]
+                matrices[i][j] = m.matrices[i][j]
             }
         }
 
@@ -102,32 +114,32 @@ class Matrix( _width : Int = 2,
     }
 
     //функция подсчета определителя
-    fun determinant() : complexNumber
+    fun determinant() : ComplexNumber
     {
         //если матрица не квадратная кидаем ошибку
         if( width == height && width != 0)
         {
             //если матрица 2х2 то считаем по формуле
-            if(width == 2) return matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0]
+            if(width == 2) return matrices[0][0]*matrices[1][1] - matrices[0][1]*matrices[1][0]
             else
             {
                 //если не 2х2 то раскладываем по первой строке
-                var res = complexNumber()
+                var res = ComplexNumber()
 
                 for(i in 0 until width)
                 {
 
                     //если сумма номеров строка:столбец четная прибавляем
-                    if( i % 2 == 0)res += matrix[0][i]*this.minor(string = 0 , colume = i).determinant()
+                    if( i % 2 == 0)res += matrices[0][i]*this.minor(string = 0 , colume = i).determinant()
 
                     //если нечестная , то вычитаем
 
-                    else res += matrix[0][i]*this.minor(string = 0 , colume = i).determinant()*-1
+                    else res += matrices[0][i]*this.minor(string = 0 , colume = i).determinant()*-1
                 }
                 return res
             }
         }
-        else throw Exception("matrix is not square")
+        else throw Exception("matrices is not square")
     }
 
 
@@ -143,7 +155,7 @@ class Matrix( _width : Int = 2,
         //прибаляем к скопированной матрице вторую матрицу по элементно
         for(i in 0 until height)
         {
-            for(j in 0 until width)resMatrix.matrix[i][j] += secMatrix.matrix[i][j]
+            for(j in 0 until width)resMatrix.matrices[i][j] += secMatrix.matrices[i][j]
         }
         return resMatrix
     }
@@ -160,7 +172,7 @@ class Matrix( _width : Int = 2,
         //поэлементно вычетаем элементы второй матрицы из первой
         for(i in 0 until height)
         {
-            for(j in 0 until width)resMatrix.matrix[i][j] -= secMatrix.matrix[i][j]
+            for(j in 0 until width)resMatrix.matrices[i][j] -= secMatrix.matrices[i][j]
         }
         return resMatrix
     }
@@ -168,6 +180,32 @@ class Matrix( _width : Int = 2,
     //перегрузка опреатора *
     operator fun times(secMatrix: Matrix): Matrix
     {
+        //если одна из матриц первого порядка
+        if( isNumber() || secMatrix.isNumber() )
+        {
+            var res : Matrix
+            var factor : ComplexNumber
+            if(isNumber())
+            {
+                res = Matrix(secMatrix)
+                factor = this.matrices[0][0]
+            }
+            else
+            {
+                res = Matrix(this)
+                factor = secMatrix.matrices[0][0]
+            }
+
+            for(i in 0 until res.height)
+            {
+                for(j in 0 until res.width)
+                {
+                    res.matrices[i][j] = res.matrices[i][j] * factor
+                }
+            }
+
+            return res
+        }
 
         //сравниваем длинну первой матрицы с выостой второй если не равны кидаем исключение
         if(this.width != secMatrix.height)throw Exception("Line length isn't equals to column height")
@@ -182,7 +220,7 @@ class Matrix( _width : Int = 2,
             {
                 for(k in 0 until width)
                 {
-                    res.matrix[i][j] += this.matrix[i][k]*secMatrix.matrix[k][j]
+                    res.matrices[i][j] += this.matrices[i][k]*secMatrix.matrices[k][j]
                 }
             }
         }
@@ -192,33 +230,33 @@ class Matrix( _width : Int = 2,
 
 
     //сложение строки по элементно с коэфицентом
-    private fun plusLines(firstLine : Int , secondLine : Int , cof : complexNumber)
+    private fun plusLines(firstLine : Int , secondLine : Int , cof : ComplexNumber)
     {
         for(i in 0 until width)
         {
-            matrix[firstLine][i] += matrix[secondLine][i]*cof
+            matrices[firstLine][i] += matrices[secondLine][i]*cof
         }
     }
 
     //вычитание строк с коэффицентом по элементно
-    private fun minusLines(firstLine : Int , secondLine : Int , cof : complexNumber)
+    private fun minusLines(firstLine : Int , secondLine : Int , cof : ComplexNumber)
     {
         for(i in 0 until width)
         {
-            matrix[firstLine][i] -= matrix[secondLine][i]*cof
+            matrices[firstLine][i] -= matrices[secondLine][i]*cof
         }
     }
 
     //деление строки на число
-    private fun dividLine(line : Int , cof : complexNumber)
+    private fun dividLine(line : Int , cof : ComplexNumber)
     {
         for(i in 0 until width)
-            matrix[line][i] /= cof
+            matrices[line][i] /= cof
     }
 
 
     //умножение матрицы на число
-    fun matrixTimesNumber(number : complexNumber):Matrix
+    fun matrixTimesNumber(number : ComplexNumber):Matrix
     {
         //копируем матрицу
         var res = Matrix(this)
@@ -228,7 +266,7 @@ class Matrix( _width : Int = 2,
         {
             for (j in 0 until width)
             {
-                res.matrix[i][j] *= number
+                res.matrices[i][j] *= number
             }
         }
         return res
@@ -236,14 +274,14 @@ class Matrix( _width : Int = 2,
 
 
     //деление матрицы на число
-    fun matrixDivideByNumber(number : complexNumber):Matrix
+    fun matrixDivideByNumber(number : ComplexNumber):Matrix
     {
         var res = Matrix(this)
         for(i in 0 until height)
         {
             for (j in 0 until width)
             {
-                res.matrix[i][j] /= number
+                res.matrices[i][j] /= number
             }
         }
         return res
@@ -258,7 +296,7 @@ class Matrix( _width : Int = 2,
         {
             for(j in  0 until res.width)
             {
-                res.matrix[i][j] = matrix[j][i]
+                res.matrices[i][j] = matrices[j][i]
             }
         }
         return res
@@ -271,7 +309,7 @@ class Matrix( _width : Int = 2,
     {
 
         //создаем нулевую матрицу
-        var res = Matrix(width - 1 , complexNumber())
+        var res = Matrix(width - 1 , ComplexNumber())
 
         //два счетчика для движение по минору матрицы
         var C : Int = 0
@@ -285,7 +323,7 @@ class Matrix( _width : Int = 2,
                 {
                     //если счетчик не принадлежит ни указанной строке ,ни столбцу
                     //добавляем в минор
-                    res.matrix[C][S] = this.matrix[i][j]
+                    res.matrices[C][S] = this.matrices[i][j]
                     S++
                 }
 
@@ -305,7 +343,7 @@ class Matrix( _width : Int = 2,
     fun minorMatrix() : Matrix
     {
         if(width != height)throw Exception("Matrix isn't square")
-        if(this.determinant() == complexNumber())throw Exception("Determinant is 0 ")
+        if(this.determinant() == ComplexNumber())throw Exception("Determinant is 0 ")
 
         //если 2х2 то по формуле
         if(width == 2)
@@ -314,22 +352,22 @@ class Matrix( _width : Int = 2,
 
 
             //считаем по формуле
-            res.matrix[0][0] = matrix[1][1]
-            res.matrix[0][1] = matrix[1][0] * -1
-            res.matrix[1][1] = matrix[0][0]
-            res.matrix[1][0] = matrix[0][1] * -1
+            res.matrices[0][0] = matrices[1][1]
+            res.matrices[0][1] = matrices[1][0] * -1
+            res.matrices[1][1] = matrices[0][0]
+            res.matrices[1][0] = matrices[0][1] * -1
 
             return res
         }
 
         //если больше чем три на три по заполняем матрицу определителями миноров
-        var res = Matrix(width , complexNumber())
+        var res = Matrix(width , ComplexNumber())
 
         for(i in 0 until width)
         {
             for(j in 0 until width)
             {
-              res.matrix[i][j] = complexNumber(fraction( (-1).pow(i+j) ) , fraction() ) * this.minor(string = i , colume = j).determinant()
+              res.matrices[i][j] = ComplexNumber(Fraction( (-1).pow(i+j) ) , Fraction() ) * this.minor(string = i , colume = j).determinant()
             }
         }
         return res
@@ -339,7 +377,7 @@ class Matrix( _width : Int = 2,
     fun invers() : Matrix
     {
         if(width != height)throw Exception("Matrix isn't square")
-        if(this.determinant() == complexNumber())throw Exception("Determinant is 0 ")
+        if(this.determinant() == ComplexNumber())throw Exception("Determinant is 0 ")
         return  this.minorMatrix().trans().matrixDivideByNumber(this.determinant())
     }
 
@@ -354,7 +392,7 @@ class Matrix( _width : Int = 2,
                 for(i in 0 until height)
                 {
                     for(j in 0 until width)
-                        if(this.matrix[i][j] != other.matrix[i][j])return false
+                        if(this.matrices[i][j] != other.matrices[i][j])return false
                 }
                 return true
             }
@@ -372,8 +410,8 @@ class Matrix( _width : Int = 2,
             for(j in 0 until width)
             {
                 if(j != width - 1)
-                    res += matrix[i][j].toString() + ' '
-                else res +=matrix[i][j].toString()
+                    res += matrices[i][j].toString() + ' '
+                else res +=matrices[i][j].toString()
             }
             if(i != height-1)
             {
@@ -394,8 +432,8 @@ class Matrix( _width : Int = 2,
             for(j in 0 until width)
             {
                 if(j != width - 1)
-                res += matrix[i][j].toString() + ' '
-                else res +=matrix[i][j].toString()
+                res += matrices[i][j].toString() + ' '
+                else res +=matrices[i][j].toString()
             }
             if(i != height-1)
             {
@@ -410,16 +448,24 @@ class Matrix( _width : Int = 2,
 
     fun isEmpty() : Boolean
     {
-        return _empty
+        for(i in 0 until height)
+        {
+            for(j in 0 until width)
+            {
+                if(matrices[i][j] != ComplexNumber())return false
+            }
+        }
+        return true
     }
 
+    fun isNumber() = (width == 1 && height == 1)
 
 
-   /* fun sumOfMainMinors( order : Int) : complexNumber
+   /* fun sumOfMainMinors( order : Int) : ComplexNumber
     {
         if( order >= width )throw Exception("MatrixTooSmallException")
         if(order == width)return this.determinant()
-        var res = complexNumber(fraction(1,0))
+        var res = ComplexNumber(fraction(1,0))
         for(i in 0 until binCofs( width , order))
         {
 
@@ -434,7 +480,7 @@ class Matrix( _width : Int = 2,
         {
             3->
             {
-                var inv1 = this.matrix
+                var inv1 = this.matrices
             }
             4->
             {
