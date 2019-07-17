@@ -46,22 +46,49 @@
 
                     android:background="@color/dark">
 
-                <com.google.android.material.textfield.TextInputEditText
 
-                        style="@style/edttxtStyle"
-
-                        android:id="@+id/firstMatrix"
+                <LinearLayout
+                        android:id="@+id/firstMatrixLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
 
+                        android:orientation="horizontal"
 
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
 
-                        android:hint="@string/txtinputBackA"
-                />
+
+                        <com.google.android.material.textfield.TextInputEditText
+
+                                style="@style/edttxtStyle"
+
+                                android:id="@+id/firstMatrix"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+
+                                android:layout_weight="1.0"
+
+                                android:hint="@string/txtinputBackA"
+                        />
+
+                        <Button
+                                android:id="@+id/btnSwap"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+
+
+                                android:layout_weight="1.0"
+
+                                android:background="@drawable/ic_swap_vert_black_24dp"
+
+
+                        />
+
+                </LinearLayout>
+
+
 
                 <com.google.android.material.textfield.TextInputEditText
 
@@ -73,7 +100,7 @@
                         android:layout_marginTop="20dp"
 
 
-                        app:layout_constraintTop_toBottomOf="@id/firstMatrix"
+                        app:layout_constraintTop_toBottomOf="@id/firstMatrixLayout"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
 

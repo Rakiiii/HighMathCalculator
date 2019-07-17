@@ -24,5 +24,7 @@ class MatrixRecyclerViewModel : ViewModel()
 
     fun isEmpty() = valueArrayList.isEmpty()
 
+    fun deleteItem(matrixGroup: MatrixGroup) = valueArrayList.remove(matrixGroup)
+
 
 }

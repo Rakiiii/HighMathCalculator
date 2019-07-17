@@ -10,9 +10,11 @@ import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +23,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
+import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.example.smurf.mtarixcalc.MatrixGroup
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
@@ -46,6 +49,8 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
     private lateinit var mMatrixRecyclerViewModel : MatrixRecyclerViewModel
 
+    private lateinit var mMatrixEdittextViewModel: EditTextViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,6 +67,9 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
         //view model для сохранения содержимого recycler view
         mMatrixRecyclerViewModel = ViewModelProviders.of(this.activity!!).get(MatrixRecyclerViewModel::class.java)
+
+        //инициализация view model для содержимого edittext
+        mMatrixEdittextViewModel = ViewModelProviders.of(activity as FragmentActivity).get(EditTextViewModel::class.java)
 
         //инициализация recycler view
         initRecyclerView()
@@ -101,8 +109,17 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
         //слушатель для поиска определителя пераой матрицы
         btnDeterminant.setOnClickListener { v -> mMatrixPresenter.onDeterminantClick(firstMatrix.text.toString()) }
 
+        btnSwap.setOnClickListener {
+            val tmp = firstMatrix.text
+            firstMatrix.text = secondMatrix.text
+            secondMatrix.text = tmp
+        }
+
         //востонавливаемся из view model
         if(!mMatrixRecyclerViewModel.isEmpty())matrixRecyclerAdapter.setList(mMatrixRecyclerViewModel.getList())
+
+        firstMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.firstValue)
+        secondMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.secondValue)
 
         if(!loaded)
         {
@@ -129,6 +146,15 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
     {
         super.onDetach()
         listener = null
+    }
+
+    override fun onStop()
+    {
+        mMatrixEdittextViewModel.firstValue = firstMatrix.text.toString()
+        mMatrixEdittextViewModel.secondValue = secondMatrix.text.toString()
+
+        super.onStop()
+
     }
 
     //утсановка нового списка элементов для recycler view
@@ -174,8 +200,11 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
     private fun enableSwipeToDeleteAndUndo()
     {
-        val swipeToDeleteCallback = object : SwipeToDeleteCallback(context!!) {
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback(context!!)
+        {
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int)
+            {
 
                 var isUnded = false
 
@@ -187,7 +216,8 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
                 val snackbar = Snackbar
                     .make( matrixFrame , "Item was removed from the list.", Snackbar.LENGTH_LONG)
-                snackbar.setAction("UNDO") {
+                snackbar.setAction("UNDO")
+                {
                     matrixRecyclerAdapter.restoreItem(position , item)
                     isUnded = true
                     matrixRecycler.scrollToPosition(position)
@@ -196,8 +226,12 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
                 snackbar.setActionTextColor(Color.YELLOW)
                 snackbar.show()
 
-                mMatrixRecyclerViewModel.updateList(matrixRecyclerAdapter.getList())
-                if(!isUnded)mMatrixPresenter.deleteFromDb(item)
+                //mMatrixRecyclerViewModel.updateList(matrixRecyclerAdapter.getList())
+                if(!isUnded)
+                {
+                    mMatrixPresenter.deleteFromDb(item)
+                    mMatrixRecyclerViewModel.deleteItem(item)
+                }
 
             }
         }

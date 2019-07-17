@@ -23,5 +23,7 @@ class PolinomRecyclerViewModel : ViewModel()
 
     fun isEmpty() = valueArrayList.isEmpty()
 
+    fun deleteItem(polinomGroup: PolinomGroup) = valueArrayList.remove(polinomGroup)
+
 
 }

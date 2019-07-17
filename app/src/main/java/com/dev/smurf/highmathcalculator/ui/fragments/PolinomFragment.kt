@@ -4,9 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
 import android.text.SpannableStringBuilder
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -118,40 +116,22 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
             v -> mPolinomPresenter.onRootsOfClick(secondPolinom.text.toString())
         }
 
-        firstPolinom.addTextChangedListener( object : TextWatcher
-        {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int)
-            {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int)
-            {
-
-            }
-            override fun afterTextChanged(s: Editable?)
-            {
-                mPolinomEditTextViewModel.firstValue = firstPolinom.text.toString()
-            }
-        })
-
-        secondPolinom.addTextChangedListener( object  : TextWatcher
-        {
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-            }
-
-            override fun afterTextChanged(s: Editable?)
-            {
-                mPolinomEditTextViewModel.secondValue = secondPolinom.text.toString()
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-        })
+        btnSwap.setOnClickListener {
+            val tmp = firstPolinom.text
+            firstPolinom.text = secondPolinom.text
+            secondPolinom.text = tmp
+        }
 
 
+    }
+
+    override fun onStop()
+    {
+        mPolinomEditTextViewModel.firstValue = firstPolinom.text.toString()
+        mPolinomEditTextViewModel.secondValue = secondPolinom.text.toString()
+
+
+        super.onStop()
     }
 
     override fun onAttach(context: Context)
@@ -188,9 +168,13 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
 
     private fun enableSwipeToDeleteAndUndo()
     {
-        val swipeToDeleteCallback = object : SwipeToDeleteCallback(this.context!!) {
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback(this.context!!)
+        {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int)
+            {
 
+
+                var isUnded = false
 
                 val position = viewHolder.adapterPosition
                 val item = mPolinomRecyclerViewAdapter.getData(position)
@@ -200,13 +184,22 @@ class PolinomFragment : MvpAppCompatFragment() , PolinomViewInterface
 
                 val snackbar = Snackbar
                     .make( polinomFrame , "Item was removed from the list.", Snackbar.LENGTH_LONG)
-                snackbar.setAction("UNDO") {
+                snackbar.setAction("UNDO")
+                {
                     mPolinomRecyclerViewAdapter.restoreItem(item, position)
+                    isUnded = true
                     mPolinomRecyclerView.scrollToPosition(position)
                 }
 
                 snackbar.setActionTextColor(Color.YELLOW)
                 snackbar.show()
+
+                //mPolinomRecyclerViewModel.updateList(mPolinomRecyclerViewAdapter.getList().clone() as ArrayList<PolinomGroup>)
+                if(!isUnded)
+                {
+                    mPolinomPresenter.deleteFromDb(item)
+                    mPolinomRecyclerViewModel.deleteItem(item)
+                }
             }
 
         }
