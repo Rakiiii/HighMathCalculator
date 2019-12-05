@@ -71,7 +71,7 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                   doAsync {
 
                       //если включена запись в бд
-                      if(mSettingsModel.getPolinomConsisten())
+                      if(mSettingsModel.getPolinomConsistens())
                       {
 
                           //записываем в бд
@@ -123,7 +123,7 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     doAsync {
 
                         //если включена запись в бд
-                        if(mSettingsModel.getPolinomConsisten())
+                        if(mSettingsModel.getPolinomConsistens())
                         {
 
                             //записываем в бд
@@ -176,7 +176,7 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     doAsync {
 
                         //если включена запись в бд
-                        if(mSettingsModel.getPolinomConsisten())
+                        if(mSettingsModel.getPolinomConsistens())
                         {
 
                             //записываем в бд
@@ -228,7 +228,7 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     doAsync {
 
                         //если включена запись в бд
-                        if(mSettingsModel.getPolinomConsisten())
+                        if(mSettingsModel.getPolinomConsistens())
                         {
 
                             //записываем в бд
@@ -280,7 +280,7 @@ class PolinomPresenter : MvpPresenter<PolinomViewInterface>()
                     doAsync {
 
                         //если включена запись в бд
-                        if(mSettingsModel.getPolinomConsisten())
+                        if(mSettingsModel.getPolinomConsistens())
                         {
 
                             //записываем в бд

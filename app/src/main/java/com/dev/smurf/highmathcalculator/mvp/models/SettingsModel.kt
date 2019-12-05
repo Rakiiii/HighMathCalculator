@@ -14,16 +14,22 @@ class SettingsModel(val context: Context)
 
 
     //получить настройки сохранения матриц
-    fun getMatrixConsisten() : Boolean
+    fun getMatrixConsistens() : Boolean
     {
         return mPrefs.getBoolean("Matrix" , false)
     }
 
 
     //получения настройки сохранения полинома
-    fun getPolinomConsisten() : Boolean
+    fun getPolinomConsistens() : Boolean
     {
         return mPrefs.getBoolean("Polinom" , false)
+    }
+
+    //получить режим работы для matrix view holder
+    fun getMatrixHolderConsistens() : Boolean
+    {
+        return mPrefs.getBoolean("MatrixHolder" , false)
     }
 
     //включение сохранения матриц
@@ -56,6 +62,22 @@ class SettingsModel(val context: Context)
     {
         doAsync {
             mPrefs.edit().putBoolean("Polinom",false).apply()
+        }
+    }
+
+    //вкл картинки в списке матриц
+    fun onMatrixImageHolder()
+    {
+        doAsync {
+            mPrefs.edit().putBoolean("MatrixHolder" , true).apply()
+        }
+    }
+
+    //вкл картинки в списке матриц
+    fun offMatrixImageHolder()
+    {
+        doAsync {
+            mPrefs.edit().putBoolean("MatrixHolder" , false).apply()
         }
     }
 }

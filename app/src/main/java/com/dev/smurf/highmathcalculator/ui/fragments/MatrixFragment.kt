@@ -11,6 +11,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,10 +25,11 @@ import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapter
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapterImageView
 import com.example.smurf.mtarixcalc.MatrixGroup
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
-import com.example.smurf.mtarixcalc.matrixAdapter
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_matrix.*
 import org.jetbrains.anko.toast
@@ -44,12 +46,15 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
 
     private lateinit var matrixRecycler : RecyclerView
-    private lateinit var matrixRecyclerLayoutManager: LinearLayoutManager
-    private lateinit var matrixRecyclerAdapter: matrixAdapter
+    private lateinit var matrixRecyclerLayoutManager : LinearLayoutManager
+    private lateinit var matrixRecyclerTextAdapter : MatrixAdapter
+    private lateinit var matrixRecyclerImageAdapter : MatrixAdapterImageView
 
     private lateinit var mMatrixRecyclerViewModel : MatrixRecyclerViewModel
 
     private lateinit var mMatrixEdittextViewModel: EditTextViewModel
+
+    private var isImageAdapter = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -116,7 +121,7 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
         }
 
         //востонавливаемся из view model
-        if(!mMatrixRecyclerViewModel.isEmpty())matrixRecyclerAdapter.setList(mMatrixRecyclerViewModel.getList())
+        if(!mMatrixRecyclerViewModel.isEmpty())matrixRecyclerTextAdapter.setList(mMatrixRecyclerViewModel.getList().clone() as ArrayList<MatrixGroup>)
 
         firstMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.firstValue)
         secondMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.secondValue)
@@ -126,6 +131,13 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
             mMatrixPresenter.onLoadSavedInstance()
             loaded = true
         }
+
+        if(mMatrixPresenter.checkImageMode())
+        {
+            isImageAdapter = true
+            setImageAdapter()
+        }
+
     }
 
 
@@ -160,7 +172,14 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
     //утсановка нового списка элементов для recycler view
     override fun setRecyclerViewArrayList(ar: ArrayList<MatrixGroup>)
     {
-        matrixRecyclerAdapter.setList(ar)
+        if(!isImageAdapter)
+        {
+            matrixRecyclerTextAdapter.setList(ar.clone() as ArrayList<MatrixGroup>)
+        }else
+        {
+            matrixRecyclerImageAdapter.setList(ar.clone() as ArrayList<MatrixGroup>)
+        }
+
         mMatrixRecyclerViewModel.updateList(ar.clone() as ArrayList<MatrixGroup>)
     }
 
@@ -176,19 +195,24 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
         matrixRecyclerLayoutManager = LinearLayoutManager(context)
 
 
-        matrixRecyclerAdapter =  matrixAdapter(context!! , firstMatrix , secondMatrix)
+        matrixRecyclerTextAdapter =  MatrixAdapter(context!! , firstMatrix , secondMatrix)
+
+        matrixRecyclerImageAdapter = MatrixAdapterImageView(context!! , firstMatrix , secondMatrix)
 
         matrixRecycler = view!!.findViewById( R.id.matrixRecycler)
 
         matrixRecycler.layoutManager = matrixRecyclerLayoutManager
 
-        matrixRecycler.adapter = matrixRecyclerAdapter
+        matrixRecycler.adapter = matrixRecyclerTextAdapter
 
     }
 
     override fun addToRecyclerView(obj: MatrixGroup)
     {
-        matrixRecyclerAdapter.addNewElem(
+        if(!isImageAdapter)
+        matrixRecyclerTextAdapter.addNewElem(
+            mMatrixRecyclerViewModel.add(obj))
+        else matrixRecyclerImageAdapter.addNewElem(
             mMatrixRecyclerViewModel.add(obj))
 
     }
@@ -198,6 +222,28 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
         this.context!!.toast(obj)
     }
 
+    fun setImageAdapter()
+    {
+        matrixRecyclerImageAdapter.setList(matrixRecyclerTextAdapter.getList().clone() as ArrayList<MatrixGroup>)
+        //matrixRecycler.adapter = null
+        //matrixRecycler.layoutManager = null
+        //matrixRecycler.recycledViewPool.clear()
+        matrixRecycler.swapAdapter(matrixRecyclerImageAdapter , true)
+        //matrixRecycler.layoutManager = matrixRecyclerLayoutManager
+        //matrixRecycler.adapter = matrixRecyclerImageAdapter
+        matrixRecyclerImageAdapter.notifyDataSetChanged()
+    }
+
+    fun setTextAdapter()
+    {
+        matrixRecyclerTextAdapter.setList(matrixRecyclerImageAdapter.getList().clone() as ArrayList<MatrixGroup>)
+        matrixRecycler.adapter = matrixRecyclerTextAdapter
+    }
+
+
+
+
+
     private fun enableSwipeToDeleteAndUndo()
     {
         val swipeToDeleteCallback = object : SwipeToDeleteCallback(context!!)
@@ -205,34 +251,67 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int)
             {
-
-                var isUnded = false
-
-                val position = viewHolder.adapterPosition
-                val item = matrixRecyclerAdapter.getData(position)
-
-                matrixRecyclerAdapter.removeElement(position)
-
-
-                val snackbar = Snackbar
-                    .make( matrixFrame , "Item was removed from the list.", Snackbar.LENGTH_LONG)
-                snackbar.setAction("UNDO")
+                if (isImageAdapter)
                 {
-                    matrixRecyclerAdapter.restoreItem(position , item)
-                    isUnded = true
-                    matrixRecycler.scrollToPosition(position)
+                    var isUnded = false
+
+                    val position = viewHolder.adapterPosition
+                    val item = matrixRecyclerImageAdapter.getData(position)
+
+                    Log.d("pos@" , position.toString())
+
+                    matrixRecyclerImageAdapter.removeElement(position)
+
+
+                    val snackbar = Snackbar
+                        .make(matrixFrame, "Item was removed from the list.", Snackbar.LENGTH_LONG)
+                    snackbar.setAction("UNDO")
+                    {
+                        matrixRecyclerImageAdapter.restoreItem(position, item)
+                        isUnded = true
+                        matrixRecycler.scrollToPosition(position)
+                    }
+
+                    snackbar.setActionTextColor(Color.YELLOW)
+                    snackbar.show()
+
+                    //mMatrixRecyclerViewModel.updateList(matrixRecyclerAdapter.getList())
+                    if (!isUnded)
+                    {
+                        mMatrixPresenter.deleteFromDb(item)
+                        mMatrixRecyclerViewModel.deleteItem(item)
+                    }
                 }
-
-                snackbar.setActionTextColor(Color.YELLOW)
-                snackbar.show()
-
-                //mMatrixRecyclerViewModel.updateList(matrixRecyclerAdapter.getList())
-                if(!isUnded)
+                else
                 {
-                    mMatrixPresenter.deleteFromDb(item)
-                    mMatrixRecyclerViewModel.deleteItem(item)
-                }
+                    var isUnded = false
 
+                    val position = viewHolder.adapterPosition
+                    val item = matrixRecyclerTextAdapter.getData(position)
+
+                    matrixRecyclerTextAdapter.removeElement(position)
+
+
+                    val snackbar = Snackbar
+                        .make(matrixFrame, "Item was removed from the list.", Snackbar.LENGTH_LONG)
+                    snackbar.setAction("UNDO")
+                    {
+                        matrixRecyclerTextAdapter.restoreItem(position, item)
+                        isUnded = true
+                        matrixRecycler.scrollToPosition(position)
+                    }
+
+                    snackbar.setActionTextColor(Color.YELLOW)
+                    snackbar.show()
+
+                    //mMatrixRecyclerViewModel.updateList(matrixRecyclerAdapter.getList())
+                    if (!isUnded)
+                    {
+                        mMatrixPresenter.deleteFromDb(item)
+                        mMatrixRecyclerViewModel.deleteItem(item)
+                    }
+
+                }
             }
         }
 

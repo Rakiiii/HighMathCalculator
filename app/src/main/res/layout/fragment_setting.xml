@@ -34,9 +34,23 @@
                     style="@style/settingsTextStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/polinomSettings"
-                    android:id="@+id/swtchPolinomMode"
+                    android:text="@string/matrixHolderMode"
+                    android:id="@+id/swtchMatrixHolderMode"
             />
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/darker_gray"/>
+
+
+        <Switch
+                style="@style/settingsTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/polinomSettings"
+                android:id="@+id/swtchPolinomMode"
+        />
 
         <View
                 android:layout_width="match_parent"

@@ -26,6 +26,7 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
 
     var matrixSwitchPreviousConsistent : Boolean = false
     var polinomSwitchPreviousConsistent : Boolean = false
+    var matrixSwitchHolderMode : Boolean = false
 
 
     //вставляем презентер
@@ -66,6 +67,11 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
         swtchPolinomMode.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked)mSettingsPresenter.polinomModeSetOn()
             else mSettingsPresenter.polinomModeSetOff()
+        }
+
+        swtchMatrixHolderMode.setOnCheckedChangeListener { buttonView, isChecked ->
+            if(isChecked)mSettingsPresenter.matrixHolderImageModeSetOn()
+            else mSettingsPresenter.matrixHolderImageModeSetOff()
         }
 
         btnDeleteMatrixDb.setOnClickListener {
@@ -143,6 +149,16 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
     override fun setPolinomModeOn()
     {
         swtchPolinomMode.isChecked = true
+    }
+
+    override fun setMatrixHolderModeOn()
+    {
+        swtchMatrixHolderMode.isChecked = true
+    }
+
+    override fun setMatrixHolderModeOff()
+    {
+        swtchMatrixHolderMode.isChecked = false
     }
 
 }

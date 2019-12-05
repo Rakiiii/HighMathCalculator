@@ -84,7 +84,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
                 async(Dispatchers.IO)
                 {
-                    if (mSettingsModel.getMatrixConsisten())
+                    if (mSettingsModel.getMatrixConsistens())
                     {
                         //записываем в бд
                         mMatrixDataBaseModel.insert(mMatrixGroup)
@@ -134,7 +134,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
                 async(Dispatchers.IO)
                 {
-                    if (mSettingsModel.getMatrixConsisten())
+                    if (mSettingsModel.getMatrixConsistens())
                     {
                         //записываем в бд
                         mMatrixDataBaseModel.insert(mMatrixGroup)
@@ -181,7 +181,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
                     async(Dispatchers.IO)
                     {
-                        if (mSettingsModel.getMatrixConsisten())
+                        if (mSettingsModel.getMatrixConsistens())
                         {
                             //записываем в бд
                             mMatrixDataBaseModel.insert(mMatrixGroup)
@@ -227,7 +227,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
                     async(Dispatchers.IO)
                     {
-                        if (mSettingsModel.getMatrixConsisten())
+                        if (mSettingsModel.getMatrixConsistens())
                         {
                             //записываем в бд
                             mMatrixDataBaseModel.insert(mMatrixGroup)
@@ -273,7 +273,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
                         async(Dispatchers.IO)
                         {
-                            if (mSettingsModel.getMatrixConsisten())
+                            if (mSettingsModel.getMatrixConsistens())
                             {
                                 //записываем в бд
                                 mMatrixDataBaseModel.insert(mMatrixGroup)
@@ -330,4 +330,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                     Log.d("ExceptionHandler@" , error.toString())
                     viewState.showToast(error.toString().substringAfter(':'))
                 })
-            }
+
+
+    fun checkImageMode() = mSettingsModel.getMatrixHolderConsistens()
+
+}

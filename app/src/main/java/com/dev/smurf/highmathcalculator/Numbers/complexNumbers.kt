@@ -3,8 +3,13 @@ package com.dev.smurf.highmathcalculator.Numbers
 import com.dev.smurf.highmathcalculator.Utils.toComplex
 
 
-class ComplexNumber(private var re : Fraction = Fraction(), private  var im : Fraction = Fraction())
+class ComplexNumber( _re : Fraction = Fraction(),_im : Fraction = Fraction())
 {
+
+    var re = _re
+        private set
+    var im = _im
+        private set
 
     operator  fun plus (secNumber : Any? ): ComplexNumber
     {
@@ -130,6 +135,19 @@ class ComplexNumber(private var re : Fraction = Fraction(), private  var im : Fr
             else -> return (re.toString() + '+' + im.toString() + 'i')
 
         }
+    }
+
+    fun isReal() = (im == Fraction())
+
+    fun isImagination() = ( re == Fraction())
+
+    fun length() : Int
+    {
+        if(isReal())return re.maxLenght()
+        if(isImagination())return im.maxLenght()+1
+        var result = re.maxLenght() + im.maxLenght() + 3
+        if(!im.isBeloweZero())result++
+        return result
     }
 
 }

@@ -163,6 +163,28 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
     }
 
 
+    fun maxLenght() : Int
+    {
+        if(upper.absoluteValue.toString().length > lower.absoluteValue.toString().length)
+            return upper.absoluteValue.toString().length
+        else
+            return lower.absoluteValue.toString().length
+        /*
+        var str = this.toString()
+        if( str.substringBefore('/').length > str.substringAfter('/').length )
+        {
+            //Log.d("debug@" , str.substringBefore('/').length.toString())
+            return str.substringBefore('/').length
+        }
+        else
+        {
+            //Log.d("debug@" , str.substringAfter('/').length.toString())
+            return str.substringAfter('/').length
+        }*/
+    }
 
+    fun isInt() = (lower == 1)
+
+    fun isBeloweZero() = (upper < 0)
 }
 

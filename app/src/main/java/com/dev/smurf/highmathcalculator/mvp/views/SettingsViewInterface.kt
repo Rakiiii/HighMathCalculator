@@ -19,4 +19,10 @@ interface SettingsViewInterface : MvpView
     //вкл режим сохранения матриц
     fun setPolinomModeOn()
 
+    //вкл режим работы на картинках
+    fun setMatrixHolderModeOn()
+
+    //выкл режим работы на картинках
+    fun setMatrixHolderModeOff()
+
 }

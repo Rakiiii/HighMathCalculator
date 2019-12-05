@@ -1,4 +1,4 @@
-package com.example.smurf.mtarixcalc
+package com.dev.smurf.highmathcalculator.ui.adapters
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -9,10 +9,11 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.R
+import com.example.smurf.mtarixcalc.MatrixGroup
 import java.text.SimpleDateFormat
 
 
-class matrixAdapter(val context: Context , val firstMatrix : EditText , val secondMatrix : EditText ) : RecyclerView.Adapter<matrixAdapter.matrixViewHolder>()
+class MatrixAdapter(val context: Context, val firstMatrix : EditText, val secondMatrix : EditText ) : RecyclerView.Adapter<MatrixAdapter.matrixViewHolder>()
 {
 
         //списое элементов

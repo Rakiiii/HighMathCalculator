@@ -56,12 +56,16 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
     fun update()
     {
         //проверка состояния сохранения матриц
-        if(mSettingsModel.getMatrixConsisten())viewState.setMatrixModeOn()
+        if(mSettingsModel.getMatrixConsistens())viewState.setMatrixModeOn()
         else viewState.setMatrixModeOff()
 
         //проверка состояния сохранения полиномов
-        if (mSettingsModel.getPolinomConsisten())viewState.setPolinomModeOn()
+        if (mSettingsModel.getPolinomConsistens())viewState.setPolinomModeOn()
         else viewState.setPolinomModeOff()
+
+        //проверка режима работы списка матриц
+        if(mSettingsModel.getMatrixHolderConsistens())viewState.setMatrixHolderModeOn()
+        else viewState.setMatrixHolderModeOff()
     }
 
     //ВКЛ созранение матриц
@@ -86,6 +90,18 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
     fun polinomModeSetOff()
     {
         mSettingsModel.offPolinomSaving()
+    }
+
+    //вкл картинки в списке матриц
+    fun matrixHolderImageModeSetOn()
+    {
+        mSettingsModel.onMatrixImageHolder()
+    }
+
+    //выкл картинки в списке матриц
+    fun matrixHolderImageModeSetOff()
+    {
+        mSettingsModel.offMatrixImageHolder()
     }
 
 

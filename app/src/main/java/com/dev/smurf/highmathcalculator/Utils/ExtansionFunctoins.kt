@@ -71,13 +71,13 @@ fun String.toComplex() : ComplexNumber
             if(line.filterNot { s->(s == 'i') }.isBlank())subIm = Fraction(1,1)
             else subIm = line.filterNot { s -> (s == 'i') }.toFraction()
             if(signRe == '-')subIm*= Fraction(-1,1)
-            return ComplexNumber(im = subIm)
+            return ComplexNumber(_im = subIm)
         }
         else->
         {
             var subRe = line.toFraction()
             if(signRe == '-')subRe *= Fraction(-1,1)
-            return ComplexNumber(re = subRe)
+            return ComplexNumber(_re = subRe)
         }
     }
 }
@@ -353,3 +353,8 @@ fun String.separateCofsWithSpaces() : String
 {
     TODO("not implemented")
 }
+
+
+
+
+

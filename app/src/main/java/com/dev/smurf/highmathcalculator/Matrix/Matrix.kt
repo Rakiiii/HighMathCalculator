@@ -460,6 +460,46 @@ class Matrix( _width : Int = 2,
 
     fun isNumber() = (width == 1 && height == 1)
 
+    fun maxWidthInString() : Int
+    {
+        var str = this.toString()
+        var result : Int = 0
+        var tmp : Int = 0
+        for(i in 0 until height)
+        {
+            tmp = 0
+            for( j in 0 until width)
+            {
+                tmp += matrices[i][j].length() + 1
+            }
+            if(tmp > result)result = tmp
+            /*
+            tmp = str.substringBefore('\n').length
+            if(tmp > result)result = tmp
+            str = str.substringAfter('\n')*/
+        }
+
+        return result
+    }
+
+    fun maxFractionsInColumn() : Int
+    {
+        var result = 2
+        var tmp = 0
+
+        for(i in 0 until width)
+        {
+            tmp = 0
+            for( j in 0 until height)
+            {
+                if(!matrices[i][j].re.isInt() || !matrices[i][j].im.isInt())tmp += 1
+            }
+
+            if(tmp > result)result = tmp
+        }
+
+        return result + 1
+    }
 
    /* fun sumOfMainMinors( order : Int) : ComplexNumber
     {
