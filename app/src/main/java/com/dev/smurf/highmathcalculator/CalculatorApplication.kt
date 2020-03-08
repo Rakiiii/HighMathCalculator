@@ -17,10 +17,10 @@ class CalculatorApplication : Application()
 
         graph = DaggerAppComponent.builder().
             matrixModule(MatrixModule()).
-            polinomModule(PolinomModule()).
+            polynomialModule(PolynomialModule()).
             settingsModule(SettingsModule(applicationContext)).
             matrixDataBaseModule(MatrixDataBaseModule(applicationContext)).
-            polinomDataBaseModule(PolinomDataBaseModule(applicationContext)).
+            polynomialDataBaseModule(PolynomialDataBaseModule(applicationContext)).
             build()
 
     }

@@ -20,9 +20,9 @@ interface SettingsViewInterface : MvpView
     fun setPolinomModeOn()
 
     //вкл режим работы на картинках
-    fun setMatrixHolderModeOn()
+    fun setHolderImageModeOn()
 
     //выкл режим работы на картинках
-    fun setMatrixHolderModeOff()
+    fun setHolderImageModeOff()
 
 }

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/polynomialCardView"
+        style="@style/cardStyle">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/timePolynomialIM"
+                android:gravity="end"
+                android:layout_marginEnd="5dp"
+                android:fontFamily="serif"
+        />
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+
+                android:background="@android:color/darker_gray"
+        />
+
+
+            <ImageView
+                    android:id="@+id/leftPolynomialIM"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_rowWeight="18"
+            />
+
+            <ImageView
+                    android:id="@+id/operationSignPolynomialIM"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_rowWeight="10"
+            />
+
+
+            <ImageView
+                    android:id="@+id/rightPolynomialIM"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_rowWeight="18"
+            />
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+
+                android:background="@android:color/darker_gray"
+        />
+
+            <ImageView
+                    android:id="@+id/resultPolynomialIM"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_rowWeight="18"
+            />
+
+            <ImageView
+                    android:id="@+id/remainderPolynomialIM"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_rowWeight="18"
+            />
+
+
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

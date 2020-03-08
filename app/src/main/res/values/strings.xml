@@ -13,8 +13,8 @@
     <string name="btnFirstTimesSecond">A*B</string>
     <string name="btnSecondTimesFirst">B*A</string>
     <string name="btnInvers">Invers</string>
-    <string name="hintPolinomA">write cofs with spaces of polinom A here</string>
-    <string name="hintPolinomB">write cofs with spaces of polinom B here</string>
+    <string name="hintPolinomA">write cofs with spaces of polynomial A here</string>
+    <string name="hintPolinomB">write cofs with spaces of polynomial B here</string>
     <string name="btnTimes">x</string>
     <string name="btnRootsA">roots of A</string>
     <string name="btnRootsB">roots of B</string>
@@ -22,11 +22,11 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="matrixSettings">Save matrix results</string>
-    <string name="polinomSettings">Save polinom results</string>
+    <string name="polinomSettings">Save polynomial results</string>
     <string name="savingHeadline">Saving settings</string>
     <string name="highMathHeadline">High Math Calculator</string>
     <string name="deleteMatrixInsatnce">Delete instance of matrix results</string>
-    <string name="deletePolinomInstance">Delete instance of polinom results</string>
+    <string name="deletePolinomInstance">Delete instance of polynomial results</string>
     <string name="search">Search on web</string>
     <string name="matrixHolderMode" >High prefomance result list</string>
 

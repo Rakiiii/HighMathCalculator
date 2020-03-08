@@ -3,7 +3,7 @@
              xmlns:tools="http://schemas.android.com/tools" xmlns:app="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context=".ui.fragments.PolinomFragment"
+             tools:context=".ui.fragments.PolynomialFragment"
              android:id="@+id/polinomFrame"
              style="@style/frameLayoutStyle">
 
@@ -63,16 +63,13 @@
                                 android:hint="@string/hintPolinomA"/>
 
                         <Button
-                                android:id="@+id/btnSwap"
+                                android:id="@+id/btnSwapPolynomial"
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
 
                                 android:layout_weight="1.0"
 
-                                android:drawableStart="@drawable/ic_swap_vert_black_24dp"
-                                android:drawableTint="@color/black"
-
-
+                                android:background="@drawable/ic_swap_vert_black_24dp"
                         />
 
                 </LinearLayout>

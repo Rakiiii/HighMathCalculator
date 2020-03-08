@@ -10,6 +10,7 @@ import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.LayoutInflater
@@ -41,6 +42,10 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
     private var loaded : Boolean = false
 
+    //buffer for toast, because amount off ui threads is finite
+    val Toasts = MutableList(0){""}
+    val toastHandler = Handler()
+
     @InjectPresenter
     lateinit var mMatrixPresenter: MatrixPresenter
 
@@ -69,6 +74,8 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
     override fun onStart()
     {
         super.onStart()
+
+        Log.d("dbPath@",context!!.getDatabasePath("polinom_db").absolutePath)
 
         //view model для сохранения содержимого recycler view
         mMatrixRecyclerViewModel = ViewModelProviders.of(this.activity!!).get(MatrixRecyclerViewModel::class.java)
@@ -112,7 +119,8 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
         btnInvers.setOnClickListener { v -> mMatrixPresenter.onInversClick(firstMatrix.text.toString()) }
 
         //слушатель для поиска определителя пераой матрицы
-        btnDeterminant.setOnClickListener { v -> mMatrixPresenter.onDeterminantClick(firstMatrix.text.toString()) }
+        btnDeterminant.setOnClickListener {
+                v -> mMatrixPresenter.onDeterminantClick(firstMatrix.text.toString()) }
 
         btnSwap.setOnClickListener {
             val tmp = firstMatrix.text
@@ -134,9 +142,11 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
         if(mMatrixPresenter.checkImageMode())
         {
-            isImageAdapter = true
-            setImageAdapter()
+                isImageAdapter = true
+                setImageAdapter()
         }
+
+        checkToast()
 
     }
 
@@ -194,7 +204,6 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
     {
         matrixRecyclerLayoutManager = LinearLayoutManager(context)
 
-
         matrixRecyclerTextAdapter =  MatrixAdapter(context!! , firstMatrix , secondMatrix)
 
         matrixRecyclerImageAdapter = MatrixAdapterImageView(context!! , firstMatrix , secondMatrix)
@@ -219,7 +228,8 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
     override fun showToast(obj: String)
     {
-        this.context!!.toast(obj)
+        Toasts.add(obj)
+        //this.context!!.toast(obj)
     }
 
     fun setImageAdapter()
@@ -317,5 +327,21 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
         val itemTouchhelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchhelper.attachToRecyclerView(matrixRecycler)
+    }
+
+    fun checkToast()
+    {
+        if(Toasts.isNotEmpty())
+        {
+            for(i in Toasts)
+            {
+                this.context!!.toast(i)
+            }
+            Toasts.clear()
+        }
+
+        toastHandler.postDelayed({
+            checkToast()
+        },2000)
     }
 }

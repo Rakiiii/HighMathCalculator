@@ -150,5 +150,12 @@ class ComplexNumber( _re : Fraction = Fraction(),_im : Fraction = Fraction())
         return result
     }
 
+    fun Copy() : ComplexNumber
+    {
+        return ComplexNumber( _re = re.Copy(),_im = im.Copy())
+    }
+
+    fun containsFractions() = (!re.isInt() || !im.isInt())
+
 }
 

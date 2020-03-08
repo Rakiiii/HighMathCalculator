@@ -7,6 +7,7 @@ import com.dev.smurf.highmathcalculator.Utils.countWords
 import com.dev.smurf.highmathcalculator.Utils.toComplex
 import com.dev.smurf.highmathcalculator.Utils.toDegree
 
+//depricated
 class polinom( _size : Int)
 {
     val size : Int = _size

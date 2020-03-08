@@ -186,5 +186,10 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
     fun isInt() = (lower == 1)
 
     fun isBeloweZero() = (upper < 0)
+
+    fun Copy() : Fraction
+    {
+        return Fraction( _upper = upper , _lower = lower)
+    }
 }
 

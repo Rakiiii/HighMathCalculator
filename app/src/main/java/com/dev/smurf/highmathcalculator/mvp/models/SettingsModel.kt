@@ -23,13 +23,19 @@ class SettingsModel(val context: Context)
     //получения настройки сохранения полинома
     fun getPolinomConsistens() : Boolean
     {
-        return mPrefs.getBoolean("Polinom" , false)
+        return mPrefs.getBoolean("Polynomial" , false)
     }
 
     //получить режим работы для matrix view holder
     fun getMatrixHolderConsistens() : Boolean
     {
         return mPrefs.getBoolean("MatrixHolder" , false)
+    }
+
+    //returns true if image view holder is turned view holder
+    fun getPolynomialHolderConsistens() : Boolean
+    {
+        return mPrefs.getBoolean("PolynomialImageHolder" , false)
     }
 
     //включение сохранения матриц
@@ -53,7 +59,7 @@ class SettingsModel(val context: Context)
     fun onPolinomSaving()
     {
         doAsync {
-            mPrefs.edit().putBoolean("Polinom",true).apply()
+            mPrefs.edit().putBoolean("Polynomial",true).apply()
         }
     }
 
@@ -61,7 +67,7 @@ class SettingsModel(val context: Context)
     fun offPolinomSaving()
     {
         doAsync {
-            mPrefs.edit().putBoolean("Polinom",false).apply()
+            mPrefs.edit().putBoolean("Polynomial",false).apply()
         }
     }
 
@@ -78,6 +84,22 @@ class SettingsModel(val context: Context)
     {
         doAsync {
             mPrefs.edit().putBoolean("MatrixHolder" , false).apply()
+        }
+    }
+
+    //on polynomial image view holder
+    fun onPolynomialImageViewHolder()
+    {
+        doAsync {
+            mPrefs.edit().putBoolean("PolynomialImageHolder" , true).apply()
+        }
+    }
+
+    //off polynomial image view holder
+    fun offPolynomialImageViewHolder()
+    {
+        doAsync {
+            mPrefs.edit().putBoolean("PolynomialImageHolder" , false).apply()
         }
     }
 }

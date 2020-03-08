@@ -229,7 +229,7 @@ fun String.degreesToNormalForm() : String
 
 fun String.amountOfCofsInPolinom() : Int
 {
-    var counter = 0
+    var counter = 1
     var flagOfClose = true
     for( i in this)
     {
@@ -311,7 +311,7 @@ fun String.toPolinomCofsString( symb : Char) : String
     return finalString
 }
 
-fun String.substringBeforSymbol() : String
+fun String.substringBeforeSymbol() : String
 {
     for(i in this)
     {
@@ -336,6 +336,21 @@ fun String.substringAfterSymbol() : String
     return this
 }
 
+fun String.separateBySymbol(symbol : String = " ") : Array<String>
+{
+    val result : Array<String> = arrayOf()
+    var tmpString = this
+
+    while(tmpString.contains( symbol ))
+    {
+        result.plus( tmpString.substringBefore(symbol))
+
+        tmpString = tmpString.substringAfter(symbol)
+    }
+
+    return result
+}
+
 fun String.substringAfterSymbolIncluded() : String
 {
     for(i in this)
@@ -347,11 +362,6 @@ fun String.substringAfterSymbolIncluded() : String
         }
     }
     return this
-}
-
-fun String.separateCofsWithSpaces() : String
-{
-    TODO("not implemented")
 }
 
 

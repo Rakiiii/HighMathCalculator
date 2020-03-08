@@ -14,7 +14,7 @@ class MainPresenter : MvpPresenter<MainViewInterface>()
         viewState.setMatrixFragment()
     }
 
-    //установить фрагмент PolinomFragment
+    //установить фрагмент PolynomialFragment
     fun setPolinonFragment()
     {
         viewState.setPolinomFragment()

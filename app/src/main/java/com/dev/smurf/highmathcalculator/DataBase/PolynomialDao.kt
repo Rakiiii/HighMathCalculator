@@ -1,30 +1,30 @@
 package com.dev.smurf.highmathcalculator.DataBase
 
 import androidx.room.*
-import com.example.smurf.mtarixcalc.PolinomGroup
+import com.example.smurf.mtarixcalc.PolynomialGroup
 
 @Dao
-interface PolinomDao
+interface PolynomialDao
 {
 
     //вставка в бд
     @Insert
-    fun insert(PolinomGroup: PolinomGroup)
+    fun insert(PolynomialGroup: PolynomialGroup)
 
 
     //удаление из бд
     @Delete
-    fun delete(PolinomGroup: PolinomGroup)
+    fun delete(PolynomialGroup: PolynomialGroup)
 
 
     //получить все данный из бд
-    @Query("SELECT * FROM PolinomGroup")
-    fun selectAll() : List<PolinomGroup>
+    @Query("SELECT * FROM PolynomialGroup")
+    fun selectAll() : List<PolynomialGroup>
 
 
     //запись целого списка транзакцией
     @Transaction
-    fun insertArrayList( ar : ArrayList<PolinomGroup>)
+    fun insertArrayList( ar : ArrayList<PolynomialGroup>)
     {
         for( i in ar)insert(i)
     }

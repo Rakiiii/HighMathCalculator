@@ -4,11 +4,13 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
-import com.dev.smurf.highmathcalculator.mvp.models.PolinomDataBaseModel
+import com.dev.smurf.highmathcalculator.mvp.models.PolynomialDataBaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.SettingsViewInterface
 import org.jetbrains.anko.doAsync
 import javax.inject.Inject
+
+//todo::add switch fot recycler view adpter for polynomial
 
 @InjectViewState
 class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
@@ -39,7 +41,7 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
 
     //модель бызы данных полиномов
     @Inject
-    lateinit var mPolinomDatabaseModel: PolinomDataBaseModel
+    lateinit var mPolynomialDatabaseModel: PolynomialDataBaseModel
 
     init
     {
@@ -64,8 +66,8 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
         else viewState.setPolinomModeOff()
 
         //проверка режима работы списка матриц
-        if(mSettingsModel.getMatrixHolderConsistens())viewState.setMatrixHolderModeOn()
-        else viewState.setMatrixHolderModeOff()
+        if(mSettingsModel.getMatrixHolderConsistens())viewState.setHolderImageModeOn()
+        else viewState.setHolderImageModeOff()
     }
 
     //ВКЛ созранение матриц
@@ -93,15 +95,19 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
     }
 
     //вкл картинки в списке матриц
-    fun matrixHolderImageModeSetOn()
+    fun holderImageModeSetOn()
     {
         mSettingsModel.onMatrixImageHolder()
+
+        mSettingsModel.onPolynomialImageViewHolder()
     }
 
     //выкл картинки в списке матриц
-    fun matrixHolderImageModeSetOff()
+    fun holderImageModeSetOff()
     {
         mSettingsModel.offMatrixImageHolder()
+
+        mSettingsModel.offPolynomialImageViewHolder()
     }
 
 
@@ -129,7 +135,7 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
     fun deletePolinomDb()
     {
         doAsync {
-            mPolinomDatabaseModel.deleteDb()
+            mPolynomialDatabaseModel.deleteDb()
         }
     }
 
@@ -137,7 +143,7 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
     fun savePolinomCache()
     {
         doAsync {
-            mPolinomDatabaseModel.saveCache()
+            mPolynomialDatabaseModel.saveCache()
         }
     }
 

@@ -4,6 +4,11 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context=".ui.fragments.SettingFragment">
+    <com.dev.smurf.highmathcalculator.CustomeView.RunningBackgroundMatrixView
+            style="@style/BackgroundMatrixViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -75,6 +80,12 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/btnDeletePolinomDb"
                 android:text="@string/deletePolinomInstance"
+        />
+
+        <ImageView
+                android:id="@+id/testIm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
         />
 
 

@@ -3,18 +3,25 @@ package com.dev.smurf.highmathcalculator.ui.fragments
 //import androidx.core.app.Fragment
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.arellomobile.mvp.presenter.InjectPresenter
+import com.dev.smurf.highmathcalculator.Polynomials.PolynomialFactory
 import com.dev.smurf.highmathcalculator.R
+import com.dev.smurf.highmathcalculator.Utils.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.Utils.drawPolynomial
+import com.dev.smurf.highmathcalculator.Utils.getPolynomialHigh
+import com.dev.smurf.highmathcalculator.Utils.getPolynomialWidth
 import com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.MvpAppCompatFragment
 import com.dev.smurf.highmathcalculator.mvp.presenters.SettingsPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.SettingsViewInterface
 import kotlinx.android.synthetic.main.fragment_setting.*
-
 
 
 class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
@@ -70,8 +77,8 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
         }
 
         swtchMatrixHolderMode.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked)mSettingsPresenter.matrixHolderImageModeSetOn()
-            else mSettingsPresenter.matrixHolderImageModeSetOff()
+            if(isChecked)mSettingsPresenter.holderImageModeSetOn()
+            else mSettingsPresenter.holderImageModeSetOff()
         }
 
         btnDeleteMatrixDb.setOnClickListener {
@@ -81,6 +88,7 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
         btnDeletePolinomDb.setOnClickListener {
             mSettingsPresenter.deletePolinomDb()
         }
+
     }
 
 
@@ -151,14 +159,41 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
         swtchPolinomMode.isChecked = true
     }
 
-    override fun setMatrixHolderModeOn()
+    override fun setHolderImageModeOn()
     {
         swtchMatrixHolderMode.isChecked = true
     }
 
-    override fun setMatrixHolderModeOff()
+    override fun setHolderImageModeOff()
     {
         swtchMatrixHolderMode.isChecked = false
     }
 
-}
+
+    fun testPolDrawing()
+    {
+        val polynomialFactory = PolynomialFactory()
+        var polynomial = polynomialFactory.createPolynomial("4x+6y")
+        var blackPainter = CanvasRenderSpecification.createBlackPainter()
+
+        val leftBitmap = Bitmap.createBitmap(
+            blackPainter.getPolynomialWidth(polynomial).toInt(),
+            blackPainter.getPolynomialHigh(polynomial).toInt(),
+            Bitmap.Config.ARGB_8888
+        )
+
+        val canvas = Canvas(leftBitmap)
+
+            Log.d("polynomial@", "left polynomial render as polynomial")
+            Log.d("polynomial@afterDraw@" ,canvas.drawPolynomial(
+                polynomial, CanvasRenderSpecification.x,
+                CanvasRenderSpecification.y,
+                blackPainter
+            ).first.toString())
+
+        testIm.setImageBitmap(leftBitmap)
+    }
+
+        //testPolynomial.imageBitmap = leftBitmap
+    }
+

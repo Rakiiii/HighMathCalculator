@@ -58,6 +58,7 @@ class Matrix( _width : Int = 2,
                 //удаляем текущую строку из скопированного текста
                 info = info.substringAfter('\n')
 
+
                 //проверяем полная ли матрица
                 if (width != subLine.countWords())
                 //если не полна кидаем ощибку
@@ -183,8 +184,8 @@ class Matrix( _width : Int = 2,
         //если одна из матриц первого порядка
         if( isNumber() || secMatrix.isNumber() )
         {
-            var res : Matrix
-            var factor : ComplexNumber
+            val res : Matrix
+            val factor : ComplexNumber
             if(isNumber())
             {
                 res = Matrix(secMatrix)
@@ -211,7 +212,7 @@ class Matrix( _width : Int = 2,
         if(this.width != secMatrix.height)throw Exception("Line length isn't equals to column height")
 
         //создаем результируюшую матрицу
-        var res  = Matrix(_width = secMatrix.width , _heigh = this.height)
+        val res  = Matrix(_width = secMatrix.width , _heigh = this.height)
 
         //умножаем матрицы
         for(i in 0 until res.height)
@@ -460,73 +461,4 @@ class Matrix( _width : Int = 2,
 
     fun isNumber() = (width == 1 && height == 1)
 
-    fun maxWidthInString() : Int
-    {
-        var str = this.toString()
-        var result : Int = 0
-        var tmp : Int = 0
-        for(i in 0 until height)
-        {
-            tmp = 0
-            for( j in 0 until width)
-            {
-                tmp += matrices[i][j].length() + 1
-            }
-            if(tmp > result)result = tmp
-            /*
-            tmp = str.substringBefore('\n').length
-            if(tmp > result)result = tmp
-            str = str.substringAfter('\n')*/
-        }
-
-        return result
-    }
-
-    fun maxFractionsInColumn() : Int
-    {
-        var result = 2
-        var tmp = 0
-
-        for(i in 0 until width)
-        {
-            tmp = 0
-            for( j in 0 until height)
-            {
-                if(!matrices[i][j].re.isInt() || !matrices[i][j].im.isInt())tmp += 1
-            }
-
-            if(tmp > result)result = tmp
-        }
-
-        return result + 1
-    }
-
-   /* fun sumOfMainMinors( order : Int) : ComplexNumber
-    {
-        if( order >= width )throw Exception("MatrixTooSmallException")
-        if(order == width)return this.determinant()
-        var res = ComplexNumber(fraction(1,0))
-        for(i in 0 until binCofs( width , order))
-        {
-
-        }
-    }*/
-
-    /*fun quadratinqRedaction() : Matrix
-    {
-        if(width != height)throw Exception("Matrix is not square")
-        if(this.trans() != this)throw Exception("Matrix is not semetric")
-        when(width)
-        {
-            3->
-            {
-                var inv1 = this.matrices
-            }
-            4->
-            {
-
-            }
-            else -> throw Exception("Polinoms have to many params")
-        }
-    }*/
 }

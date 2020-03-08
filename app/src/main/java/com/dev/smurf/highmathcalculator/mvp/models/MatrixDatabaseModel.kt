@@ -17,7 +17,7 @@ class MatrixDatabaseModel(val context: Context)
         Room.
             databaseBuilder( context ,MatrixDataBase::class.java , "matrix_db").
             fallbackToDestructiveMigration().
-            allowMainThreadQueries().
+            //allowMainThreadQueries().
             build()
 
 

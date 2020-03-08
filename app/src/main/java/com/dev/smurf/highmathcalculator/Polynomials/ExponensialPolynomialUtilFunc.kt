@@ -1,0 +1,36 @@
+package com.dev.smurf.highmathcalculator.Polynomials
+
+import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
+import com.dev.smurf.highmathcalculator.Utils.minusToCof
+import com.dev.smurf.highmathcalculator.Utils.plusToCof
+
+
+fun exponensialRecursiveDivison(
+    division: ArrayList<Pair<Int, ComplexNumber>>,
+    divider: ArrayList<Pair<Int, ComplexNumber>>
+
+): Pair<ArrayList<Pair<Int, ComplexNumber>>, ArrayList<Pair<Int, ComplexNumber>>>
+{
+    val result: ArrayList<Pair<Int, ComplexNumber>> = arrayListOf()
+
+    //if degree of divione is smaller the degree of divider then stop
+    while (division.last().first >= divider.last().first)
+    {
+
+        //deferense between max degree of division and divider
+        val degreeCof = division.last().first - division.last().first
+        //cof of elem on this stage of division
+        val cof = division.last().second / divider.last().second
+
+        //add new result of this part to result
+        result.plusToCof(degreeCof, cof)
+
+        //calculate remainder
+        for (i in divider)
+        {
+            division.minusToCof(i.first + degreeCof, i.second * cof)
+        }
+
+    }
+    return Pair(result, division)
+}

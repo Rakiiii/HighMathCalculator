@@ -1,15 +1,16 @@
 package com.dev.smurf.highmathcalculator.RoomConverters
 
 import androidx.room.TypeConverter
-import com.dev.smurf.highmathcalculator.Polinoms.PolinomBase
-import com.dev.smurf.highmathcalculator.Polinoms.PolinomFactory
+import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
+import com.dev.smurf.highmathcalculator.Polynomials.PolynomialFactory
+import com.dev.smurf.highmathcalculator.Polynomials.PolynomialRoots
 import com.example.smurf.mtarixcalc.Matrix
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 //преобразование
-class POJOСonverter
+class POJOConverter
 {
     companion object
     {
@@ -31,7 +32,7 @@ class POJOСonverter
         {
             if(time != null)
             {
-                var fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
+                val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
                 fmt.calendar = time
                 return fmt.format(time.time)
             }else return ""
@@ -46,8 +47,8 @@ class POJOСonverter
             if(time == "")return null
             else
             {
-                var fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
-                var date = fmt.parse(time)
+                val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
+                val date = fmt.parse(time)
                 val result = GregorianCalendar()
                 result.time = date
                 return result
@@ -57,22 +58,36 @@ class POJOСonverter
         //конвертация полинома в строку
         @TypeConverter
         @JvmStatic
-        fun fromPolinom(polinom : PolinomBase) : String
+        fun fromPolynomial(polynomial : PolynomialBase?) : String
         {
-            if(polinom.isSolved())
-            {
-                return polinom.toString() + "|" + polinom.stringWithRoots()
-            }
-            else return polinom.toString()
+            return  if(polynomial != null)polynomial.toString() else ""
         }
 
 
         //конвертация строки к полиному
         @TypeConverter
         @JvmStatic
-        fun toPolinom(polinom : String) : PolinomBase
+        fun toPolynomial(polynomial : String) : PolynomialBase?
         {
-            return PolinomFactory().createPolinom(polinom)
+            return if(polynomial != "")PolynomialFactory().createPolynomial(polynomial) else null
         }
+
+
+        //конвертация корней полинома к строке
+        @TypeConverter
+        @JvmStatic
+        fun fromPolynomialRoots(polynomialRoots : PolynomialRoots?) : String
+        {
+            return if(polynomialRoots != null)polynomialRoots.toString() else ""
+        }
+
+        //конвертация строки к корням полинома
+        @TypeConverter
+        @JvmStatic
+        fun toPolynomialRoots(polynomialRoots : String) : PolynomialRoots?
+        {
+            return if(polynomialRoots != "")PolynomialRoots(polynomialRoots) else null
+        }
+
     }
 }
