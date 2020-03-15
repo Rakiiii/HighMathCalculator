@@ -445,46 +445,79 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
     //vertical offset for symbols,signs and non fraction numbers
     val verticalOffset: Float = y +
             if (fractionFlag) (CanvasRenderSpecification.getLetterHigh(mPaint) +
-                    CanvasRenderSpecification.getVerticalSpaceSize(mPaint)+
+                    CanvasRenderSpecification.getVerticalSpaceSize(mPaint) +
                     CanvasRenderSpecification.getLineWidth(mPaint)) / 2
-            else CanvasRenderSpecification.getLetterHigh(mPaint)/2
+            else CanvasRenderSpecification.getLetterHigh(mPaint) / 2
 
     //horizontal offset for render those element
     var horizontalOffset = x
 
+    //count amount of rendered cofs
+    var renderedCounter = 0
+
+    //count amount of itterations
+    var itterationCounter = 0
+
     //start render
     for (i in polynomialForRender)
     {
-        //if cof contains fraction we dont need any vertical offset
-        if (i.second.containsFractions())
+        //count itteration
+        itterationCounter ++
+
+        //if cof before is 0 we dont need to draw it
+        if (!i.second.equals(0))
         {
-            this.drawComplex(i.second, horizontalOffset, y, mPaint)
+            //count rendered cof
+            renderedCounter ++
+
+            //if cof contains fraction we dont need any vertical offset
+            if (i.second.containsFractions())
+            {
+                this.drawComplex(i.second, horizontalOffset, y, mPaint)
+            }
+            else
+            {
+                //todo::think about this construction
+                //if cofs dont contains fraction we need counted vertical offset
+                this.drawComplex(i.second, horizontalOffset, y/*verticalOffset*/, mPaint)
+            }
+
+            //update horizontal offset to the left of rendered cof
+            //we dont need to render plus after last cof
+            horizontalOffset += mPaint.getComplexNumberWidth(i.second)
+
+            //init text for render after cof
+            val text = i.first + if (i != polynomialForRender.last()) "+" else ""
+
+            //draw text it self
+            this.drawText(text, horizontalOffset, verticalOffset + 4.0f, mPaint)
+
+            //calculate horizontal offset
+            //we need an array if size word to get length of all symbols in the word
+            val arr = FloatArray(text.length)
+            //get length of symbols it self
+            mPaint.getTextWidths(text, arr)
+
+            //sum symbols length,get length of symbols and update horizontal offset to the left of symbols
+            horizontalOffset += arr.sum()
         }
-        else
+        if(itterationCounter == polynomialForRender.size && renderedCounter == 0)
         {
-            //todo::think about this construction
-            //if cofs dont contains fraction we need counted vertical offset
-            this.drawComplex(i.second, horizontalOffset, y/*verticalOffset*/, mPaint)
+            //init text for render after cof
+            val text = "0"
+
+            //draw text it self
+            this.drawText(text, horizontalOffset, verticalOffset + 4.0f, mPaint)
+
+            //calculate horizontal offset
+            //we need an array if size word to get length of all symbols in the word
+            val arr = FloatArray(text.length)
+            //get length of symbols it self
+            mPaint.getTextWidths(text, arr)
+
+            //sum symbols length,get length of symbols and update horizontal offset to the left of symbols
+            horizontalOffset += arr.sum()
         }
-
-        //update horizontal offset to the left of rendered cof
-        //we dont need to render plus after last cof
-        horizontalOffset += mPaint.getComplexNumberWidth(i.second)
-
-        //init text for render after cof
-        val text = i.first + if (i != polynomialForRender.last()) "+" else ""
-
-        //draw text it self
-        this.drawText(text, horizontalOffset, verticalOffset + 4.0f, mPaint)
-
-        //calculate horizontal offset
-        //we need an array if size word to get length of all symbols in the word
-        val arr = FloatArray(text.length)
-        //get length of symbols it self
-        mPaint.getTextWidths(text, arr)
-
-        //sum symbols length,get length of symbols and update horizontal offset to the left of symbols
-        horizontalOffset += arr.sum()
     }
 
     //returns offset pair
@@ -524,19 +557,19 @@ fun Canvas.drawPolynomialRoots(roots: PolynomialRoots, x: Float, y: Float, mPain
 
         val symbol = i.first + roots.getSepareteSymbol()
         val arr = FloatArray(symbol.length)
-        mPaint.getTextWidths(symbol , arr)
+        mPaint.getTextWidths(symbol, arr)
 
-        this.drawText(symbol , horizontalOffset , verticalOffset , mPaint)
+        this.drawText(symbol, horizontalOffset, verticalOffset, mPaint)
 
         horizontalOffset += arr.sum()
 
-        if(i.second.containsFractions())
+        if (i.second.containsFractions())
         {
-            this.drawComplex(i.second , horizontalOffset , y ,mPaint)
+            this.drawComplex(i.second, horizontalOffset, y, mPaint)
         }
         else
         {
-            this.drawComplex(i.second , horizontalOffset , verticalOffset ,mPaint)
+            this.drawComplex(i.second, horizontalOffset, verticalOffset, mPaint)
         }
 
         horizontalOffset += mPaint.getComplexNumberWidth(i.second)

@@ -1,12 +1,11 @@
 package com.dev.smurf.highmathcalculator.ui.adapters
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.text.SpannableStringBuilder
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -105,207 +104,22 @@ class PolynomialAdapterImageView(
             context.toast(e.toString())
         }
         //контекстное  меню для левого полинома
-        holder.leftPolynomialImageView.setOnCreateContextMenuListener(object : View.OnCreateContextMenuListener
-        {
-            override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?)
-            {
-                if (menu != null)
-                {
-                    menu.add(1, 1, 1, "Paste to A").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            polFirstPolynomial.text = SpannableStringBuilder(holder.leftPolynomialValue)
-                            return true
-                        }
-                    })
-                    menu.add(2, 2, 2, "Paste to B").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            polSecPolynomial.text = SpannableStringBuilder(holder.leftPolynomialValue)
-                            return true
-                        }
-                    })
-                    menu.add(3, 3, 3, "Copy cofs").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            val clipboardManager =
-                                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            val clip = ClipData.newPlainText("some", holder.leftPolynomialValue)
-                            clipboardManager.primaryClip = clip
-                            return true
-                        }
-                    })
-                    menu.add(4, 4, 4, "Copy polinom")
-                        .setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                        {
-                            override fun onMenuItemClick(item: MenuItem?): Boolean
-                            {
-                                val clipboardManager =
-                                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                val clip = ClipData.newPlainText("some", holder.leftPolynomialValue)
-                                clipboardManager.primaryClip = clip
-                                return true
-                            }
-                        })
-                }
-            }
-        })
+        holder.leftPolynomialImageView.setOnCreateContextMenuListener(
+            ContextMenuListener(context,polFirstPolynomial,polSecPolynomial,holder.leftPolynomialValue) )
+
 
         //контестное меню для праавого элемента
-        holder.rightPolynomialImageView.setOnCreateContextMenuListener(object : View.OnCreateContextMenuListener
-        {
-            override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?)
-            {
-                if (menu != null)
-                {
-                    menu.add(1, 1, 1, "Paste to A").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            polFirstPolynomial.text = SpannableStringBuilder(holder.rightPolynomialValue)
-                            return true
-                        }
-                    })
-                    menu.add(2, 2, 2, "Paste to B").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            polSecPolynomial.text = SpannableStringBuilder(holder.rightPolynomialValue)
-                            return true
-                        }
-                    })
-                    menu.add(3, 3, 3, "Copy cofs").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            val clipboardManager =
-                                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            val clip = ClipData.newPlainText("some", holder.rightPolynomialValue)
-                            clipboardManager.primaryClip = clip
-                            return true
-                        }
-                    })
-                    menu.add(4, 4, 4, "Copy polinom")
-                        .setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                        {
-                            override fun onMenuItemClick(item: MenuItem?): Boolean
-                            {
-                                val clipboardManager =
-                                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                val clip = ClipData.newPlainText("some", holder.rightPolynomialValue)
-                                clipboardManager.primaryClip = clip
-                                return true
-                            }
-                        })
-                }
-            }
-        })
+        holder.rightPolynomialImageView.setOnCreateContextMenuListener(
+            ContextMenuListener( context,polFirstPolynomial,polSecPolynomial,holder.rightPolynomialValue) )
 
 
         //контекстное меню для результирующего полинома
-        holder.resultPolynomialImageView.setOnCreateContextMenuListener(object : View.OnCreateContextMenuListener
-        {
-            override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?)
-            {
-                if (menu != null)
-                {
-                    menu.add(1, 1, 1, "Paste to A").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            polFirstPolynomial.text = SpannableStringBuilder(holder.resultPolynomialValue)
-                            return true
-                        }
-                    })
-                    menu.add(2, 2, 2, "Paste to B").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            polSecPolynomial.text = SpannableStringBuilder(holder.resultPolynomialValue)
-                            return true
-                        }
-                    })
-                    menu.add(3, 3, 3, "Copy cofs").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            val clipboardManager =
-                                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            val clip = ClipData.newPlainText("some", holder.resultPolynomialValue)
-                            clipboardManager.primaryClip = clip
-                            return true
-                        }
-                    })
-                    menu.add(4, 4, 4, "Copy polinom")
-                        .setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                        {
-                            override fun onMenuItemClick(item: MenuItem?): Boolean
-                            {
-                                val clipboardManager =
-                                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                val clip = ClipData.newPlainText("some", holder.resultPolynomialValue)
-                                clipboardManager.primaryClip = clip
-                                return true
-                            }
-                        })
-                }
-            }
-        })
+        holder.resultPolynomialImageView.setOnCreateContextMenuListener(
+            ContextMenuListener(context,polFirstPolynomial,polSecPolynomial,holder.resultPolynomialValue) )
 
         //контекстное меню для остаточное полинома
-        holder.remainderPolynomialImageView.setOnCreateContextMenuListener(object : View.OnCreateContextMenuListener
-        {
-            override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?)
-            {
-                if (menu != null)
-                {
-                    menu.add(1, 1, 1, "Paste to A").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            polFirstPolynomial.text =
-                                SpannableStringBuilder(holder.remainderPolynomialValue)
-                            return true
-                        }
-                    })
-                    menu.add(2, 2, 2, "Paste to B").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            polSecPolynomial.text =
-                                SpannableStringBuilder(holder.remainderPolynomialValue)
-                            return true
-                        }
-                    })
-                    menu.add(3, 3, 3, "Copy cofs").setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                    {
-                        override fun onMenuItemClick(item: MenuItem?): Boolean
-                        {
-                            val clipboardManager =
-                                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            val clip = ClipData.newPlainText("some", holder.remainderPolynomialValue)
-                            clipboardManager.primaryClip = clip
-                            return true
-                        }
-                    })
-                    menu.add(4, 4, 4, "Copy polinom")
-                        .setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener
-                        {
-                            override fun onMenuItemClick(item: MenuItem?): Boolean
-                            {
-                                val clipboardManager =
-                                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                val clip = ClipData.newPlainText("some", holder.remainderPolynomialValue)
-                                clipboardManager.primaryClip = clip
-                                return true
-                            }
-                        })
-                }
-            }
-        })
+        holder.remainderPolynomialImageView.setOnCreateContextMenuListener(
+            ContextMenuListener( context,polFirstPolynomial,polSecPolynomial,holder.remainderPolynomialValue) )
 
 
     }

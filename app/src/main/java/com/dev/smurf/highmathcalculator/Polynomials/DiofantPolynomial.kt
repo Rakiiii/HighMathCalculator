@@ -1,6 +1,6 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
-import android.util.Log
+import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Utils.amountOfCofsInPolinom
 import com.dev.smurf.highmathcalculator.Utils.removePluses
@@ -37,7 +37,6 @@ class DiofantPolynomial : PolynomialBase
                     polynomial[tmp.last().toString()] = tmp.substringBefore(tmp.last()).toComplex()
                 }
                 str = str.substringAfter(' ')
-                Log.d("DEBUG@" , str)
             }
     }
 
@@ -59,7 +58,7 @@ class DiofantPolynomial : PolynomialBase
                     diofantPlusToKeyInMap(res.polynomial,"0",obj)
                     return res
                 }
-                else -> throw Exception("UnknownTypeForPolinomPlus")
+                else -> throw WrongDataException("UnknownTypeForPolinomPlus")
             }
     }
 
@@ -81,18 +80,18 @@ class DiofantPolynomial : PolynomialBase
                 diofantMinusToKeyInMap(res.polynomial, "0", obj)
                 return res
             }
-            else -> throw Exception("UnknownTypeForPolinomMinus")
+            else -> throw WrongDataException("UnknownTypeForPolinomMinus")
         }
     }
 
     override fun times(obj: Any) : PolynomialBase
     {
-        throw Exception("No Operation Times For Diofant Polinoms")
+        throw WrongDataException("No Operation Times For Diofant Polinoms")
     }
 
     override fun div(obj: Any) : Pair<PolynomialBase,PolynomialBase>
     {
-        throw Exception("No Operation Division For Diofant Polinoms")
+        throw WrongDataException("No Operation Division For Diofant Polinoms")
     }
 
 

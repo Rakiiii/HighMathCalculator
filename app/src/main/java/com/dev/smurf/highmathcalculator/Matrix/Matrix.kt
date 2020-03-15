@@ -1,6 +1,7 @@
 package com.example.smurf.mtarixcalc
 
 import android.widget.EditText
+import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
 import com.dev.smurf.highmathcalculator.Utils.countLines
@@ -62,7 +63,7 @@ class Matrix( _width : Int = 2,
                 //проверяем полная ли матрица
                 if (width != subLine.countWords())
                 //если не полна кидаем ощибку
-                    throw Exception("amount of elemnts in line is different")
+                    throw WrongDataException("amount of elements in line is different")
 
                 //проходим все столбцы
                 for (j in 0 until width)
@@ -140,7 +141,7 @@ class Matrix( _width : Int = 2,
                 return res
             }
         }
-        else throw Exception("matrices is not square")
+        else throw WrongDataException("matrices is not square")
     }
 
 
@@ -148,10 +149,10 @@ class Matrix( _width : Int = 2,
     operator fun plus(secMatrix : Matrix): Matrix
     {
         //если разного размера матрицы то кидаем исключение
-        if(this.width != secMatrix.width || this.height != secMatrix.height)throw Exception("Matrixes have different size")
+        if(this.width != secMatrix.width || this.height != secMatrix.height)throw WrongDataException("Matrixes have different size")
 
         //копируем матрицу
-        var resMatrix = Matrix(this)
+        val resMatrix = Matrix(this)
 
         //прибаляем к скопированной матрице вторую матрицу по элементно
         for(i in 0 until height)
@@ -165,10 +166,10 @@ class Matrix( _width : Int = 2,
     operator fun minus(secMatrix : Matrix): Matrix
     {
         //если разного размера матрицы то кидаем исключение
-        if(this.width != secMatrix.width || this.height != secMatrix.height)throw Exception("Matrixes have different size")
+        if(this.width != secMatrix.width || this.height != secMatrix.height)throw WrongDataException("Matrixes have different size")
 
         //копируем матрицу
-        var resMatrix = Matrix(this)
+        val resMatrix = Matrix(this)
 
         //поэлементно вычетаем элементы второй матрицы из первой
         for(i in 0 until height)
@@ -209,7 +210,7 @@ class Matrix( _width : Int = 2,
         }
 
         //сравниваем длинну первой матрицы с выостой второй если не равны кидаем исключение
-        if(this.width != secMatrix.height)throw Exception("Line length isn't equals to column height")
+        if(this.width != secMatrix.height)throw WrongDataException("Line length isn't equals to column height")
 
         //создаем результируюшую матрицу
         val res  = Matrix(_width = secMatrix.width , _heigh = this.height)
@@ -260,7 +261,7 @@ class Matrix( _width : Int = 2,
     fun matrixTimesNumber(number : ComplexNumber):Matrix
     {
         //копируем матрицу
-        var res = Matrix(this)
+        val res = Matrix(this)
 
         //поэлементно умнажаем матрицу на число
         for(i in 0 until height)
@@ -277,7 +278,7 @@ class Matrix( _width : Int = 2,
     //деление матрицы на число
     fun matrixDivideByNumber(number : ComplexNumber):Matrix
     {
-        var res = Matrix(this)
+        val res = Matrix(this)
         for(i in 0 until height)
         {
             for (j in 0 until width)
@@ -292,7 +293,7 @@ class Matrix( _width : Int = 2,
     //транспонированние матрицы
     fun trans() : Matrix
     {
-        var res = Matrix(_width = height, _heigh =  width)
+        val res = Matrix(_width = height, _heigh =  width)
         for(i in 0 until res.height)
         {
             for(j in  0 until res.width)
@@ -310,11 +311,11 @@ class Matrix( _width : Int = 2,
     {
 
         //создаем нулевую матрицу
-        var res = Matrix(width - 1 , ComplexNumber())
+        val res = Matrix(width - 1 , ComplexNumber())
 
         //два счетчика для движение по минору матрицы
-        var C : Int = 0
-        var S : Int = 0
+        var c : Int = 0
+        var s : Int = 0
 
         for(i in 0 until width)
         {
@@ -324,16 +325,16 @@ class Matrix( _width : Int = 2,
                 {
                     //если счетчик не принадлежит ни указанной строке ,ни столбцу
                     //добавляем в минор
-                    res.matrices[C][S] = this.matrices[i][j]
-                    S++
+                    res.matrices[c][s] = this.matrices[i][j]
+                    s++
                 }
 
             }
             if(i != string)
             {
                 //по заполнению строки обнуляем счетчик
-                S = 0
-                C++
+                s = 0
+                c++
             }
         }
         return res
@@ -343,13 +344,13 @@ class Matrix( _width : Int = 2,
     //матрица алгеброических дополнений
     fun minorMatrix() : Matrix
     {
-        if(width != height)throw Exception("Matrix isn't square")
-        if(this.determinant() == ComplexNumber())throw Exception("Determinant is 0 ")
+        if(width != height)throw WrongDataException("Matrix isn't square")
+        if(this.determinant() == ComplexNumber())throw WrongDataException("Determinant is 0 ")
 
         //если 2х2 то по формуле
         if(width == 2)
         {
-            var res = Matrix(width)
+            val res = Matrix(width)
 
 
             //считаем по формуле
@@ -362,7 +363,7 @@ class Matrix( _width : Int = 2,
         }
 
         //если больше чем три на три по заполняем матрицу определителями миноров
-        var res = Matrix(width , ComplexNumber())
+        val res = Matrix(width , ComplexNumber())
 
         for(i in 0 until width)
         {
@@ -377,8 +378,8 @@ class Matrix( _width : Int = 2,
     //поиск обратной матрицы через определитель и матрицу алгеброических дополнений
     fun invers() : Matrix
     {
-        if(width != height)throw Exception("Matrix isn't square")
-        if(this.determinant() == ComplexNumber())throw Exception("Determinant is 0 ")
+        if(width != height)throw WrongDataException("Matrix isn't square")
+        if(this.determinant() == ComplexNumber())throw WrongDataException("Determinant is 0 ")
         return  this.minorMatrix().trans().matrixDivideByNumber(this.determinant())
     }
 
@@ -404,7 +405,7 @@ class Matrix( _width : Int = 2,
     //перегрузка приведения к строке
     override fun toString(): String
     {
-        var res : String = ""
+        var res = ""
 
         for( i in 0 until height)
         {

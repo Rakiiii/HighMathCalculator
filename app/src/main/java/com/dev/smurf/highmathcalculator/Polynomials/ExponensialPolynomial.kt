@@ -1,5 +1,7 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
+import android.util.Log
+import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Utils.*
 
@@ -23,6 +25,9 @@ class ExponensialPolynomial : PolynomialBase
         //replace pluses with spaces
         var pol = str.degreesToNormalForm().filter { s -> ( s != ' ' ) }.removePluses()
 
+        Log.d("checkPolynomialAfter@",pol)
+        Log.d("checkPolynomialBefore@",str)
+
         //for amount cofs in polynomial
         for(i in 0 until pol.amountOfCofsInPolinom())
         {
@@ -30,7 +35,7 @@ class ExponensialPolynomial : PolynomialBase
             var value = pol.substringBefore(' ').substringBefore('^').substringBeforeSymbol()
 
             //get degree of cof in polynomial
-            var exp = pol.substringBefore(' ').substringAfterSymbol()
+            var exp = pol.substringBefore(' ').substringAfterSymbol().substringAfter('^')
 
             //if something wrong
             when
@@ -110,7 +115,7 @@ class ExponensialPolynomial : PolynomialBase
             //in any other case the type of right operand is wrong
             else ->
             {
-                throw Exception("Unknown type for polynomial plus")
+                throw WrongDataException("Unknown type for polynomial plus")
             }
         }
 
@@ -143,7 +148,7 @@ class ExponensialPolynomial : PolynomialBase
             //in any other case the type of right operand is wrong
             else ->
             {
-                throw Exception("Unknown type for polynomial minus")
+                throw WrongDataException("Unknown type for polynomial minus")
             }
         }
 
@@ -182,7 +187,7 @@ class ExponensialPolynomial : PolynomialBase
 
             else ->
             {
-                throw Exception("Unknown type for polynomial multiplication")
+                throw WrongDataException("Unknown type for polynomial multiplication")
             }
         }
 
@@ -217,7 +222,7 @@ class ExponensialPolynomial : PolynomialBase
             }
             else ->
             {
-                throw Exception("Unknown type for polynomial division")
+                throw WrongDataException("Unknown type for polynomial division")
             }
         }
 

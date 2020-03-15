@@ -206,25 +206,36 @@ fun String.translateDegree():String
 fun String.degreesToNormalForm() : String
 {
     var result = ""
-    var flag = false
-    for( i in this)
+    for ( i in this)
     {
-        if(i in '⁰'..'⁹')
+        if(i.isDegree())
         {
-            if(!flag)
-            {
-                result += '^'
-                flag = true
-            }
             result += i.toString().translateDegree()
         }
         else
         {
-            flag = false
             result += i
         }
     }
     return result
+}
+
+fun Char.isDegree() : Boolean
+{
+    when(this)
+    {
+        '⁰'->return true
+        '¹'->return true
+        '²'->return true
+        '³'->return true
+        '⁴'->return true
+        '⁵'->return true
+        '⁶'->return true
+        '⁷'->return true
+        '⁸'->return true
+        '⁹'->return true
+        else ->return false
+    }
 }
 
 fun String.amountOfCofsInPolinom() : Int

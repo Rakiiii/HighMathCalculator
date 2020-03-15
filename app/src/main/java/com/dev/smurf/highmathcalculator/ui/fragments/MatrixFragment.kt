@@ -75,8 +75,6 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
     {
         super.onStart()
 
-        Log.d("dbPath@",context!!.getDatabasePath("polinom_db").absolutePath)
-
         //view model для сохранения содержимого recycler view
         mMatrixRecyclerViewModel = ViewModelProviders.of(this.activity!!).get(MatrixRecyclerViewModel::class.java)
 
@@ -158,9 +156,6 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
         if (context is OnFragmentInteractionListener)
         {
             listener = context
-        } else
-        {
-            //throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
         }
     }
 

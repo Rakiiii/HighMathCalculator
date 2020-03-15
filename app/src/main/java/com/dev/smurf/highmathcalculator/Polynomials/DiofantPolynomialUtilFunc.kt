@@ -6,7 +6,7 @@ fun diofantPlusToKeyInMap(map :  MutableMap<String , ComplexNumber>, key : Strin
 {
     if(map.containsKey(key))
     {
-        map[key]?.plus( value)
+        map[key] = map[key]?.plus( value)!!
     }
     else
     {
@@ -18,7 +18,7 @@ fun diofantMinusToKeyInMap(map :  MutableMap<String , ComplexNumber>, key : Stri
 {
     if(map.containsKey(key))
     {
-        map[key]?.minus( value)
+        map[key] = map[key]?.minus( value)!!
     }
     else
     {

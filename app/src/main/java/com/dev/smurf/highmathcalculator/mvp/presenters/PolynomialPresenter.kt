@@ -6,6 +6,7 @@ import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.dev.smurf.highmathcalculator.CalculatorApplication
+import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialDataBaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
@@ -56,10 +57,17 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     private val ioScope = CoroutineScope(Dispatchers.IO + supJob)
 
     //обработчик ошибок
-    val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
-        Log.d("ExceptionHandler@", error.toString())
-        //for(i in error.stackTrace)Log.d("ExceptionHandlerStack@",i.lineNumber.toString() + ":"+i.className+"."+i.methodName)
-        viewState.showToast(error.toString().substringAfter(':'))
+    private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
+        when(error)
+        {
+            is WrongDataException ->{
+                viewState.showToast(error.toString().substringAfter(':'))
+            }
+            else ->{
+                Log.d("ExceptionHandler@", error.toString())
+                Log.d("ExceptionHandler@","StackTrace@", error)
+            }
+        }
     })
 
 
@@ -253,7 +261,6 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     @SuppressLint(value = ["StaticFieldLeak"])
     fun onLoadSavedInstance()
     {
-        Log.d("dbTrace@","start load db")
         object : AsyncTask<Void, Void, List<PolynomialGroup>>()
         {
 
@@ -264,8 +271,6 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
 
             override fun onPostExecute(result: List<PolynomialGroup>?)
             {
-                Log.d("dbTrace@","show loaded db")
-                for(i in result!!) Log.d("dbTrace@", i.polLeftPolynomial.toString())
                 viewState.setRecyclerViewList(ArrayList(result))
             }
         }.execute()
@@ -281,14 +286,12 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
             //если включена запись в бд
             if (mSettingsModel.getPolinomConsistens())
             {
-                Log.d("dbTrace@","add to db")
                 //записываем в бд
                 mPolynomialDataBaseModel.insert(result)
 
             }
             else
             {
-                Log.d("dbTrace@","add to cache")
                 //пишем в сache бд
                 mPolynomialDataBaseModel.addToCache(result)
 

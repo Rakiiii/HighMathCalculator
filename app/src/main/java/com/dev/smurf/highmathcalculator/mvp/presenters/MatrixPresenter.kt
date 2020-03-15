@@ -6,6 +6,7 @@ import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.dev.smurf.highmathcalculator.CalculatorApplication
+import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
@@ -48,15 +49,28 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     }
 
 
-    val supJob = SupervisorJob()
+    private val supJob = SupervisorJob()
 
     //корутин скоп для ui
-    val uiScope = CoroutineScope(Dispatchers.Main + supJob)
+    private val uiScope = CoroutineScope(Dispatchers.Main + supJob)
 
     //список работ
     lateinit var MainJob : Job
 
 
+
+    private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
+        when(error)
+        {
+            is WrongDataException->{
+                viewState.showToast(error.toString().substringAfter(':'))
+        }
+            else ->{
+                Log.d("ExceptionHandler@", error.toString())
+                Log.d("ExceptionHandler@","StackTrace@", error)
+            }
+        }
+    })
 
 
     /*
@@ -322,13 +336,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
         }.execute()
 
     }
-
-
-    val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
-        Log.d("ExceptionHandler@", error.toString())
-        viewState.showToast(error.toString().substringAfter(':'))
-    })
-
 
     fun checkImageMode() = mSettingsModel.getMatrixHolderConsistens()
 
