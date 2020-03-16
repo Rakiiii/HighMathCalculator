@@ -434,7 +434,7 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
     //check for fractions in cofs
     for (i in polynomialForRender)
     {
-        if (!i.second.im.isInt() && !i.second.re.isInt())
+        if (!i.second.im.isInt() || !i.second.re.isInt())
         {
             fractionFlag = true
             break
@@ -444,9 +444,9 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
 
     //vertical offset for symbols,signs and non fraction numbers
     val verticalOffset: Float = y +
-            if (fractionFlag) (CanvasRenderSpecification.getLetterHigh(mPaint) +
+            if (fractionFlag) (2*CanvasRenderSpecification.getLetterHigh(mPaint) +
                     CanvasRenderSpecification.getVerticalSpaceSize(mPaint) +
-                    CanvasRenderSpecification.getLineWidth(mPaint)) / 2
+                    CanvasRenderSpecification.getLineWidth(mPaint))/2
             else CanvasRenderSpecification.getLetterHigh(mPaint) / 2
 
     //horizontal offset for render those element
@@ -462,13 +462,13 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
     for (i in polynomialForRender)
     {
         //count itteration
-        itterationCounter ++
+        itterationCounter++
 
         //if cof before is 0 we dont need to draw it
         if (!i.second.equals(0))
         {
             //count rendered cof
-            renderedCounter ++
+            renderedCounter++
 
             //if cof contains fraction we dont need any vertical offset
             if (i.second.containsFractions())
@@ -477,9 +477,8 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
             }
             else
             {
-                //todo::think about this construction
                 //if cofs dont contains fraction we need counted vertical offset
-                this.drawComplex(i.second, horizontalOffset, y/*verticalOffset*/, mPaint)
+                this.drawComplex(i.second, horizontalOffset, verticalOffset / 4, mPaint)
             }
 
             //update horizontal offset to the left of rendered cof
@@ -487,7 +486,8 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
             horizontalOffset += mPaint.getComplexNumberWidth(i.second)
 
             //init text for render after cof
-            val text = i.first + if (i != polynomialForRender.last()) "+" else ""
+
+            val text = i.first + if (i == polynomialForRender.last() || (i.second.isBelowZero())) "" else "+"
 
             //draw text it self
             this.drawText(text, horizontalOffset, verticalOffset + 4.0f, mPaint)
@@ -501,7 +501,7 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
             //sum symbols length,get length of symbols and update horizontal offset to the left of symbols
             horizontalOffset += arr.sum()
         }
-        if(itterationCounter == polynomialForRender.size && renderedCounter == 0)
+        if (itterationCounter == polynomialForRender.size && renderedCounter == 0)
         {
             //init text for render after cof
             val text = "0"

@@ -22,6 +22,7 @@ fun ArrayList<Pair<Int, ComplexNumber>>.plusToCof( degree: Int , value : Complex
     {
         this.add( Pair(degree,value) )
         this.sortBy { s -> s.first }
+        this.reverse()
     }
 }
 
@@ -36,5 +37,6 @@ fun ArrayList<Pair<Int, ComplexNumber>>.minusToCof( degree: Int , value : Comple
     {
         this.add( Pair( degree , value * (-1) ) )
         this.sortBy { s -> s.first }
+        this.reverse()
     }
 }

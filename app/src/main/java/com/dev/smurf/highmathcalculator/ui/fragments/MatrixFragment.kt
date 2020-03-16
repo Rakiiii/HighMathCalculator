@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -224,18 +223,12 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
     override fun showToast(obj: String)
     {
         Toasts.add(obj)
-        //this.context!!.toast(obj)
     }
 
     fun setImageAdapter()
     {
         matrixRecyclerImageAdapter.setList(matrixRecyclerTextAdapter.getList().clone() as ArrayList<MatrixGroup>)
-        //matrixRecycler.adapter = null
-        //matrixRecycler.layoutManager = null
-        //matrixRecycler.recycledViewPool.clear()
         matrixRecycler.swapAdapter(matrixRecyclerImageAdapter , true)
-        //matrixRecycler.layoutManager = matrixRecyclerLayoutManager
-        //matrixRecycler.adapter = matrixRecyclerImageAdapter
         matrixRecyclerImageAdapter.notifyDataSetChanged()
     }
 
@@ -262,8 +255,6 @@ class MatrixFragment : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.
 
                     val position = viewHolder.adapterPosition
                     val item = matrixRecyclerImageAdapter.getData(position)
-
-                    Log.d("pos@" , position.toString())
 
                     matrixRecyclerImageAdapter.removeElement(position)
 

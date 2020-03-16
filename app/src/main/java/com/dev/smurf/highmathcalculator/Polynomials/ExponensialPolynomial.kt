@@ -16,6 +16,7 @@ class ExponensialPolynomial : PolynomialBase
 
     constructor( arr : ArrayList<Pair<Int, ComplexNumber>>) { polynomial = arr }
 
+    //todo:: rework constructor
     constructor(str : String)
     {
         polynomial = arrayListOf()
@@ -23,53 +24,52 @@ class ExponensialPolynomial : PolynomialBase
         //change small degree numbers to normal numbers
         //remove extra spaces
         //replace pluses with spaces
-        var pol = str.degreesToNormalForm().filter { s -> ( s != ' ' ) }.removePluses()
+        val pol = str.degreesToNormalForm().filter { s -> ( s != ' ' ) }.removePluses().fields(" ")
 
-        Log.d("checkPolynomialAfter@",pol)
-        Log.d("checkPolynomialBefore@",str)
-
-        //for amount cofs in polynomial
-        for(i in 0 until pol.amountOfCofsInPolinom())
+        for(i in 0 until pol.size)
         {
-            //get value of cof in polynomial
-            var value = pol.substringBefore(' ').substringBefore('^').substringBeforeSymbol()
+                //get value of cof in polynomial
+                var value = pol[i].substringBefore('^').substringBeforeSymbol()
 
-            //get degree of cof in polynomial
-            var exp = pol.substringBefore(' ').substringAfterSymbol().substringAfter('^')
+                //get degree of cof in polynomial
+                var exp = pol[i].substringAfterSymbol().substringAfter('^')
 
-            //if something wrong
-            when
-            {
-                //if degree of cof is 0
-                value == "" && exp == "" ->
+                //if something wrong
+                when
                 {
-                    value = pol.substringBefore(' ')
+                    //if degree of cof is 0
+                    value == "" && exp == "" ->
+                    {
+                        value = pol[i]
 
+                        exp = "0"
+                    }
+                    //if cof before degree equals 1
+                    value == "" ->
+                    {
+                        value = "1"
+                    }
+                    //if degree is in reconaizable
+                    exp == "" ->
+                    {
+                        exp = "0"
+                    }
+                }
+
+                if(!pol[i].contains("^"))
+                {
                     exp = "0"
                 }
-                //if cof before degree equals 1
-                value == "" ->
-                {
-                    value = "1"
-                }
-                //if degree is in reconaizable
-                exp == "" ->
-                {
-                    exp = "0"
-                }
-            }
+                //add cof to polynomial
+                polynomial.plusToCof(exp.toInt() , value.toComplex())
 
-            //add cof to polynomial
-            polynomial.plusToCof(exp.toInt() , value.toComplex())
-
-            pol = pol.substringAfter(' ')
         }
-
         polynomial.sortBy { s -> s.first }
+        polynomial.reverse()
     }
 
     //contains polynomial in form degree : cof where degree is int and cof is complex number
-    private lateinit var polynomial : ArrayList<Pair<Int,ComplexNumber>>
+    private var polynomial : ArrayList<Pair<Int,ComplexNumber>>
 
     //returns polynomials degree
     override fun degree() = polynomial.size
@@ -81,7 +81,7 @@ class ExponensialPolynomial : PolynomialBase
 
         for(i in polynomial)
         {
-            copy.polynomial.plus(Pair(i.first,i.second.Copy()))
+            copy.polynomial.add(Pair(i.first,i.second.Copy()))
         }
 
         return copy
@@ -105,6 +105,7 @@ class ExponensialPolynomial : PolynomialBase
             //if right operand is exponesial polynomial
             is ExponensialPolynomial ->
             {
+                Log.d("plus@" , "start plussing")
                 //plus all degrees of right operand to left operand
                 for( i in obj.polynomial)
                 {
@@ -249,7 +250,8 @@ class ExponensialPolynomial : PolynomialBase
 
         for(i in polynomial)
         {
-            renderFormat.add( Pair( defaultSymbol + "^" + i.first.toString().toDegree() , i.second))
+            if (i.first != 0) renderFormat.add( Pair( defaultSymbol + "^" + i.first.toString().toDegree() , i.second))
+            else renderFormat.add( Pair( "" , i.second))
         }
 
         return renderFormat

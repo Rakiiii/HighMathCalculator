@@ -29,9 +29,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_polinom.*
 import org.jetbrains.anko.toast
 
-//TODO: добавить созранение в базу данных
-
-
 class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface
 {
 
@@ -159,10 +156,6 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface
         {
             listener = context
         }
-        else
-        {
-            //throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-        }
     }
 
     override fun onDetach()
@@ -174,7 +167,6 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface
 
     interface OnFragmentInteractionListener
     {
-        // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
 

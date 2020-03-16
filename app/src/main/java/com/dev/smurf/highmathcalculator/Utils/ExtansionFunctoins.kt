@@ -375,6 +375,43 @@ fun String.substringAfterSymbolIncluded() : String
     return this
 }
 
+//returns MuableList of strings get from separation of string by str
+fun String.fields(breakString : String) : MutableList<String>
+{
+    val result = mutableListOf<String>()
+
+    var str = this
+
+    if(!str.contains(breakString) )
+    {
+        result.add(str.substringBefore(breakString))
+
+        return result
+    }
+    do
+    {
+        result.add(str.substringBefore(breakString))
+        str = str.substringAfter(breakString)
+    }while (str.contains(breakString))
+
+    result.add(str.substringBefore(breakString))
+
+    return result
+}
+
+//returns strings where oldStr symbols was changed by newStr
+fun String.changeChar(oldChar : Char , newChar : Char) : String
+{
+    var result = ""
+
+    for(i in this)
+    {
+        result += if(i == oldChar)newChar else i
+    }
+
+    return result
+}
+
 
 
 

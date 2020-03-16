@@ -151,6 +151,8 @@ class ComplexNumber( _re : Fraction = Fraction(),_im : Fraction = Fraction())
         return result
     }
 
+    fun isBelowZero() = (re.upper < 0 && isReal())
+
     fun Copy() : ComplexNumber
     {
         return ComplexNumber( _re = re.Copy(),_im = im.Copy())

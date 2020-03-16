@@ -3,37 +3,29 @@ package com.dev.smurf.highmathcalculator.ui.fragments
 //import androidx.core.app.Fragment
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.arellomobile.mvp.presenter.InjectPresenter
-import com.dev.smurf.highmathcalculator.Polynomials.PolynomialFactory
 import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.Utils.CanvasRenderSpecification
-import com.dev.smurf.highmathcalculator.Utils.drawPolynomial
-import com.dev.smurf.highmathcalculator.Utils.getPolynomialHigh
-import com.dev.smurf.highmathcalculator.Utils.getPolynomialWidth
 import com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.MvpAppCompatFragment
 import com.dev.smurf.highmathcalculator.mvp.presenters.SettingsPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.SettingsViewInterface
 import kotlinx.android.synthetic.main.fragment_setting.*
 
 
-class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
+class SettingFragment : MvpAppCompatFragment(), SettingsViewInterface
 {
 
     /*
      * состояние свитчей на момент запуска фрагмента
      */
 
-    var matrixSwitchPreviousConsistent : Boolean = false
-    var polinomSwitchPreviousConsistent : Boolean = false
-    var matrixSwitchHolderMode : Boolean = false
+    var matrixSwitchPreviousConsistent: Boolean = false
+    var polinomSwitchPreviousConsistent: Boolean = false
+    var matrixSwitchHolderMode: Boolean = false
 
 
     //вставляем презентер
@@ -42,8 +34,6 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
 
 
     private var listener: OnFragmentInteractionListener? = null
-
-
 
 
     override fun onCreateView(
@@ -55,7 +45,8 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
         return inflater.inflate(R.layout.fragment_setting, container, false)
     }
 
-    override fun onStart() {
+    override fun onStart()
+    {
         super.onStart()
 
         //загружаем состояние настроек
@@ -67,17 +58,17 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
 
 
         swtchMatrixMode.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked)mSettingsPresenter.matrixModeSetOn()
+            if (isChecked) mSettingsPresenter.matrixModeSetOn()
             else mSettingsPresenter.matrixModeSetOff()
         }
 
         swtchPolinomMode.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked)mSettingsPresenter.polinomModeSetOn()
+            if (isChecked) mSettingsPresenter.polinomModeSetOn()
             else mSettingsPresenter.polinomModeSetOff()
         }
 
         swtchMatrixHolderMode.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked)mSettingsPresenter.holderImageModeSetOn()
+            if (isChecked) mSettingsPresenter.holderImageModeSetOn()
             else mSettingsPresenter.holderImageModeSetOff()
         }
 
@@ -92,16 +83,21 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
     }
 
 
-    override fun onAttach(context: Context) {
+    override fun onAttach(context: Context)
+    {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
+        if (context is OnFragmentInteractionListener)
+        {
             listener = context
-        } else {
+        }
+        else
+        {
             //throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
         }
     }
 
-    override fun onDetach() {
+    override fun onDetach()
+    {
         super.onDetach()
         listener = null
     }
@@ -110,33 +106,21 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
     {
         super.onPause()
 
-        if(matrixSwitchPreviousConsistent != swtchMatrixMode.isChecked && swtchMatrixMode.isChecked)
+        if (matrixSwitchPreviousConsistent != swtchMatrixMode.isChecked && swtchMatrixMode.isChecked)
         {
             mSettingsPresenter.saveMatrixCache()
         }
-        if(polinomSwitchPreviousConsistent != swtchPolinomMode.isChecked && swtchPolinomMode.isChecked)
+        if (polinomSwitchPreviousConsistent != swtchPolinomMode.isChecked && swtchPolinomMode.isChecked)
         {
             mSettingsPresenter.savePolinomCache()
         }
 
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+    interface OnFragmentInteractionListener
+    {
         fun onFragmentInteraction(uri: Uri)
     }
-
 
 
     override fun setMatrixModeOff()
@@ -170,30 +154,5 @@ class SettingFragment : MvpAppCompatFragment() , SettingsViewInterface
     }
 
 
-    fun testPolDrawing()
-    {
-        val polynomialFactory = PolynomialFactory()
-        var polynomial = polynomialFactory.createPolynomial("4x+6y")
-        var blackPainter = CanvasRenderSpecification.createBlackPainter()
-
-        val leftBitmap = Bitmap.createBitmap(
-            blackPainter.getPolynomialWidth(polynomial).toInt(),
-            blackPainter.getPolynomialHigh(polynomial).toInt(),
-            Bitmap.Config.ARGB_8888
-        )
-
-        val canvas = Canvas(leftBitmap)
-
-            Log.d("polynomial@", "left polynomial render as polynomial")
-            Log.d("polynomial@afterDraw@" ,canvas.drawPolynomial(
-                polynomial, CanvasRenderSpecification.x,
-                CanvasRenderSpecification.y,
-                blackPainter
-            ).first.toString())
-
-        testIm.setImageBitmap(leftBitmap)
-    }
-
-        //testPolynomial.imageBitmap = leftBitmap
-    }
+}
 
