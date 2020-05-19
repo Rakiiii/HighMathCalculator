@@ -1,4 +1,4 @@
-package com.dev.smurf.highmathcalculator.Utils
+package com.dev.smurf.highmathcalculator.CanvasExtension
 
 import android.graphics.Color
 import android.graphics.Paint
@@ -22,6 +22,9 @@ class CanvasRenderSpecification
 
         val defspaceSize = 5.0f
 
+        val PolynomialTopMargin = 6.0f
+        val PolynomialBottomMargin = 6.0f
+
         fun createBlackPainter() : Paint
         {
             val blackPainter = Paint(Color.BLACK)
@@ -29,9 +32,11 @@ class CanvasRenderSpecification
             blackPainter.typeface = Typeface.SERIF
 
 
-            blackPainter.textSize = textSize
+            blackPainter.textSize =
+                textSize
 
-            blackPainter.strokeWidth = strokeWidth
+            blackPainter.strokeWidth =
+                strokeWidth
 
             return blackPainter
         }
@@ -43,7 +48,9 @@ class CanvasRenderSpecification
 
         fun getVerticalSpaceSize(mPaint : Paint) : Float
         {
-            return this.getLetterHigh(mPaint)/2
+            return getLetterHigh(
+                mPaint
+            ) /2
         }
 
         fun getHorizontalSpaceSize(mPaint: Paint) : Float

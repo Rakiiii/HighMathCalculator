@@ -6,7 +6,7 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.View
 import com.dev.smurf.highmathcalculator.Numbers.isOdd
-import com.dev.smurf.highmathcalculator.Utils.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.Utils.NumberRepresenter
 
 open class BackgroundMatrixView : View

@@ -30,17 +30,14 @@
 
             <ImageView
                     android:id="@+id/leftPolynomialIM"
-                    android:layout_marginTop="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:layout_rowWeight="18"
-                    android:background="@drawable/button_shape"
             />
 
             <ImageView
                     android:id="@+id/operationSignPolynomialIM"
-                    android:layout_marginTop="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
@@ -50,7 +47,6 @@
 
             <ImageView
                     android:id="@+id/rightPolynomialIM"
-                    android:layout_marginTop="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
@@ -65,7 +61,6 @@
 
             <ImageView
                     android:id="@+id/resultPolynomialIM"
-                    android:layout_marginTop="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
@@ -74,7 +69,6 @@
 
             <ImageView
                     android:id="@+id/remainderPolynomialIM"
-                    android:layout_marginTop="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"

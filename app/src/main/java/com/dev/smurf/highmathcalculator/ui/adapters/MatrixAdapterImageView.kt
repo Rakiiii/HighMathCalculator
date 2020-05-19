@@ -12,6 +12,10 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawComplex
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInBrackets
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInLines
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.Utils.*
 import com.example.smurf.mtarixcalc.MatrixGroup

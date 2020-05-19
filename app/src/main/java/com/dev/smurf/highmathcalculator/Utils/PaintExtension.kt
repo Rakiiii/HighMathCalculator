@@ -1,6 +1,8 @@
 package com.dev.smurf.highmathcalculator.Utils
 
 import android.graphics.Paint
+import android.graphics.Rect
+import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
@@ -237,10 +239,14 @@ fun Paint.getPolynomialHigh(polynomial: PolynomialBase): Float
 {
     for (i in polynomial.renderFormat())
     {
-        if (i.second.containsFractions()) return 2 * CanvasRenderSpecification.getLetterHigh(this) + 2 * CanvasRenderSpecification.getVerticalSpaceSize(
+        if (i.second.containsFractions()) return  CanvasRenderSpecification.getLetterHigh(this) + 2 * CanvasRenderSpecification.getVerticalSpaceSize(
             this
         ) + CanvasRenderSpecification.getLineWidth(this)
     }
 
-    return CanvasRenderSpecification.getLetterHigh(this)
+    val textRect = Rect()
+    this.getTextBounds(polynomial.renderFormat()[0].first,0,polynomial.renderFormat()[0].first.length,textRect)
+
+    return 2*textRect.height().toFloat() + CanvasRenderSpecification.PolynomialBottomMargin + CanvasRenderSpecification.PolynomialTopMargin
+    //return CanvasRenderSpecification.getLetterHigh(this)
 }
