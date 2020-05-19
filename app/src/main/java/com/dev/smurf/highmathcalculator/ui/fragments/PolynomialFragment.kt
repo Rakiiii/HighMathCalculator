@@ -14,9 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arellomobile.mvp.presenter.InjectPresenter
 import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.MvpAppCompatFragment
 import com.dev.smurf.highmathcalculator.mvp.presenters.PolynomialPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
@@ -27,6 +25,8 @@ import com.example.smurf.mtarixcalc.PolynomialTxtAdapter
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_polinom.*
+import moxy.MvpAppCompatFragment
+import moxy.presenter.InjectPresenter
 import org.jetbrains.anko.toast
 
 class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface

@@ -45,7 +45,7 @@ fun Canvas.drawFraction(fraction: Fraction, x: Float, y: Float, mPaint: Paint): 
         fraction.isBeloweZero() ->
         {
             //Drawing minus
-            val minusVerticalPozition = y + high + letterVerticalSpacing
+            val minusVerticalPozition = y + high + letterVerticalSpacing*3
             this.drawText("-", x + horizontalOffset, minusVerticalPozition, mPaint)
 
             //getting width of minus in setted offset
@@ -53,7 +53,7 @@ fun Canvas.drawFraction(fraction: Fraction, x: Float, y: Float, mPaint: Paint): 
             mPaint.getTextWidths("-", arr)
 
             //increment horizontal offset on minus size
-            horizontalOffset += arr[0]
+            horizontalOffset += arr[0]+CanvasRenderSpecification.defspaceSize
         }
     }
 
@@ -444,10 +444,10 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
 
     //vertical offset for symbols,signs and non fraction numbers
     val verticalOffset: Float = y +
-            if (fractionFlag) (2*CanvasRenderSpecification.getLetterHigh(mPaint) +
+            if (fractionFlag) (2 * CanvasRenderSpecification.getLetterHigh(mPaint) +
                     CanvasRenderSpecification.getVerticalSpaceSize(mPaint) +
-                    CanvasRenderSpecification.getLineWidth(mPaint))/2
-            else CanvasRenderSpecification.getLetterHigh(mPaint) / 2
+                    CanvasRenderSpecification.getLineWidth(mPaint)) / 2
+            else 0.0f//CanvasRenderSpecification.getLetterHigh(mPaint) / 2
 
     //horizontal offset for render those element
     var horizontalOffset = x
@@ -473,12 +473,12 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
             //if cof contains fraction we dont need any vertical offset
             if (i.second.containsFractions())
             {
-                this.drawComplex(i.second, horizontalOffset, y, mPaint)
+                this.drawComplex(i.second, horizontalOffset, y + CanvasRenderSpecification.getLetterHigh(mPaint)/2 + letterVerticalSpacing, mPaint)
             }
             else
             {
                 //if cofs dont contains fraction we need counted vertical offset
-                this.drawComplex(i.second, horizontalOffset, verticalOffset / 4, mPaint)
+                this.drawComplex(i.second, horizontalOffset, verticalOffset, mPaint)
             }
 
             //update horizontal offset to the left of rendered cof
@@ -490,7 +490,7 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
             val text = i.first + if (i == polynomialForRender.last() || (i.second.isBelowZero())) "" else "+"
 
             //draw text it self
-            this.drawText(text, horizontalOffset, verticalOffset + 4.0f, mPaint)
+            this.drawText(text, horizontalOffset, verticalOffset + CanvasRenderSpecification.getLetterHigh(mPaint)/2, mPaint)
 
             //calculate horizontal offset
             //we need an array if size word to get length of all symbols in the word
@@ -501,23 +501,24 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
             //sum symbols length,get length of symbols and update horizontal offset to the left of symbols
             horizontalOffset += arr.sum()
         }
-        if (itterationCounter == polynomialForRender.size && renderedCounter == 0)
-        {
-            //init text for render after cof
-            val text = "0"
+    }
 
-            //draw text it self
-            this.drawText(text, horizontalOffset, verticalOffset + 4.0f, mPaint)
+    if (itterationCounter == polynomialForRender.size && renderedCounter == 0)
+    {
+        //init text for render after cof
+        val text = "0"
 
-            //calculate horizontal offset
-            //we need an array if size word to get length of all symbols in the word
-            val arr = FloatArray(text.length)
-            //get length of symbols it self
-            mPaint.getTextWidths(text, arr)
+        //draw text it self
+        this.drawText(text, horizontalOffset, verticalOffset + 4.0f, mPaint)
 
-            //sum symbols length,get length of symbols and update horizontal offset to the left of symbols
-            horizontalOffset += arr.sum()
-        }
+        //calculate horizontal offset
+        //we need an array if size word to get length of all symbols in the word
+        val arr = FloatArray(text.length)
+        //get length of symbols it self
+        mPaint.getTextWidths(text, arr)
+
+        //sum symbols length,get length of symbols and update horizontal offset to the left of symbols
+        horizontalOffset += arr.sum()
     }
 
     //returns offset pair

@@ -2,6 +2,7 @@ package com.dev.smurf.highmathcalculator.Utils
 
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
 
 class CanvasRenderSpecification
 {
@@ -19,9 +20,13 @@ class CanvasRenderSpecification
 
         val strokeWidth = 5.0f
 
+        val defspaceSize = 5.0f
+
         fun createBlackPainter() : Paint
         {
             val blackPainter = Paint(Color.BLACK)
+
+            blackPainter.typeface = Typeface.SERIF
 
 
             blackPainter.textSize = textSize

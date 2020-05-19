@@ -40,6 +40,11 @@
                         </option>
                         <option name="myPositions">
                           <map>
+                            <entry key="action_polinomFragment_to_matrixFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_polinomFragment_to_settingFragment">
                               <value>
                                 <LayoutPositions />

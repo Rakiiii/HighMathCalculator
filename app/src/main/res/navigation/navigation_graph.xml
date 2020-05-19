@@ -7,12 +7,15 @@
     <fragment android:id="@+id/matrixFragment"
               android:name="com.dev.smurf.highmathcalculator.ui.fragments.MatrixFragment"
               android:label="fragment_matrix" tools:layout="@layout/fragment_matrix">
-        <action android:id="@+id/action_matrixFragment_to_polinomFragment" app:destination="@id/polinomFragment"/>
+        <action android:id="@+id/action_matrixFragment_to_polinomFragment" app:destination="@id/polinomFragment"
+        />
     </fragment>
     <fragment android:id="@+id/polinomFragment"
               android:name="com.dev.smurf.highmathcalculator.ui.fragments.PolynomialFragment"
               android:label="fragment_polinom" tools:layout="@layout/fragment_polinom">
         <action android:id="@+id/action_polinomFragment_to_settingFragment" app:destination="@id/settingFragment"/>
+        <action android:id="@+id/action_polinomFragment_to_matrixFragment" app:destination="@id/matrixFragment"
+        />
     </fragment>
     <fragment android:id="@+id/settingFragment"
               android:name="com.dev.smurf.highmathcalculator.ui.fragments.SettingFragment"

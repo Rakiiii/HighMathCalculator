@@ -16,28 +16,25 @@
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            <EditText
-                    android:id="@+id/edttxtSearch"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="7dp"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-
-                    android:background="@drawable/search_edittext_shape"
-                    android:paddingStart="15dp"
-
-                    android:hint="@string/search"/>
+                android:orientation="vertical"
+                android:layout_marginTop="72dp"
+        >
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
-                    android:background="@color/dark">
+                    android:background="@drawable/rect_white"
+                    android:elevation="8dp"
+
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginBottom="6dp"
+                    >
 
                 <LinearLayout
                         android:id="@+id/firstPolinomLayout"
@@ -97,10 +94,13 @@
                         android:layout_marginTop="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="6dp"
 
                         app:layout_constraintTop_toBottomOf="@id/secondPolinom"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent">
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        >
 
                     <Button
                             style="@style/btnStyle"
@@ -128,15 +128,6 @@
                             android:text="@string/btnDivision"/>
 
                 </GridLayout>
-
-
-                <View
-                        android:layout_width="match_parent"
-                        android:layout_height="15dp"
-                        android:background="@color/dark"
-
-                        app:layout_constraintTop_toBottomOf="@id/gridBtn"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

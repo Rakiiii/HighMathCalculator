@@ -1,22 +1,18 @@
 package com.dev.smurf.highmathcalculator
 
-//import android.support.design.widget.NavigationView
-//import com.google.android.material.navigation.NavigationView
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.arellomobile.mvp.presenter.InjectPresenter
 import com.dev.smurf.highmathcalculator.mvp.presenters.MainPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import moxy.MvpAppCompatActivity
+import moxy.presenter.InjectPresenter
 
 
-
-class MainActivity : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.MvpAppCompatActivity(), MainViewInterface {
+class MainActivity : MvpAppCompatActivity(), MainViewInterface {
 
     //добовляем mainPresenter
     @InjectPresenter
@@ -40,6 +36,7 @@ class MainActivity : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.Mv
 
         supportActionBar?.hide()
 
+        /*
         bottomNavView.setOnNavigationItemSelectedListener (object : BottomNavigationView.OnNavigationItemSelectedListener{
             override fun onNavigationItemSelected(item: MenuItem): Boolean
             {
@@ -65,8 +62,21 @@ class MainActivity : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.Mv
                     else ->return false
                 }
             }
-        })
+        })*/
+        bottomNavView.setNavigationChangeListener{ view, position ->
+            when( position){
+                0->{
+                    mMainPresenter.setMatrixFragment()
+                }
+                1->{
+                    mMainPresenter.setPolinonFragment()
+                }
+            }
+        }
 
+        settingsButton.setOnClickListener {
+            mMainPresenter.setSettingsFragment()
+        }
 
     }
 
@@ -76,13 +86,15 @@ class MainActivity : com.dev.smurf.highmathcalculator.moxyTmpAMdroisdXSupport.Mv
     //Установка фрагмента с матрицами
     override fun setMatrixFragment()
     {
-        mNavigationController.navigate(R.id.matrixFragment)
+        //mNavigationController.navigate(R.id.matrixFragment)
+        mNavigationController.navigate(R.id.action_polinomFragment_to_matrixFragment)
     }
 
     //установка фрагмента с полиномами
     override fun setPolinomFragment()
     {
-        mNavigationController.navigate(R.id.polinomFragment)
+        //mNavigationController.navigate(R.id.polinomFragment)
+        mNavigationController.navigate(R.id.action_matrixFragment_to_polinomFragment)
 
     }
 

@@ -1,9 +1,10 @@
 package com.dev.smurf.highmathcalculator.mvp.views
 
-import com.arellomobile.mvp.MvpView
-import com.arellomobile.mvp.viewstate.strategy.SkipStrategy
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
+
 import com.example.smurf.mtarixcalc.PolynomialGroup
+import moxy.MvpView
+import moxy.viewstate.strategy.SkipStrategy
+import moxy.viewstate.strategy.StateStrategyType
 
 @StateStrategyType(value = SkipStrategy::class)
 interface PolynomialViewInterface : MvpView

@@ -7,18 +7,78 @@
         style="@style/frameLayoutStyle"
         android:id="@+id/fragmentFrame">
 
-    <RelativeLayout
+<RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout
+            android:id="@+id/navLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginBottom="18dp"
+            android:background="@drawable/rect_white"
+            android:elevation="8dp"
+            android:padding="3dp"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal"
+    >
+
+        <com.gauravk.bubblenavigation.BubbleNavigationLinearView
+                android:id="@+id/bottomNavView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:bnc_mode="packed"
+                android:gravity="center_horizontal"
+                android:layout_marginStart="60dp"
+                android:layout_gravity="center_horizontal"
+
+        >
+            <com.gauravk.bubblenavigation.BubbleToggleView
+                    android:layout_marginStart="40dp"
+                    android:id="@+id/item_matrix"
+                    android:layout_width="wrap_content"
+                    android:layout_height = "wrap_content"
+                    app:bt_active="true"
+                    app:bt_colorActive="@color/white"
+                    app:bt_colorInactive="@color/dark"
+                    app:bt_icon="@drawable/ic_grid_on_black_24dp"/>
+            <com.gauravk.bubblenavigation.BubbleToggleView
+                    android:id="@+id/item_polinom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bt_active="false"
+                    app:bt_colorActive="@color/white"
+                    app:bt_colorInactive="@color/dark"
+                    app:bt_icon="@drawable/ic_expand_less_black_24dp"/>
 
 
+        </com.gauravk.bubblenavigation.BubbleNavigationLinearView>
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/settingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_settings_black_24dp"
+            android:drawableTint="@color/darker_gray"
+            android:background="@drawable/rect_white"
+            android:gravity="end"
+            android:layout_gravity="end"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="10dp"
+            style="@style/Widget.AppCompat.Button.Borderless"
+    />
+    </LinearLayout>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:id="@+id/fragmentWrapperLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_above="@id/bottomNavView"
-                android:layout_alignParentTop="true">
+                android:layout_below="@id/navLinearLayout"
+                android:layout_alignParentTop="true"
+                >
 
             <fragment
                     android:id="@+id/nav_host_fragment"
@@ -29,18 +89,6 @@
                     app:navGraph="@navigation/navigation_graph"/>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:id="@+id/bottomNavView"
-                android:layout_gravity="bottom"
-                android:background="@color/dark"
-                app:itemIconTint="@color/nav_bottom_background_selector"
-                app:itemTextColor="@color/nav_bottom_background_selector"
-                app:menu="@menu/main_menu"
-                android:layout_alignParentBottom="true"/>
 
     </RelativeLayout>
 

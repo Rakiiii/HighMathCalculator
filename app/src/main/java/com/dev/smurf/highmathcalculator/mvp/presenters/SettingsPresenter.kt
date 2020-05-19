@@ -1,12 +1,12 @@
 package com.dev.smurf.highmathcalculator.mvp.presenters
 
-import com.arellomobile.mvp.InjectViewState
-import com.arellomobile.mvp.MvpPresenter
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialDataBaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.SettingsViewInterface
+import moxy.InjectViewState
+import moxy.MvpPresenter
 import org.jetbrains.anko.doAsync
 import javax.inject.Inject
 
