@@ -5,13 +5,13 @@
             app:startDestination="@id/matrixFragment">
 
     <fragment android:id="@+id/matrixFragment"
-              android:name="com.dev.smurf.highmathcalculator.ui.fragments.MatrixFragment"
+              android:name="com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment.MatrixFragment"
               android:label="fragment_matrix" tools:layout="@layout/fragment_matrix">
         <action android:id="@+id/action_matrixFragment_to_polinomFragment" app:destination="@id/polinomFragment"
         />
     </fragment>
     <fragment android:id="@+id/polinomFragment"
-              android:name="com.dev.smurf.highmathcalculator.ui.fragments.PolynomialFragment"
+              android:name="com.dev.smurf.highmathcalculator.ui.fragments.polynomialFragment.PolynomialFragment"
               android:label="fragment_polinom" tools:layout="@layout/fragment_polinom">
         <action android:id="@+id/action_polinomFragment_to_matrixFragment" app:destination="@id/matrixFragment"
         />

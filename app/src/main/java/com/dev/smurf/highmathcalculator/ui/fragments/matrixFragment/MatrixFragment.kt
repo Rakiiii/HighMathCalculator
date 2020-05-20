@@ -1,4 +1,4 @@
-package com.dev.smurf.highmathcalculator.ui.fragments
+package com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment
 
 import android.content.Context
 import android.graphics.Color
@@ -20,6 +20,7 @@ import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapterImageView
+import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
 import com.example.smurf.mtarixcalc.MatrixGroup
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
@@ -30,26 +31,26 @@ import moxy.presenter.InjectPresenter
 import org.jetbrains.anko.toast
 
 
-class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
+class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
 {
     private var listener: OnFragmentInteractionListener? = null
 
-    private var loaded : Boolean = false
+    private var loaded: Boolean = false
 
     //buffer for toast, because amount off ui threads is finite
-    val Toasts = MutableList(0){""}
+    val Toasts = MutableList(0) { "" }
     val toastHandler = Handler()
 
     @InjectPresenter
     lateinit var mMatrixPresenter: MatrixPresenter
 
 
-    private lateinit var matrixRecycler : RecyclerView
-    private lateinit var matrixRecyclerLayoutManager : LinearLayoutManager
-    private lateinit var matrixRecyclerTextAdapter : MatrixAdapter
-    private lateinit var matrixRecyclerImageAdapter : MatrixAdapterImageView
+    private lateinit var matrixRecycler: RecyclerView
+    private lateinit var matrixRecyclerLayoutManager: LinearLayoutManager
+    private lateinit var matrixRecyclerTextAdapter: MatrixAdapter
+    private lateinit var matrixRecyclerImageAdapter: MatrixAdapterImageView
 
-    private lateinit var mMatrixRecyclerViewModel : MatrixRecyclerViewModel
+    private lateinit var mMatrixRecyclerViewModel: MatrixRecyclerViewModel
 
     private lateinit var mMatrixEdittextViewModel: EditTextViewModel
 
@@ -73,7 +74,8 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
         mMatrixRecyclerViewModel = ViewModelProviders.of(this.activity!!).get(MatrixRecyclerViewModel::class.java)
 
         //инициализация view model для содержимого edittext
-        mMatrixEdittextViewModel = ViewModelProviders.of(activity as FragmentActivity).get(EditTextViewModel::class.java)
+        mMatrixEdittextViewModel =
+            ViewModelProviders.of(activity as FragmentActivity).get(EditTextViewModel::class.java)
 
         //инициализация recycler view
         initRecyclerView()
@@ -111,8 +113,7 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
         btnInvers.setOnClickListener { v -> mMatrixPresenter.onInversClick(firstMatrix.text.toString()) }
 
         //слушатель для поиска определителя пераой матрицы
-        btnDeterminant.setOnClickListener {
-                v -> mMatrixPresenter.onDeterminantClick(firstMatrix.text.toString()) }
+        btnDeterminant.setOnClickListener { v -> mMatrixPresenter.onDeterminantClick(firstMatrix.text.toString()) }
 
         btnSwap.setOnClickListener {
             val tmp = firstMatrix.text
@@ -121,12 +122,12 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
         }
 
         //востонавливаемся из view model
-        if(!mMatrixRecyclerViewModel.isEmpty())matrixRecyclerTextAdapter.setList(mMatrixRecyclerViewModel.getList().clone() as ArrayList<MatrixGroup>)
+        if (!mMatrixRecyclerViewModel.isEmpty()) matrixRecyclerTextAdapter.setList(mMatrixRecyclerViewModel.getList().clone() as ArrayList<MatrixGroup>)
 
         firstMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.firstValue)
         secondMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.secondValue)
 
-        if(!loaded)
+        if (!loaded)
         {
             mMatrixPresenter.onLoadSavedInstance()
             loaded = true
@@ -140,14 +141,9 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
     {
         super.onResume()
 
-        if(mMatrixPresenter.checkImageMode())
-        {
-            isImageAdapter = true
-            setImageAdapter()
-        }
+        updateSettings()
 
     }
-
 
 
     override fun onAttach(context: Context)
@@ -177,10 +173,11 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
     //утсановка нового списка элементов для recycler view
     override fun setRecyclerViewArrayList(ar: ArrayList<MatrixGroup>)
     {
-        if(!isImageAdapter)
+        if (!isImageAdapter)
         {
             matrixRecyclerTextAdapter.setList(ar.clone() as ArrayList<MatrixGroup>)
-        }else
+        }
+        else
         {
             matrixRecyclerImageAdapter.setList(ar.clone() as ArrayList<MatrixGroup>)
         }
@@ -199,11 +196,11 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
     {
         matrixRecyclerLayoutManager = LinearLayoutManager(context)
 
-        matrixRecyclerTextAdapter =  MatrixAdapter(context!! , firstMatrix , secondMatrix)
+        matrixRecyclerTextAdapter = MatrixAdapter(context!!, firstMatrix, secondMatrix)
 
-        matrixRecyclerImageAdapter = MatrixAdapterImageView(context!! , firstMatrix , secondMatrix)
+        matrixRecyclerImageAdapter = MatrixAdapterImageView(context!!, firstMatrix, secondMatrix)
 
-        matrixRecycler = view!!.findViewById( R.id.matrixRecycler)
+        matrixRecycler = view!!.findViewById(R.id.matrixRecycler)
 
         matrixRecycler.layoutManager = matrixRecyclerLayoutManager
 
@@ -213,11 +210,13 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
 
     override fun addToRecyclerView(obj: MatrixGroup)
     {
-        if(!isImageAdapter)
-        matrixRecyclerTextAdapter.addNewElem(
-            mMatrixRecyclerViewModel.add(obj))
+        if (!isImageAdapter)
+            matrixRecyclerTextAdapter.addNewElem(
+                mMatrixRecyclerViewModel.add(obj)
+            )
         else matrixRecyclerImageAdapter.addNewElem(
-            mMatrixRecyclerViewModel.add(obj))
+            mMatrixRecyclerViewModel.add(obj)
+        )
 
     }
 
@@ -229,7 +228,7 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
     fun setImageAdapter()
     {
         matrixRecyclerImageAdapter.setList(matrixRecyclerTextAdapter.getList().clone() as ArrayList<MatrixGroup>)
-        matrixRecycler.swapAdapter(matrixRecyclerImageAdapter , true)
+        matrixRecycler.swapAdapter(matrixRecyclerImageAdapter, true)
         matrixRecyclerImageAdapter.notifyDataSetChanged()
     }
 
@@ -238,9 +237,6 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
         matrixRecyclerTextAdapter.setList(matrixRecyclerImageAdapter.getList().clone() as ArrayList<MatrixGroup>)
         matrixRecycler.adapter = matrixRecyclerTextAdapter
     }
-
-
-
 
 
     private fun enableSwipeToDeleteAndUndo()
@@ -318,9 +314,9 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
 
     fun checkToast()
     {
-        if(Toasts.isNotEmpty())
+        if (Toasts.isNotEmpty())
         {
-            for(i in Toasts)
+            for (i in Toasts)
             {
                 this.context!!.toast(i)
             }
@@ -329,6 +325,23 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
 
         toastHandler.postDelayed({
             checkToast()
-        },2000)
+        }, 2000)
+    }
+
+    override fun updateSettings()
+    {
+        if (mMatrixPresenter.checkImageMode())
+        {
+            isImageAdapter = true
+            setImageAdapter()
+        }
+        else
+        {
+            if (isImageAdapter)
+            {
+                setTextAdapter()
+                isImageAdapter = false
+            }
+        }
     }
 }

@@ -1,8 +1,6 @@
-package com.dev.smurf.highmathcalculator.ui.fragments
+package com.dev.smurf.highmathcalculator.ui.fragments.polynomialFragment
 
-import android.content.Context
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableStringBuilder
@@ -19,6 +17,8 @@ import com.dev.smurf.highmathcalculator.mvp.presenters.PolynomialPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapterImageView
+import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
+import com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment.MatrixFragment
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import com.example.smurf.mtarixcalc.PolynomialRecyclerViewModel
 import com.example.smurf.mtarixcalc.PolynomialTxtAdapter
@@ -29,7 +29,7 @@ import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import org.jetbrains.anko.toast
 
-class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface
+class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Settingable
 {
 
     //buffer for toast, because amount off ui threads is finite
@@ -41,7 +41,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface
     lateinit var mPolynomialPresenter: PolynomialPresenter
 
 
-    private var listener: OnFragmentInteractionListener? = null
+    private var listener: MatrixFragment.OnFragmentInteractionListener? = null
 
     //recycler view для полиномов
     private lateinit var mPolinomRecyclerView: RecyclerView
@@ -131,12 +131,6 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface
         }
 
 
-        if (mPolynomialPresenter.checkImageMode())
-        {
-            setImageAdapter()
-            isImageViewHolder = true
-        }
-
         checkToast()
     }
 
@@ -149,13 +143,10 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface
         super.onStop()
     }
 
-    override fun onAttach(context: Context)
+    override fun onResume()
     {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener)
-        {
-            listener = context
-        }
+        super.onResume()
+        updateSettings()
     }
 
     override fun onDetach()
@@ -164,11 +155,6 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface
         listener = null
     }
 
-
-    interface OnFragmentInteractionListener
-    {
-        fun onFragmentInteraction(uri: Uri)
-    }
 
     fun initRecyclerView()
     {
@@ -316,6 +302,22 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface
         }, 2000)
     }
 
+    override fun updateSettings()
+    {
+        if (mPolynomialPresenter.checkImageMode())
+        {
+            setImageAdapter()
+            isImageViewHolder = true
+        }
+        else
+        {
+            if (isImageViewHolder)
+            {
+                setTxtAdapter()
+                isImageViewHolder = false
+            }
+        }
+    }
 }
 
 

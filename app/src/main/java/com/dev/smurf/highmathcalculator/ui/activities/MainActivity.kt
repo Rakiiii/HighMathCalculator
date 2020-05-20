@@ -7,7 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.dev.smurf.highmathcalculator.mvp.presenters.MainPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
-import com.dev.smurf.highmathcalculator.ui.fragments.SettingBottomSheetDialogFragment
+import com.dev.smurf.highmathcalculator.ui.fragments.settingsFragment.SettingBottomSheetDialogFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import moxy.MvpAppCompatActivity
 import moxy.presenter.InjectPresenter
@@ -22,7 +22,8 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface {
 
     private lateinit var mNavigationController : NavController
 
-    private val mSettingBottomSheetDialogFragment = SettingBottomSheetDialogFragment()
+    private val mSettingBottomSheetDialogFragment =
+        SettingBottomSheetDialogFragment()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {

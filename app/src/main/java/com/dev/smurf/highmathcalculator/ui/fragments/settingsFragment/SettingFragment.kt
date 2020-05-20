@@ -1,4 +1,4 @@
-package com.dev.smurf.highmathcalculator.ui.fragments
+package com.dev.smurf.highmathcalculator.ui.fragments.settingsFragment
 
 //import androidx.core.app.Fragment
 
