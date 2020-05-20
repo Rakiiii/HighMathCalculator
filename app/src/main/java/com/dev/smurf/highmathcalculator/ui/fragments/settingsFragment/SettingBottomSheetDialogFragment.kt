@@ -1,5 +1,6 @@
 package com.dev.smurf.highmathcalculator.ui.fragments.settingsFragment
 
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,6 +16,13 @@ import org.jetbrains.anko.support.v4.toast
 
 class SettingBottomSheetDialogFragment : MvpBottomSheetDialogFragment(), SettingsViewInterface
 {
+    interface onFragmentInteractionListener
+    {
+        fun updateSettings()
+    }
+
+    private lateinit var listener : onFragmentInteractionListener
+
     //вставляем презентер
     @InjectPresenter
     lateinit var mSettingsPresenter: SettingsPresenter
@@ -101,9 +109,13 @@ class SettingBottomSheetDialogFragment : MvpBottomSheetDialogFragment(), Setting
         mSettingsPresenter.settingsOpened()
     }
 
-    override fun onDetach()
+    override fun onAttach(context: Context)
     {
-        super.onDetach()
+        super.onAttach(context)
+        if( context is onFragmentInteractionListener)
+        {
+            listener = context
+        }
     }
 
 
@@ -139,6 +151,10 @@ class SettingBottomSheetDialogFragment : MvpBottomSheetDialogFragment(), Setting
 
     override fun dismissDialog()
     {
+        if(::listener.isInitialized)
+        {
+            listener.updateSettings()
+        }
         dismiss()
     }
 

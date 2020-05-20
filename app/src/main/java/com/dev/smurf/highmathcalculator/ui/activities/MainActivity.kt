@@ -3,26 +3,30 @@ package com.dev.smurf.highmathcalculator
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
 import com.dev.smurf.highmathcalculator.mvp.presenters.MainPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
+import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagerFragmentStateAdapter
+import com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment.MatrixFragment
+import com.dev.smurf.highmathcalculator.ui.fragments.polynomialFragment.PolynomialFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.settingsFragment.SettingBottomSheetDialogFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import moxy.MvpAppCompatActivity
 import moxy.presenter.InjectPresenter
 
 
-class MainActivity : MvpAppCompatActivity(), MainViewInterface {
+class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSheetDialogFragment.onFragmentInteractionListener{
 
     //добовляем mainPresenter
     @InjectPresenter
     lateinit var mMainPresenter : MainPresenter
 
 
-    private lateinit var mNavigationController : NavController
+    //private lateinit var mNavigationController : NavController
 
     private val mSettingBottomSheetDialogFragment =
         SettingBottomSheetDialogFragment()
+
+    private val mViewPagerFragmentStateAdapter = ViewPagerFragmentStateAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -35,9 +39,14 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface {
 
         //mNavigationController = Navigation.findNavController(this,R.id.nav_host_fragment)
 
+        mViewPagerFragmentStateAdapter.addNewFragment(MatrixFragment())
+        mViewPagerFragmentStateAdapter.addNewFragment(PolynomialFragment())
+
+        mainViewPager.adapter = mViewPagerFragmentStateAdapter
+
         supportActionBar?.hide()
 
-        bottomNavView.setNavigationChangeListener{ view, position ->
+        bottomNavView.setNavigationChangeListener{ _, position ->
             when( position){
                 0->{
                     mMainPresenter.setMatrixFragment()
@@ -52,6 +61,10 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface {
             mMainPresenter.setSettingsFragment()
         }
 
+        mainViewPager.setOnTouchListener { _, _ ->
+            return@setOnTouchListener true
+        }
+
     }
 
 
@@ -60,16 +73,13 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface {
     //Установка фрагмента с матрицами
     override fun setMatrixFragment()
     {
-        //mNavigationController.navigate(R.id.matrixFragment)
-        mNavigationController.navigate(R.id.action_polinomFragment_to_matrixFragment)
+        mainViewPager.setCurrentItem(0,true)
     }
 
     //установка фрагмента с полиномами
     override fun setPolinomFragment()
     {
-        //mNavigationController.navigate(R.id.polinomFragment)
-        mNavigationController.navigate(R.id.action_matrixFragment_to_polinomFragment)
-
+        mainViewPager.setCurrentItem(1,true)
     }
 
 
@@ -79,5 +89,8 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface {
         mSettingBottomSheetDialogFragment.show(supportFragmentManager,mSettingBottomSheetDialogFragment.tag)
     }
 
-
+    override fun updateSettings()
+    {
+        mViewPagerFragmentStateAdapter.callUpdateSettings()
+    }
 }

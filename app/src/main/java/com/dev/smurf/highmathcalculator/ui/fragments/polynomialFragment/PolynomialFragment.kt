@@ -18,7 +18,6 @@ import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapterImageView
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
-import com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment.MatrixFragment
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import com.example.smurf.mtarixcalc.PolynomialRecyclerViewModel
 import com.example.smurf.mtarixcalc.PolynomialTxtAdapter
@@ -40,8 +39,12 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     @InjectPresenter
     lateinit var mPolynomialPresenter: PolynomialPresenter
 
+    init
+    {
+        mvpDelegate.onCreate()
+        mvpDelegate.onAttach()
+    }
 
-    private var listener: MatrixFragment.OnFragmentInteractionListener? = null
 
     //recycler view для полиномов
     private lateinit var mPolinomRecyclerView: RecyclerView
@@ -55,7 +58,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     private var isLoaded: Boolean = false
     private var isImageViewHolder = false
-
+    private var isPaused = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,7 +79,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         mPolynomialRecyclerViewModel =
             ViewModelProviders.of(activity as FragmentActivity).get(PolynomialRecyclerViewModel::class.java)
 
-        //инициализация view model для содержимого edittext
+        //инициализация view model для содержимого EditText
         mPolinomEditTextViewModel =
             ViewModelProviders.of(activity as FragmentActivity).get(EditTextViewModel::class.java)
 
@@ -88,27 +91,27 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
 
         //добовляем обработчики
-        btnPolPlus.setOnClickListener { v ->
+        btnPolPlus.setOnClickListener {
             mPolynomialPresenter.onPlusClick(firstPolinom.text.toString(), secondPolinom.text.toString())
         }
 
-        btnPolMinus.setOnClickListener { v ->
+        btnPolMinus.setOnClickListener {
             mPolynomialPresenter.onMinusClick(firstPolinom.text.toString(), secondPolinom.text.toString())
         }
 
-        btnPolTimes.setOnClickListener { v ->
+        btnPolTimes.setOnClickListener {
             mPolynomialPresenter.onTimesClick(firstPolinom.text.toString(), secondPolinom.text.toString())
         }
 
-        btnPolDiv.setOnClickListener { v ->
+        btnPolDiv.setOnClickListener {
             mPolynomialPresenter.onDivisionClick(firstPolinom.text.toString(), secondPolinom.text.toString())
         }
 
-        btnPolRootsA.setOnClickListener { v ->
+        btnPolRootsA.setOnClickListener {
             mPolynomialPresenter.onRootsOfClick(firstPolinom.text.toString())
         }
 
-        btnPolRootsB.setOnClickListener { v ->
+        btnPolRootsB.setOnClickListener {
             mPolynomialPresenter.onRootsOfClick(secondPolinom.text.toString())
         }
 
@@ -118,11 +121,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
             secondPolinom.text = tmp
         }
 
-        //востанавливаемя из view model
-        if (!mPolynomialRecyclerViewModel.isEmpty()) mPolinomRecyclerViewAdapter.setList(mPolynomialRecyclerViewModel.getList())
-
-        firstPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.firstValue)
-        secondPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.secondValue)
+        restoreFromViewModel()
 
         if (!isLoaded)
         {
@@ -134,25 +133,22 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         checkToast()
     }
 
-    override fun onStop()
-    {
-        mPolinomEditTextViewModel.firstValue = firstPolinom.text.toString()
-        mPolinomEditTextViewModel.secondValue = secondPolinom.text.toString()
-
-
-        super.onStop()
-    }
 
     override fun onResume()
     {
+        isPaused = false
         super.onResume()
         updateSettings()
+        restoreFromViewModel()
+
     }
 
-    override fun onDetach()
+    override fun onPause()
     {
-        super.onDetach()
-        listener = null
+        isPaused = true
+        mPolinomEditTextViewModel.firstValue = firstPolinom.text.toString()
+        mPolinomEditTextViewModel.secondValue = secondPolinom.text.toString()
+        super.onPause()
     }
 
 
@@ -274,16 +270,24 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     fun setImageAdapter()
     {
-        mPolinomRecyclerImageViewAdapter.setList(mPolinomRecyclerViewAdapter.getList().clone() as ArrayList<PolynomialGroup>)
-        mPolinomRecyclerView.swapAdapter(mPolinomRecyclerImageViewAdapter, true)
-        mPolinomRecyclerImageViewAdapter.notifyDataSetChanged()
+        if (!isPaused && isRecycleViewInited())
+        {
+            isImageViewHolder = true
+            mPolinomRecyclerImageViewAdapter.setList(mPolinomRecyclerViewAdapter.getList().clone() as ArrayList<PolynomialGroup>)
+            mPolinomRecyclerView.adapter = mPolinomRecyclerImageViewAdapter
+            mPolinomRecyclerImageViewAdapter.notifyDataSetChanged()
+        }
     }
 
     fun setTxtAdapter()
     {
-        mPolinomRecyclerViewAdapter.setList(mPolinomRecyclerImageViewAdapter.getList().clone() as ArrayList<PolynomialGroup>)
-        mPolinomRecyclerView.swapAdapter(mPolinomRecyclerViewAdapter, true)
-        mPolinomRecyclerViewAdapter.notifyDataSetChanged()
+        if (!isPaused && isRecycleViewInited())
+        {
+            isImageViewHolder = false
+            mPolinomRecyclerViewAdapter.setList(mPolinomRecyclerImageViewAdapter.getList().clone() as ArrayList<PolynomialGroup>)
+            mPolinomRecyclerView.adapter = mPolinomRecyclerViewAdapter
+            mPolinomRecyclerViewAdapter.notifyDataSetChanged()
+        }
     }
 
     fun checkToast()
@@ -307,17 +311,40 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         if (mPolynomialPresenter.checkImageMode())
         {
             setImageAdapter()
-            isImageViewHolder = true
         }
         else
         {
             if (isImageViewHolder)
             {
                 setTxtAdapter()
-                isImageViewHolder = false
             }
         }
     }
+
+    private fun restoreFromViewModel()
+    {
+        //востанавливаемя из view model
+        if (!mPolynomialRecyclerViewModel.isEmpty())
+        {
+            if (!isImageViewHolder) mPolinomRecyclerViewAdapter.setList(
+                mPolynomialRecyclerViewModel.getList().clone() as ArrayList<PolynomialGroup>
+            )
+            else mPolinomRecyclerImageViewAdapter.setList(
+                mPolynomialRecyclerViewModel.getList().clone() as ArrayList<PolynomialGroup>
+            )
+        }
+
+        firstPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.firstValue)
+        secondPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.secondValue)
+    }
+
+    private fun isRecycleViewInited() =
+        (::mPolinomRecyclerView.isInitialized &&
+                ::mPolinomRecyclerViewAdapter.isInitialized &&
+                ::mPolinomRecyclerImageViewAdapter.isInitialized &&
+                ::mPolinomRecyclerViewLayoutManager.isInitialized
+                )
+
 }
 
 
