@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import com.dev.smurf.highmathcalculator.mvp.presenters.MainPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
 import com.dev.smurf.highmathcalculator.ui.fragments.settingsFragment.SettingBottomSheetDialogFragment
@@ -34,7 +33,7 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface {
 
         setContentView(R.layout.activity_main)
 
-        mNavigationController = Navigation.findNavController(this,R.id.nav_host_fragment)
+        //mNavigationController = Navigation.findNavController(this,R.id.nav_host_fragment)
 
         supportActionBar?.hide()
 
