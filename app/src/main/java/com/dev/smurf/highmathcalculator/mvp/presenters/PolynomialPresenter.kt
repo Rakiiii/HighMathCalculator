@@ -13,6 +13,7 @@ import com.example.smurf.mtarixcalc.PolynomialGroup
 import kotlinx.coroutines.*
 import moxy.InjectViewState
 import moxy.MvpPresenter
+import moxy.presenterScope
 import org.jetbrains.anko.doAsync
 import javax.inject.Inject
 
@@ -79,7 +80,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     //@SuppressLint("StaticFieldLeak")
     fun onPlusClick(left: String, right: String)
     {
-        uiScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
             val result = withContext(Dispatchers.IO) {
@@ -102,8 +103,9 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
 
             addToDb(result)
 
-            viewState.addToPolynomialRecyclerView(result)
-
+            uiScope.launch {
+                viewState.addToPolynomialRecyclerView(result)
+            }
 
         }
     }
@@ -113,7 +115,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     //@SuppressLint("StaticFieldLeak")
     fun onMinusClick(left: String, right: String)
     {
-        uiScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Main + errorHandler)
         {
             val result = withContext(Dispatchers.IO) {
 
@@ -133,7 +135,9 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
 
             addToDb(result)
 
-            viewState.addToPolynomialRecyclerView(result)
+            uiScope.launch {
+                viewState.addToPolynomialRecyclerView(result)
+            }
 
 
         }
@@ -143,7 +147,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     //@SuppressLint("StaticFieldLeak")
     fun onTimesClick(left: String, right: String)
     {
-        uiScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
             val result = withContext(Dispatchers.IO) {
@@ -163,7 +167,9 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
 
             addToDb(result)
 
-            viewState.addToPolynomialRecyclerView(result)
+            uiScope.launch {
+                viewState.addToPolynomialRecyclerView(result)
+            }
 
         }
     }
@@ -172,7 +178,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     //@SuppressLint("StaticFieldLeak")
     fun onDivisionClick(left: String, right: String)
     {
-        uiScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Main + errorHandler)
         {
             val result = withContext(Dispatchers.IO) {
 
@@ -191,7 +197,9 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
 
             addToDb(result)
 
-            viewState.addToPolynomialRecyclerView(result)
+            uiScope.launch {
+                viewState.addToPolynomialRecyclerView(result)
+            }
 
         }
     }

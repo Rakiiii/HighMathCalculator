@@ -9,6 +9,10 @@
     <color name="botomNavViewBackBlue">#000080</color>
     <color name="dark">#c2c2c2</color>
     <color name="prime">#F5F5F5</color>
+    <color name="doneBtnColor">#03a9f4</color>
+
+    <color name="settingsElevationBackground">@android:color/white</color>
+    <color name="settingViewBackgrounfColor">#e0e0e0</color>
 
     <color name="white">@android:color/white</color>
 

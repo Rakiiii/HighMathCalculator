@@ -25,4 +25,8 @@ interface SettingsViewInterface : MvpView
     //выкл режим работы на картинках
     fun setHolderImageModeOff()
 
+    fun dismissDialog()
+
+    fun showToast(msg : String)
+
 }

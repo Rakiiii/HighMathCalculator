@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".ui.fragments.SettingBottomSheetDialogFragment">
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/settingViewBackgrounfColor">
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp"
+                android:elevation="2dp"
+                android:background="@color/settingsElevationBackground">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="bold"
+                    android:textSize="20sp"
+                    android:textColor="@color/black"
+                    android:text="@string/settings"
+                    android:layout_centerHorizontal="true"
+            />
+            <Button
+                    android:id="@+id/btnDone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="bold"
+                    android:textColor="@color/doneBtnColor"
+                    android:text="@string/done"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_alignParentEnd="true"
+
+            />
+        </RelativeLayout>
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:alpha="0.0"
+        />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/settingsElevationBackground"
+                android:orientation="vertical">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/settingViewBackgrounfColor">
+
+                </View>
+                <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/settingsElevationBackground">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/SettingsSubTextStyle"
+                            android:text="@string/matrixSettings"
+                            android:layout_alignParentStart="true"
+                    />
+                    <com.bitvale.switcher.SwitcherX
+                            android:id="@+id/swtchMatrixMode"
+                            style="@style/SettingsSwitchStyle"
+                    >
+
+                    </com.bitvale.switcher.SwitcherX>
+
+                </RelativeLayout>
+                <View
+                        style="@style/SettingsMidViewStyle"
+                />
+        </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/settingsElevationBackground"
+                >
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/SettingsSubTextStyle"
+                            android:text="@string/polinomSettings"
+                            android:layout_alignParentStart="true"
+                    />
+                    <com.bitvale.switcher.SwitcherX
+                            android:id="@+id/swtchPolynomialMode"
+                            style="@style/SettingsSwitchStyle"
+                    >
+
+                    </com.bitvale.switcher.SwitcherX>
+
+                </RelativeLayout>
+
+                <View
+                        style="@style/SettingsMidViewStyle"
+                />
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/settingsElevationBackground">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/SettingsSubTextStyle"
+                            android:text="@string/matrixHolderMode"
+                            android:layout_alignParentStart="true"
+                    />
+                    <com.bitvale.switcher.SwitcherX
+                            android:id="@+id/swtchHolderMode"
+                            style="@style/SettingsSwitchStyle"
+
+                    />
+
+                </RelativeLayout>
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/settingViewBackgrounfColor"
+                />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:alpha="0.0"
+        />
+
+        <Button
+                android:id="@+id/btnDeleteMatrixDb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rect_white"
+                android:elevation="5dp"
+                android:text="@string/deleteMatrixInsatnce"
+                style="@style/SettingsSubTextStyle"
+        />
+        <Button
+                android:id="@+id/btnDeletePolynomialDb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rect_white"
+                android:elevation="5dp"
+                android:text="@string/deletePolinomInstance"
+                style="@style/SettingsSubTextStyle"
+        />
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.0"
+        />
+    </LinearLayout>
+
+</FrameLayout>

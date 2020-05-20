@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@android:color/darker_gray</item>
+
     </style>
 
     <style name="MainActivityBtn" parent="Theme.AppCompat.DayNight">
@@ -30,6 +31,32 @@
         <item name="android:layout_marginStart">3dp</item>
         <item name="android:layout_marginTop">3dp</item>
         <item name="android:layout_marginBottom">3dp</item>
+    </style>
+
+    <style name="SettingsSwitchStyle" parent="Theme.AppCompat.DayNight">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <style name="SettingsSubTextStyle" parent="Theme.AppCompat.DayNight">
+        <item name="android:fontFamily">bold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginStart">30dp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="SettingsMidViewStyle" parent="Theme.AppCompat.DayNight">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginStart">30dp</item>
+        <item name="android:background">@color/settingViewBackgrounfColor</item>
     </style>
 
     <style name="edttxtStyle" parent="Theme.AppCompat.DayNight">
@@ -93,6 +120,22 @@
     <style name="BackgroundMatrixViewStyle" parent="Theme.AppCompat.DayNight">
         <item name="android:alpha">0.1</item>
         <item name="android:scaleType">fitXY</item>
+    </style>
+
+    <style name="RoundedCornersBottomSheetShapeStyle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+
+    <style name="RoundedCornersBottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/RoundedCornersBottomSheetShapeStyle</item>
+    </style>
+
+    <style name="RoundedCornersBottomSheetDialogStyle" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/RoundedCornersBottomSheetStyle</item>
     </style>
 
 </resources>

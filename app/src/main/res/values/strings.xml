@@ -28,7 +28,10 @@
     <string name="deleteMatrixInsatnce">Delete instance of matrix results</string>
     <string name="deletePolinomInstance">Delete instance of polynomial results</string>
     <string name="search">Search on web</string>
-    <string name="matrixHolderMode" >High prefomance result list</string>
+    <string name="matrixHolderMode">Image result list</string>
+
+    <string name="settings">Settings</string>
+    <string name="done">Done</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

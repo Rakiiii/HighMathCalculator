@@ -132,13 +132,19 @@ class MatrixFragment : MvpAppCompatFragment()  ,MatrixViewInterface
             loaded = true
         }
 
+        checkToast()
+
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+
         if(mMatrixPresenter.checkImageMode())
         {
-                isImageAdapter = true
-                setImageAdapter()
+            isImageAdapter = true
+            setImageAdapter()
         }
-
-        checkToast()
 
     }
 

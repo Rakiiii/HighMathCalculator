@@ -23,7 +23,7 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
 
     //модель настроек
     @Inject
-    lateinit var mSettingsModel : SettingsModel
+    lateinit var mSettingsModel: SettingsModel
 
     init
     {
@@ -48,6 +48,9 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
         CalculatorApplication.graph.inject(this)
     }
 
+    private val state = settingsState()
+    private val startState = settingsState()
+
 
     /*
      * Операции обраюотки изменения состояния фрагмента
@@ -55,48 +58,65 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
 
 
     //обновить режимы
-    fun update()
+    fun settingsOpened()
     {
         //проверка состояния сохранения матриц
-        if(mSettingsModel.getMatrixConsistens())viewState.setMatrixModeOn()
+        if (mSettingsModel.getMatrixConsistens())
+        {
+            viewState.setMatrixModeOn()
+            state.matrixMode = true
+            startState.matrixMode = true
+        }
         else viewState.setMatrixModeOff()
 
         //проверка состояния сохранения полиномов
-        if (mSettingsModel.getPolinomConsistens())viewState.setPolinomModeOn()
+        if (mSettingsModel.getPolinomConsistens())
+        {
+            viewState.setPolinomModeOn()
+            state.polynomialMode = true
+            startState.polynomialMode = true
+        }
         else viewState.setPolinomModeOff()
 
         //проверка режима работы списка матриц
-        if(mSettingsModel.getMatrixHolderConsistens())viewState.setHolderImageModeOn()
+        if (mSettingsModel.getMatrixHolderConsistens())
+        {
+            viewState.setHolderImageModeOn()
+            state.holderImageMode = true
+            startState.holderImageMode = true
+
+        }
         else viewState.setHolderImageModeOff()
     }
 
     //ВКЛ созранение матриц
     fun matrixModeSetOn()
     {
-        mSettingsModel.onMatrixSaving()
+        state.matrixMode = true
     }
 
     //ВЫКЛ сохранение матриц
     fun matrixModeSetOff()
     {
-        mSettingsModel.offMatrixSaving()
+        state.matrixMode = false
     }
 
     //ВКЛ сохранение полиномов
     fun polinomModeSetOn()
     {
-        mSettingsModel.onPolinomSaving()
+        state.polynomialMode = true
     }
 
     //ВЫКЛ сохранение полиномов
     fun polinomModeSetOff()
     {
-        mSettingsModel.offPolinomSaving()
+        state.polynomialMode = false
     }
 
     //вкл картинки в списке матриц
     fun holderImageModeSetOn()
     {
+        state.holderImageMode = true
         mSettingsModel.onMatrixImageHolder()
 
         mSettingsModel.onPolynomialImageViewHolder()
@@ -105,18 +125,29 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
     //выкл картинки в списке матриц
     fun holderImageModeSetOff()
     {
+        state.holderImageMode = false
         mSettingsModel.offMatrixImageHolder()
 
         mSettingsModel.offPolynomialImageViewHolder()
     }
 
+    fun onCancelHappened()
+    {
+        saveState()
+    }
+
+    fun doneBtnPressed()
+    {
+        saveState()
+        viewState.dismissDialog()
+    }
 
     /*
      * Функции работы с базами данных
      */
 
     //очистка бд матриц
-    fun deleteMatrixDb()
+    fun deleteMatrixDbBtnPressed()
     {
         doAsync {
             mMatrixDatabaseModel.deleteDb()
@@ -124,7 +155,7 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
     }
 
     //сохранение кэша бд матриц
-    fun saveMatrixCache()
+    private fun saveMatrixCache()
     {
         doAsync {
             mMatrixDatabaseModel.saveCache()
@@ -132,7 +163,7 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
     }
 
     //очистка бд полиномов
-    fun deletePolinomDb()
+    fun deletePolinomDbPressed()
     {
         doAsync {
             mPolynomialDatabaseModel.deleteDb()
@@ -140,11 +171,62 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
     }
 
     //сохранение кэша бд полиномов
-    fun savePolinomCache()
+    private fun savePolynomialCache()
     {
         doAsync {
             mPolynomialDatabaseModel.saveCache()
         }
     }
+
+    private data class settingsState(
+        var matrixMode: Boolean = false,
+        var polynomialMode: Boolean = false,
+        var holderImageMode: Boolean = false
+    )
+
+    private fun saveState()
+    {
+        if (startState.matrixMode != state.matrixMode)
+        {
+            if (state.matrixMode)
+            {
+                mSettingsModel.onMatrixSaving()
+                saveMatrixCache()
+            }
+            else
+            {
+                mSettingsModel.offMatrixSaving()
+            }
+        }
+
+        if (startState.polynomialMode != state.polynomialMode)
+        {
+            if (state.polynomialMode)
+            {
+                mSettingsModel.onPolinomSaving()
+                savePolynomialCache()
+            }
+            else
+            {
+                mSettingsModel.offPolinomSaving()
+            }
+        }
+
+        if (startState.holderImageMode != state.holderImageMode)
+        {
+            if (state.holderImageMode)
+            {
+                mSettingsModel.onPolynomialImageViewHolder()
+                mSettingsModel.onMatrixImageHolder()
+            }
+            else
+            {
+                mSettingsModel.offMatrixImageHolder()
+                mSettingsModel.offPolynomialImageViewHolder()
+            }
+        }
+
+    }
+
 
 }

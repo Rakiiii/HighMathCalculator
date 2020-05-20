@@ -17,7 +17,10 @@ import com.dev.smurf.highmathcalculator.CanvasExtension.drawComplex
 import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInBrackets
 import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInLines
 import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.Utils.*
+import com.dev.smurf.highmathcalculator.Utils.getComplexNumberHigh
+import com.dev.smurf.highmathcalculator.Utils.getComplexNumberWidth
+import com.dev.smurf.highmathcalculator.Utils.getMatrixInBracketsSize
+import com.dev.smurf.highmathcalculator.Utils.getMatrixInLinesSize
 import com.example.smurf.mtarixcalc.MatrixGroup
 import org.jetbrains.anko.imageBitmap
 import org.jetbrains.anko.toast
@@ -36,7 +39,7 @@ class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, va
     {
         listOfMatrices.add(0, group)
         //Log.d("RV@" , "adding new elem")
-        notifyDataSetChanged()
+        notifyItemInserted(0)
     }
 
     //очистка списка элементов

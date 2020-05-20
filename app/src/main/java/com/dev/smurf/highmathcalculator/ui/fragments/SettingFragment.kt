@@ -2,20 +2,7 @@ package com.dev.smurf.highmathcalculator.ui.fragments
 
 //import androidx.core.app.Fragment
 
-import android.content.Context
-import android.net.Uri
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.mvp.presenters.SettingsPresenter
-import com.dev.smurf.highmathcalculator.mvp.views.SettingsViewInterface
-import kotlinx.android.synthetic.main.fragment_setting.*
-import moxy.MvpAppCompatFragment
-import moxy.presenter.InjectPresenter
-
-
+/*
 class SettingFragment : MvpAppCompatFragment(), SettingsViewInterface
 {
 
@@ -156,3 +143,4 @@ class SettingFragment : MvpAppCompatFragment(), SettingsViewInterface
 
 }
 
+*/

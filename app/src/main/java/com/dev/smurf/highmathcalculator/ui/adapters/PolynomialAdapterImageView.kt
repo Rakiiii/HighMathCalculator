@@ -45,7 +45,7 @@ class PolynomialAdapterImageView(
     fun addElement(PolynomialGroup: PolynomialGroup)
     {
         listOfPolynomials.add(0, PolynomialGroup)
-        notifyDataSetChanged()
+        notifyItemInserted(0)
     }
 
     //очиститть список элементов

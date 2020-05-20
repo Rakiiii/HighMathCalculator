@@ -13,11 +13,7 @@
     <fragment android:id="@+id/polinomFragment"
               android:name="com.dev.smurf.highmathcalculator.ui.fragments.PolynomialFragment"
               android:label="fragment_polinom" tools:layout="@layout/fragment_polinom">
-        <action android:id="@+id/action_polinomFragment_to_settingFragment" app:destination="@id/settingFragment"/>
         <action android:id="@+id/action_polinomFragment_to_matrixFragment" app:destination="@id/matrixFragment"
         />
     </fragment>
-    <fragment android:id="@+id/settingFragment"
-              android:name="com.dev.smurf.highmathcalculator.ui.fragments.SettingFragment"
-              android:label="fragment_setting" tools:layout="@layout/fragment_setting"/>
 </navigation>

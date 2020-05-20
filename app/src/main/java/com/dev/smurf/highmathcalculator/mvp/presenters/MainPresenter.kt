@@ -1,8 +1,8 @@
 package com.dev.smurf.highmathcalculator.mvp.presenters
 
+import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
 import moxy.InjectViewState
 import moxy.MvpPresenter
-import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
 
 @InjectViewState
 class MainPresenter : MvpPresenter<MainViewInterface>()
@@ -25,5 +25,4 @@ class MainPresenter : MvpPresenter<MainViewInterface>()
     {
         viewState.setSettingsFragment()
     }
-
 }

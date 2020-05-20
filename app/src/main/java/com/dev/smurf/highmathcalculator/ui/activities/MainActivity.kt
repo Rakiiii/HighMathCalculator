@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.dev.smurf.highmathcalculator.mvp.presenters.MainPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
+import com.dev.smurf.highmathcalculator.ui.fragments.SettingBottomSheetDialogFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import moxy.MvpAppCompatActivity
 import moxy.presenter.InjectPresenter
@@ -21,7 +22,7 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface {
 
     private lateinit var mNavigationController : NavController
 
-
+    private val mSettingBottomSheetDialogFragment = SettingBottomSheetDialogFragment()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -36,33 +37,6 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface {
 
         supportActionBar?.hide()
 
-        /*
-        bottomNavView.setOnNavigationItemSelectedListener (object : BottomNavigationView.OnNavigationItemSelectedListener{
-            override fun onNavigationItemSelected(item: MenuItem): Boolean
-            {
-                when(item.itemId)
-                {
-                    R.id.matrixCalcBtn->
-                    {
-                        //setMatrixFragment()
-                        mMainPresenter.setMatrixFragment()
-                        return true
-                    }
-                    R.id.polinomicCalculationBtn->
-                    {
-                        //setPolinomFragment()
-                        mMainPresenter.setPolinonFragment()
-                        return true
-                    }
-                    R.id.settingsBtn->
-                    {
-                        mMainPresenter.setSettingsFragment()
-                        return true
-                    }
-                    else ->return false
-                }
-            }
-        })*/
         bottomNavView.setNavigationChangeListener{ view, position ->
             when( position){
                 0->{
@@ -102,8 +76,8 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface {
     //утсановка фрагмента с настройками
     override fun setSettingsFragment()
     {
-        mNavigationController.navigate(R.id.settingFragment)
-
+        mSettingBottomSheetDialogFragment.show(supportFragmentManager,mSettingBottomSheetDialogFragment.tag)
     }
+
 
 }

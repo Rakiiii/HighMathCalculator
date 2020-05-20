@@ -13,6 +13,7 @@ import com.example.smurf.mtarixcalc.MatrixGroup
 import kotlinx.coroutines.*
 import moxy.InjectViewState
 import moxy.MvpPresenter
+import moxy.presenterScope
 import org.jetbrains.anko.doAsync
 import javax.inject.Inject
 
@@ -81,7 +82,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     fun onPlusClick(firstMatrix: String, secondMatrix: String)
     {
 
-        uiScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
             val mMatrixGroup = withContext(Dispatchers.IO) {
@@ -119,7 +120,9 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                 }
             }
 
-            viewState.addToRecyclerView(mMatrixGroup)
+            uiScope.launch {
+                viewState.addToRecyclerView(mMatrixGroup)
+            }
 
         }
     }
@@ -129,7 +132,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     fun onMinusClick(firstMatrix: String, secondMatrix: String)
     {
 
-        uiScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
 
@@ -169,7 +172,9 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                 }
             }
 
-            viewState.addToRecyclerView(mMatrixGroup)
+            uiScope.launch {
+                viewState.addToRecyclerView(mMatrixGroup)
+            }
         }
     }
 
@@ -177,7 +182,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     @SuppressLint("StaticFieldLeak")
     fun onTimesClick(firstMatrix: String, secondMatrix: String)
     {
-        uiScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
 
@@ -216,7 +221,9 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                 }
             }
 
-            viewState.addToRecyclerView(mMatrixGroup)
+            uiScope.launch {
+                viewState.addToRecyclerView(mMatrixGroup)
+            }
         }
     }
 
@@ -225,7 +232,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     fun onInversClick(firstMatrix: String)
     {
         //CoroutineScope(Dispatchers.Main)
-        uiScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Main + errorHandler)
         {
             val mMatrixGroup  = withContext(Dispatchers.IO) {
 
@@ -258,7 +265,9 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                 }
             }
 
-            viewState.addToRecyclerView(mMatrixGroup)
+            uiScope.launch {
+                viewState.addToRecyclerView(mMatrixGroup)
+            }
         }
     }
 
@@ -267,7 +276,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     fun onDeterminantClick(firstMatrix: String)
     {
 
-        uiScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
             val mMatrixGroup = withContext(Dispatchers.IO){
@@ -282,8 +291,10 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                 //устанавливаем время начала операции
                 result.time = time
 
+
                 result
             }
+
             async(Dispatchers.IO)
             {
                 if (mSettingsModel.getMatrixConsistens())
@@ -299,7 +310,9 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                 }
             }
 
-            viewState.addToRecyclerView(mMatrixGroup)
+            uiScope.launch {
+                viewState.addToRecyclerView(mMatrixGroup)
+            }
         }
     }
 
