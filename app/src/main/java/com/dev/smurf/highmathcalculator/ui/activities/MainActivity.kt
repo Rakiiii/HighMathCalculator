@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.dev.smurf.highmathcalculator.mvp.presenters.MainPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
-import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagerFragmentStateAdapter
+import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.ViewPagerFragmentStateAdapter
 import com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment.MatrixFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.polynomialFragment.PolynomialFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.settingsFragment.SettingBottomSheetDialogFragment
@@ -28,7 +28,10 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSh
     private val mSettingBottomSheetDialogFragment =
         SettingBottomSheetDialogFragment()
 
-    private val mViewPagerFragmentStateAdapter = ViewPagerFragmentStateAdapter(this)
+    private val mViewPagerFragmentStateAdapter =
+        ViewPagerFragmentStateAdapter(
+            this
+        )
 
     override fun onCreate(savedInstanceState: Bundle?)
     {

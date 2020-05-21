@@ -1,4 +1,4 @@
-package com.dev.smurf.highmathcalculator.ui.adapters
+package com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -80,7 +80,9 @@ class MatrixAdapter(val context: Context, val firstMatrix : EditText, val second
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): matrixViewHolder
     {
-        return matrixViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.matrix_expressions , parent , false ) )
+        return matrixViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.matrix_expressions, parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: matrixViewHolder, position: Int)

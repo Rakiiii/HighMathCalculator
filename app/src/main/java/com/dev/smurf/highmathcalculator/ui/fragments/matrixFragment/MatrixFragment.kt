@@ -1,6 +1,7 @@
 package com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment
 
 import android.graphics.Color
+import android.graphics.Point
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
@@ -16,9 +17,9 @@ import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
-import com.dev.smurf.highmathcalculator.ui.adapters.BtnViewPagerFragmentStateAdapter
-import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapter
-import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapterImageView
+import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapter
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapterImageView
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
 import com.example.smurf.mtarixcalc.MatrixGroup
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
@@ -145,9 +146,21 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         mMatrixRecyclerLayoutManager = LinearLayoutManager(context)
 
-        mMatrixRecyclerTextAdapter = MatrixAdapter(context!!, firstMatrix, secondMatrix)
-
-        mMatrixRecyclerImageAdapter = MatrixAdapterImageView(context!!, firstMatrix, secondMatrix)
+        mMatrixRecyclerTextAdapter =
+            MatrixAdapter(
+                context!!,
+                firstMatrix,
+                secondMatrix
+            )
+        val point = Point()
+        activity!!.windowManager.defaultDisplay.getSize(point)
+        mMatrixRecyclerImageAdapter =
+            MatrixAdapterImageView(
+                context!!,
+                firstMatrix,
+                secondMatrix,
+                point.x.toFloat()
+            )
 
         mMatrixRecyclerView = view!!.findViewById(R.id.matrixRecycler)
 
@@ -161,7 +174,10 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         if (activity != null)
         {
-            mBtnMatrixViewPagerAdapter = BtnViewPagerFragmentStateAdapter(activity!!)
+            mBtnMatrixViewPagerAdapter =
+                BtnViewPagerFragmentStateAdapter(
+                    activity!!
+                )
             BtnFrgmentSet.add(MatrixButtonGridFragment().addEventListener(this))
             BtnFrgmentSet.add(MatrixButtonGridFragmentSecondPage().setListener(this))
             mBtnMatrixViewPagerAdapter.setNewFragmentSet(BtnFrgmentSet)

@@ -16,7 +16,7 @@ import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.PolynomialPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
-import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapterImageView
+import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialAdapterImageView
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import com.example.smurf.mtarixcalc.PolynomialRecyclerViewModel
@@ -158,7 +158,12 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
         mPolinomRecyclerViewAdapter = PolynomialTxtAdapter(this.context!!, firstPolinom, secondPolinom)
 
-        mPolinomRecyclerImageViewAdapter = PolynomialAdapterImageView(this.context!!, firstPolinom, secondPolinom)
+        mPolinomRecyclerImageViewAdapter =
+            PolynomialAdapterImageView(
+                this.context!!,
+                firstPolinom,
+                secondPolinom
+            )
 
         mPolinomRecyclerView = view!!.findViewById(R.id.polinomRecycler)
 

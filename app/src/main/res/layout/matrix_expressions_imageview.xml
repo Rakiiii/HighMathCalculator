@@ -22,12 +22,14 @@
         <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:columnCount="4"
+                android:columnCount="5"
                 android:contextClickable="true"
                 android:layout_marginTop="7dp"
                 android:layout_marginBottom="7dp"
                 android:layout_marginStart="7dp"
                 android:layout_marginEnd="7dp"
+                android:orientation="horizontal"
+                android:layout_gravity="fill"
         >
 
             <ImageView
@@ -35,15 +37,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="fill_horizontal"
-                    android:layout_columnWeight="30"
+                    android:layout_columnWeight="6"
             />
 
             <ImageView
                     android:id="@+id/operationSignMatrix"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="fill_horizontal"
-                    android:layout_columnWeight="5"
+                    android:layout_gravity="fill"
+                    android:layout_columnWeight="1"
             />
 
 
@@ -52,15 +54,23 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="fill_horizontal"
-                    android:layout_columnWeight="30"
+                    android:layout_columnWeight="6"
             />
+
+            <ImageView
+                    android:id="@+id/equalsSignMatrix"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="fill"
+                    android:layout_columnWeight="1"
+                    />
 
             <ImageView
                     android:id="@+id/resMatrix"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="fill_horizontal"
-                    android:layout_columnWeight="30"
+                    android:layout_columnWeight="6"
             />
 
         </GridLayout>

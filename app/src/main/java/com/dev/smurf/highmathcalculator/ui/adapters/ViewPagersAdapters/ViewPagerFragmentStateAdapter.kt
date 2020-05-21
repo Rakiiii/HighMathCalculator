@@ -1,4 +1,4 @@
-package com.dev.smurf.highmathcalculator.ui.adapters
+package com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity

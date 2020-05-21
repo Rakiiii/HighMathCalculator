@@ -1,4 +1,4 @@
-package com.dev.smurf.highmathcalculator.ui.adapters
+package com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -17,6 +17,7 @@ import com.dev.smurf.highmathcalculator.CanvasExtension.drawPolynomialRoots
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.Utils.getPolynomialHigh
 import com.dev.smurf.highmathcalculator.Utils.getPolynomialWidth
+import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import org.jetbrains.anko.imageBitmap
 import org.jetbrains.anko.toast
@@ -88,7 +89,7 @@ class PolynomialAdapterImageView(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PolynomialViewHolder
     {
-        return PolynomialAdapterImageView.PolynomialViewHolder(
+        return PolynomialViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.polynomial_expressions_imageview,
                 parent,
@@ -110,21 +111,45 @@ class PolynomialAdapterImageView(
         }
         //контекстное  меню для левого полинома
         holder.leftPolynomialImageView.setOnCreateContextMenuListener(
-            ContextMenuListener(context,polFirstPolynomial,polSecPolynomial,holder.leftPolynomialValue) )
+            ContextMenuListener(
+                context,
+                polFirstPolynomial,
+                polSecPolynomial,
+                holder.leftPolynomialValue
+            )
+        )
 
 
         //контестное меню для праавого элемента
         holder.rightPolynomialImageView.setOnCreateContextMenuListener(
-            ContextMenuListener( context,polFirstPolynomial,polSecPolynomial,holder.rightPolynomialValue) )
+            ContextMenuListener(
+                context,
+                polFirstPolynomial,
+                polSecPolynomial,
+                holder.rightPolynomialValue
+            )
+        )
 
 
         //контекстное меню для результирующего полинома
         holder.resultPolynomialImageView.setOnCreateContextMenuListener(
-            ContextMenuListener(context,polFirstPolynomial,polSecPolynomial,holder.resultPolynomialValue) )
+            ContextMenuListener(
+                context,
+                polFirstPolynomial,
+                polSecPolynomial,
+                holder.resultPolynomialValue
+            )
+        )
 
         //контекстное меню для остаточное полинома
         holder.remainderPolynomialImageView.setOnCreateContextMenuListener(
-            ContextMenuListener( context,polFirstPolynomial,polSecPolynomial,holder.remainderPolynomialValue) )
+            ContextMenuListener(
+                context,
+                polFirstPolynomial,
+                polSecPolynomial,
+                holder.remainderPolynomialValue
+            )
+        )
 
 
     }

@@ -9,11 +9,20 @@ import java.util.*
 @Entity()
 @TypeConverters(POJOConverter::class)
 data class MatrixGroup(
-    var leftMatrix : Matrix,
-    var rightMatrix : Matrix,
-    var sign : String,
-    var resMatrix : Matrix,
+    var leftMatrix: Matrix,
+    var rightMatrix: Matrix,
+    var sign: String,
+    var resMatrix: Matrix,
     @PrimaryKey
     var time: java.util.GregorianCalendar = GregorianCalendar()
 )
-{}
+{
+    companion object
+    {
+        val DET = "det"
+        val INV = "inv"
+        val MINUS = "-"
+        val PLUS = "+"
+        val TIMES = "*"
+    }
+}
