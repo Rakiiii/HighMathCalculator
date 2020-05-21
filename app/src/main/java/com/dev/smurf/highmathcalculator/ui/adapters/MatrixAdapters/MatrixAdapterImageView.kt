@@ -37,7 +37,6 @@ class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, va
     fun addNewElem(group: MatrixGroup)
     {
         listOfMatrices.add(0, group)
-        //Log.d("RV@" , "adding new elem")
         notifyItemInserted(0)
 
     }
@@ -46,7 +45,6 @@ class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, va
     fun clear()
     {
         listOfMatrices.clear()
-        //Log.d("RV@" , "clear list")
         notifyDataSetChanged()
     }
 
@@ -55,14 +53,12 @@ class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, va
     fun removeElement(position: Int)
     {
         listOfMatrices.removeAt(position)
-        //Log.d("RV@" , "remove from position:" + position.toString())
         notifyDataSetChanged()
     }
 
     //получить элемент из позиции position
     fun getData(position: Int): MatrixGroup
     {
-        //Log.d("RV@" , "get data")
         return listOfMatrices[position]
     }
 
@@ -70,7 +66,6 @@ class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, va
     fun restoreItem(position: Int, MatrixGroup: MatrixGroup)
     {
         listOfMatrices.add(position, MatrixGroup)
-        //Log.d("RV@" , "restore item")
         notifyItemInserted(position)
     }
 
@@ -78,7 +73,6 @@ class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, va
     fun setList(newArray: ArrayList<MatrixGroup>)
     {
         listOfMatrices = newArray
-        //Log.d("RV@" , "set list")
         notifyDataSetChanged()
     }
 
