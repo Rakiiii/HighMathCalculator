@@ -43,6 +43,8 @@
                         app:bt_active="true"
                         app:bt_colorActive="@color/white"
                         app:bt_colorInactive="@color/dark"
+                        app:bt_shape="@drawable/transition_nav"
+                        app:bt_duration="1000"
                         app:bt_title="@string/matrixFragmentNavigation"
                         app:bt_icon="@drawable/ic_grid_on_black_24dp"/>
                 <com.gauravk.bubblenavigation.BubbleToggleView
@@ -52,6 +54,8 @@
                         app:bt_active="false"
                         app:bt_colorActive="@color/white"
                         app:bt_colorInactive="@color/dark"
+                        app:bt_shape="@drawable/transition_nav"
+                        app:bt_duration="1000"
                         app:bt_title="@string/polynomialFragmentNavigation"
                         app:bt_icon="@drawable/ic_expand_less_black_24dp"/>
 

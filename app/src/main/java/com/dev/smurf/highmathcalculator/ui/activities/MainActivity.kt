@@ -1,8 +1,10 @@
 package com.dev.smurf.highmathcalculator
 
+import android.graphics.Point
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.viewpager2.widget.ViewPager2
 import com.dev.smurf.highmathcalculator.mvp.presenters.MainPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagerFragmentStateAdapter
@@ -44,6 +46,7 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSh
 
         mainViewPager.adapter = mViewPagerFragmentStateAdapter
 
+
         supportActionBar?.hide()
 
         bottomNavView.setNavigationChangeListener{ _, position ->
@@ -61,9 +64,21 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSh
             mMainPresenter.setSettingsFragment()
         }
 
+        //mainViewPager.isUserInputEnabled=false
         mainViewPager.setOnTouchListener { _, _ ->
             return@setOnTouchListener true
         }
+
+        mainViewPager.registerOnPageChangeCallback( object : ViewPager2.OnPageChangeCallback(){
+            override fun onPageSelected(position: Int)
+            {
+                super.onPageSelected(position)
+                when(position){
+                    0-> bottomNavView.setCurrentActiveItem(0)
+                    1 -> bottomNavView.setCurrentActiveItem(1)
+                }
+            }
+    })
 
     }
 
@@ -73,13 +88,25 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSh
     //Установка фрагмента с матрицами
     override fun setMatrixFragment()
     {
-        mainViewPager.setCurrentItem(0,true)
+        mainViewPager.beginFakeDrag()
+        val point = Point()
+        windowManager.defaultDisplay.getSize(point)
+        mainViewPager.fakeDragBy((point.x.toFloat()+10.0f))
+        mainViewPager.endFakeDrag()
+
+        //mainViewPager.setCurrentItem(0,false)
     }
 
     //установка фрагмента с полиномами
     override fun setPolinomFragment()
     {
-        mainViewPager.setCurrentItem(1,true)
+        mainViewPager.beginFakeDrag()
+        val point = Point()
+        windowManager.defaultDisplay.getSize(point)
+        mainViewPager.fakeDragBy(-(point.x.toFloat()+10.0f))
+        mainViewPager.endFakeDrag()
+        //mainViewPager.setCurrentItem(1,false)
+
     }
 
 
