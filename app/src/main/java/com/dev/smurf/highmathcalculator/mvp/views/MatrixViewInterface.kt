@@ -22,6 +22,9 @@ interface MatrixViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun setRecyclerViewArrayList(ar : ArrayList<MatrixGroup>)
 
+    @StateStrategyType(SkipStrategy::class)
+    fun setBtnFragment(position : Int)
+
    /* //установить Image адаптер
     @StateStrategyType(SkipStrategy::class)
     fun setImageAdapter()

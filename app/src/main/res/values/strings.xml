@@ -7,12 +7,22 @@
     <string name="determinant">Determinant</string>
     <string name="txtinputBackA">Add your matrix there : A</string>
     <string name="txtinputBackB">Add your matrix there : B</string>
+
     <string name="btnPolinom">Polinomic Calculator</string>
     <string name="btnPlus">+</string>
     <string name="btnMinus">-</string>
     <string name="btnFirstTimesSecond">A*B</string>
     <string name="btnSecondTimesFirst">B*A</string>
     <string name="btnInvers">Invers</string>
+    <string name="btnSwitch">S</string>
+
+    <string name="btnPositive">Positive</string>
+    <string name="btnNegative">Negative</string>
+    <string name="btnRank">Rank</string>
+    <string name="btnEeigenvector">Eigenvector</string>
+    <string name="btnSolve">Solve as\nsystem</string>
+    <string name="btnEigenvalue">Eigenvalue</string>
+
     <string name="hintPolinomA">write cofs with spaces of polynomial A here</string>
     <string name="hintPolinomB">write cofs with spaces of polynomial B here</string>
     <string name="btnTimes">x</string>

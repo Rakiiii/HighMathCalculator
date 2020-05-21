@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.fragments.matrixFragment.MatrixButtonGridFragment">
+
+    <GridLayout
+            android:id="@+id/gridMatrixBtnPage2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:orientation="horizontal">
+
+
+        <Button
+                android:id="@+id/btnRank"
+                style="@style/btnStyle"
+                android:text="@string/btnRank" />
+
+        <Button
+                android:id="@+id/btnPositive"
+                style="@style/btnStyle"
+                android:text="@string/btnPositive" />
+
+        <Button
+                android:id="@+id/btnNegative"
+                style="@style/btnStyle"
+                android:text="@string/btnNegative" />
+
+        <GridLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_marginBottom="3dp"
+                android:columnCount="2"
+                android:orientation="horizontal">
+
+            <Button
+                    android:id="@+id/btnSwitchBtnFragment"
+                    style="@style/SubBtnStyle"
+                    android:layout_columnWeight="1"
+                    android:text="@string/btnSwitch" />
+
+            <Button
+                    android:id="@+id/btnEigenvalue"
+                    style="@style/SubBtnStyle"
+                    android:layout_columnWeight="3"
+                    android:text="@string/btnEigenvalue" />
+
+        </GridLayout>
+
+        <Button
+                android:id="@+id/btnEigenvector"
+                style="@style/btnStyle"
+                android:text="@string/btnEeigenvector" />
+
+        <Button
+                android:id="@+id/btnSolveSystem"
+                style="@style/btnStyle"
+                android:text="@string/btnSolve" />
+    </GridLayout>
+</FrameLayout>

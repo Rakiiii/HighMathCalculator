@@ -2,11 +2,11 @@ package com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment
 
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -16,6 +16,7 @@ import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
+import com.dev.smurf.highmathcalculator.ui.adapters.BtnViewPagerFragmentStateAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapterImageView
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
@@ -29,14 +30,12 @@ import moxy.presenter.InjectPresenter
 import org.jetbrains.anko.toast
 
 
-class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
+class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
+    MatrixButtonGridFragment.onFragmentInteractionListener,
+        MatrixButtonGridFragmentSecondPage.onFragmentInteractionListener
 {
 
     private var loaded: Boolean = false
-
-    //buffer for toast, because amount off ui threads is finite
-    val Toasts = MutableList(0) { "" }
-    val toastHandler = Handler()
 
     @InjectPresenter
     lateinit var mMatrixPresenter: MatrixPresenter
@@ -46,6 +45,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
     private lateinit var mMatrixRecyclerLayoutManager: LinearLayoutManager
     private lateinit var mMatrixRecyclerTextAdapter: MatrixAdapter
     private lateinit var mMatrixRecyclerImageAdapter: MatrixAdapterImageView
+    private lateinit var mBtnMatrixViewPagerAdapter: BtnViewPagerFragmentStateAdapter
 
     private lateinit var mMatrixRecyclerViewModel: MatrixRecyclerViewModel
 
@@ -53,6 +53,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
 
     private var isImageAdapter = false
     private var isPaused = false
+
+    private var BtnFrgmentSet = mutableListOf<Fragment>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,7 +71,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
         super.onStart()
 
         //view model для сохранения содержимого recycler view
-        mMatrixRecyclerViewModel = ViewModelProviders.of(this.activity!!).get(MatrixRecyclerViewModel::class.java)
+        mMatrixRecyclerViewModel =
+            ViewModelProviders.of(this.activity!!).get(MatrixRecyclerViewModel::class.java)
 
         //инициализация view model для содержимого edittext
         mMatrixEdittextViewModel =
@@ -78,56 +81,27 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
         //инициализация recycler view
         initRecyclerView()
 
+        //initiali veapager with bottons
+        initViewPager()
+
         //удаление и возврат по свайпу из recycler view
         enableSwipeToDeleteAndUndo()
 
-        //слушатель для кнопки плюс
-        btnPlus.setOnClickListener { v ->
-            mMatrixPresenter.onPlusClick(
-                firstMatrix.text.toString(),
-                secondMatrix.text.toString()
-            )
-        }
+        //off view pager swap page by gesture
+        buttonViewPager.isUserInputEnabled=false
 
-        //слушатель для кнопки минус
-        btnMinus.setOnClickListener { v ->
-            mMatrixPresenter.onMinusClick(
-                firstMatrix.text.toString(),
-                secondMatrix.text.toString()
-            )
-        }
-
-        //слушатель для кнопки умножения первой матрицы на вторую
-        btnFirstTimesSecond.setOnClickListener { v ->
-            mMatrixPresenter.onTimesClick(firstMatrix.text.toString(), secondMatrix.text.toString())
-        }
-
-        //случатель для кнопки умножения второй матрицы на первую
-        btnSecondTimesFirst.setOnClickListener { v ->
-            mMatrixPresenter.onTimesClick(secondMatrix.text.toString(), firstMatrix.text.toString())
-        }
-
-        //слушатель для инвертированния первой матрицы
-        btnInvers.setOnClickListener { v -> mMatrixPresenter.onInversClick(firstMatrix.text.toString()) }
-
-        //слушатель для поиска определителя пераой матрицы
-        btnDeterminant.setOnClickListener { v -> mMatrixPresenter.onDeterminantClick(firstMatrix.text.toString()) }
-
+        //swap matrix btn listener
         btnSwap.setOnClickListener {
             val tmp = firstMatrix.text
             firstMatrix.text = secondMatrix.text
             secondMatrix.text = tmp
         }
 
+        //get data from view models
         restoreFromViewModel()
 
-        if (!loaded)
-        {
-            mMatrixPresenter.onLoadSavedInstance()
-            loaded = true
-        }
-
-        checkToast()
+        //load data from db
+        loadData()
 
     }
 
@@ -183,6 +157,19 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
 
     }
 
+    private fun initViewPager()
+    {
+        if (activity != null)
+        {
+            mBtnMatrixViewPagerAdapter = BtnViewPagerFragmentStateAdapter(activity!!)
+            BtnFrgmentSet.add(MatrixButtonGridFragment().addEventListener(this))
+            BtnFrgmentSet.add(MatrixButtonGridFragmentSecondPage().setListener(this))
+            mBtnMatrixViewPagerAdapter.setNewFragmentSet(BtnFrgmentSet)
+            buttonViewPager.adapter = mBtnMatrixViewPagerAdapter
+        }
+
+    }
+
     override fun addToRecyclerView(obj: MatrixGroup)
     {
         if (!isImageAdapter)
@@ -197,26 +184,30 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
 
     override fun showToast(obj: String)
     {
-        Toasts.add(obj)
+        context!!.toast(obj)
     }
 
-    fun setImageAdapter()
+    private fun setImageAdapter()
     {
-        if (!isPaused && isRecycleViewInited())
+        if (!isPaused && isRecycleViewInitted())
         {
             isImageAdapter = true
-            mMatrixRecyclerImageAdapter.setList(mMatrixRecyclerTextAdapter.getList().clone() as ArrayList<MatrixGroup>)
+            mMatrixRecyclerImageAdapter.setList(
+                mMatrixRecyclerTextAdapter.getList().clone() as ArrayList<MatrixGroup>
+            )
             mMatrixRecyclerView.adapter = mMatrixRecyclerImageAdapter
             mMatrixRecyclerImageAdapter.notifyDataSetChanged()
         }
     }
 
-    fun setTextAdapter()
+    private fun setTextAdapter()
     {
-        if (!isPaused && isRecycleViewInited())
+        if (!isPaused && isRecycleViewInitted())
         {
             isImageAdapter = false
-            mMatrixRecyclerTextAdapter.setList(mMatrixRecyclerImageAdapter.getList().clone() as ArrayList<MatrixGroup>)
+            mMatrixRecyclerTextAdapter.setList(
+                mMatrixRecyclerImageAdapter.getList().clone() as ArrayList<MatrixGroup>
+            )
             mMatrixRecyclerView.adapter = mMatrixRecyclerTextAdapter
             mMatrixRecyclerTextAdapter.notifyDataSetChanged()
         }
@@ -234,7 +225,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
                 {
                     var isUnded = false
 
-                    val position = viewHolder.adapterPosition
+
+                    val position = viewHolder.absoluteAdapterPosition
                     val item = mMatrixRecyclerImageAdapter.getData(position)
 
                     mMatrixRecyclerImageAdapter.removeElement(position)
@@ -263,7 +255,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
                 {
                     var isUnded = false
 
-                    val position = viewHolder.adapterPosition
+                    val position = viewHolder.absoluteAdapterPosition
                     val item = mMatrixRecyclerTextAdapter.getData(position)
 
                     mMatrixRecyclerTextAdapter.removeElement(position)
@@ -296,20 +288,13 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
         itemTouchhelper.attachToRecyclerView(mMatrixRecyclerView)
     }
 
-    fun checkToast()
+    private fun loadData()
     {
-        if (Toasts.isNotEmpty())
+        if (!loaded)
         {
-            for (i in Toasts)
-            {
-                this.context!!.toast(i)
-            }
-            Toasts.clear()
+            mMatrixPresenter.onLoadSavedInstance()
+            loaded = true
         }
-
-        toastHandler.postDelayed({
-            checkToast()
-        }, 2000)
     }
 
     override fun updateSettings()
@@ -345,11 +330,93 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable
         secondMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.secondValue)
     }
 
-    private fun isRecycleViewInited() =
+    private fun isRecycleViewInitted() =
         (::mMatrixRecyclerView.isInitialized &&
                 ::mMatrixRecyclerLayoutManager.isInitialized &&
                 ::mMatrixRecyclerImageAdapter.isInitialized &&
                 ::mMatrixRecyclerTextAdapter.isInitialized
                 )
 
+
+    override fun btnDeterminantClicked()
+    {
+        mMatrixPresenter.onDeterminantClick(firstMatrix.text.toString())
+    }
+
+    override fun btnInverseClicked()
+    {
+        mMatrixPresenter.onInversClick(firstMatrix.text.toString())
+    }
+
+    override fun btnPlusClicked()
+    {
+        mMatrixPresenter.onPlusClick(
+            firstMatrix.text.toString(),
+            secondMatrix.text.toString()
+        )
+    }
+
+    override fun btnMinusClicked()
+    {
+        mMatrixPresenter.onMinusClick(
+            firstMatrix.text.toString(),
+            secondMatrix.text.toString()
+        )
+    }
+
+    override fun btnFirstTimeSecondClicked()
+    {
+        mMatrixPresenter.onTimesClick(firstMatrix.text.toString(), secondMatrix.text.toString())
+    }
+
+    override fun btnSecondTimesFirstClicked()
+    {
+        mMatrixPresenter.onTimesClick(secondMatrix.text.toString(), firstMatrix.text.toString())
+    }
+
+    override fun btnSwitchFPClicked()
+    {
+        mMatrixPresenter.btnSwitchClicked(1)
+    }
+
+    override fun setBtnFragment(position : Int)
+    {
+        buttonViewPager.setCurrentItem(position, true)
+    }
+
+    override fun btnEighnvalueClicked()
+    {
+        mMatrixPresenter.btnEighnvalueClicked()
+    }
+
+    override fun btnEighnvectorClicked()
+    {
+        mMatrixPresenter.btnEighnvectorClicked()
+    }
+
+    override fun btnNegativeClicked()
+    {
+        mMatrixPresenter.btnNegativeClicked()
+    }
+
+    override fun btnPositiveClicked()
+    {
+        mMatrixPresenter.btnPositiveClicked()
+    }
+
+    override fun btnRankClicked()
+    {
+        mMatrixPresenter.btnRankClicked()
+    }
+
+    override fun btnSolveSystemClicked()
+    {
+        mMatrixPresenter.btnSolveSystemClicked()
+    }
+
+    override fun btnSwitchSPClicked()
+    {
+        mMatrixPresenter.btnSwitchClicked(0)
+    }
 }
+

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.fragments.matrixFragment.MatrixButtonGridFragment">
+
+    <GridLayout
+            android:id="@+id/gridMatrixBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:orientation="horizontal">
+
+
+        <Button
+                android:id="@+id/btnDeterminant"
+                style="@style/btnStyle"
+                android:text="@string/determinant" />
+
+        <Button
+                android:id="@+id/btnPlus"
+                style="@style/btnStyle"
+                android:text="@string/btnPlus" />
+
+        <Button
+                android:id="@+id/btnMinus"
+                style="@style/btnStyle"
+                android:text="@string/btnMinus" />
+
+        <GridLayout
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_gravity="fill"
+                android:columnCount="2"
+                android:orientation="horizontal"
+                android:layout_marginBottom="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_columnWeight="1">
+
+            <Button
+                    android:id="@+id/btnSwitchBtnFragment"
+                    style="@style/SubBtnStyle"
+                    android:layout_columnWeight="1"
+                    android:text="@string/btnSwitch" />
+
+            <Button
+                    android:id="@+id/btnFirstTimesSecond"
+                    style="@style/SubBtnStyle"
+                    android:layout_columnWeight="3"
+                    android:text="@string/btnFirstTimesSecond" />
+
+
+        </GridLayout>
+
+        <Button
+                android:id="@+id/btnSecondTimesFirst"
+                style="@style/btnStyle"
+                android:text="@string/btnSecondTimesFirst" />
+
+        <Button
+                android:id="@+id/btnInvers"
+                style="@style/btnStyle"
+                android:text="@string/btnInvers" />
+    </GridLayout>
+
+</FrameLayout>

@@ -56,19 +56,20 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     private val uiScope = CoroutineScope(Dispatchers.Main + supJob)
 
     //список работ
-    lateinit var MainJob : Job
-
+    lateinit var MainJob: Job
 
 
     private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
-        when(error)
+        when (error)
         {
-            is WrongDataException->{
+            is WrongDataException ->
+            {
                 viewState.showToast(error.toString().substringAfter(':'))
-        }
-            else ->{
+            }
+            else ->
+            {
                 Log.d("ExceptionHandler@", error.toString())
-                Log.d("ExceptionHandler@","StackTrace@", error)
+                Log.d("ExceptionHandler@", "StackTrace@", error)
             }
         }
     })
@@ -234,7 +235,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
         //CoroutineScope(Dispatchers.Main)
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
-            val mMatrixGroup  = withContext(Dispatchers.IO) {
+            val mMatrixGroup = withContext(Dispatchers.IO) {
 
                 //сохраняем время начала операции
                 val time = java.util.GregorianCalendar()
@@ -279,7 +280,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
-            val mMatrixGroup = withContext(Dispatchers.IO){
+            val mMatrixGroup = withContext(Dispatchers.IO) {
                 //сохраняем время начала операции
                 val time = java.util.GregorianCalendar()
                 time.timeInMillis = System.currentTimeMillis()
@@ -314,6 +315,41 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                 viewState.addToRecyclerView(mMatrixGroup)
             }
         }
+    }
+
+    fun btnSwitchClicked(position: Int)
+    {
+        viewState.setBtnFragment(position)
+    }
+
+    fun btnEighnvalueClicked()
+    {
+        viewState.showToast("WIP")
+    }
+
+    fun btnNegativeClicked()
+    {
+        viewState.showToast("WIP")
+    }
+
+    fun btnEighnvectorClicked()
+    {
+        viewState.showToast("WIP")
+    }
+
+    fun btnPositiveClicked()
+    {
+        viewState.showToast("WIP")
+    }
+
+    fun btnRankClicked()
+    {
+        viewState.showToast("WIP")
+    }
+
+    fun btnSolveSystemClicked()
+    {
+        viewState.showToast("WIP")
     }
 
 
