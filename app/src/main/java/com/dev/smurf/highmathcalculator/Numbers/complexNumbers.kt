@@ -1,8 +1,7 @@
 package com.dev.smurf.highmathcalculator.Numbers
 
-import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
-import com.dev.smurf.highmathcalculator.Utils.toComplex
+import com.dev.smurf.highmathcalculator.StringsExtension.toComplexNumber
 
 
 class ComplexNumber( _re : Fraction = Fraction(),_im : Fraction = Fraction())
@@ -117,7 +116,7 @@ class ComplexNumber( _re : Fraction = Fraction(),_im : Fraction = Fraction())
             is Int -> return (this.re == other)&&(this.im == Fraction())
             is Double -> return(this.re == other)&&(this.im == Fraction())
             is Float -> return(this.re == other)&&(this.im == Fraction())
-            is String -> return(this == other.toComplex())
+            is String -> return(this == other.toComplexNumber())
             else -> return false
         }
     }

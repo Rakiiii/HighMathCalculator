@@ -3,6 +3,7 @@ package com.dev.smurf.highmathcalculator.Polynomials
 import android.util.Log
 import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
+import com.dev.smurf.highmathcalculator.StringsExtension.*
 import com.dev.smurf.highmathcalculator.Utils.*
 
 class ExponentialPolynomial private constructor(
@@ -59,7 +60,7 @@ class ExponentialPolynomial private constructor(
                     exp = "0"
                 }
                 //add cof to polynomial
-                polynomial.plusToCof(exp.toInt(), value.toComplex())
+                polynomial.plusToCof(exp.toInt(), value.toComplexNumber())
 
             }
             polynomial.sortBy { s -> s.first }

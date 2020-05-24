@@ -1,8 +1,8 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
-import com.dev.smurf.highmathcalculator.Utils.separateBySymbol
-import com.dev.smurf.highmathcalculator.Utils.toComplex
+import com.dev.smurf.highmathcalculator.StringsExtension.separateBySymbol
+import com.dev.smurf.highmathcalculator.StringsExtension.toComplexNumber
 
 class PolynomialRoots
 {
@@ -22,7 +22,7 @@ class PolynomialRoots
 
         for( i in tmp )
         {
-            roots.add( Pair( i.substringBefore('=') , i.substringAfter('=').toComplex() ) )
+            roots.add( Pair( i.substringBefore('=') , i.substringAfter('=').toComplexNumber() ) )
         }
     }
 

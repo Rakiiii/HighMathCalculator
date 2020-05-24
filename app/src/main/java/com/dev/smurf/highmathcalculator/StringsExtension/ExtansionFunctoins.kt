@@ -1,4 +1,4 @@
-package com.dev.smurf.highmathcalculator.Utils
+package com.dev.smurf.highmathcalculator.StringsExtension
 
 import android.util.Log
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
@@ -7,20 +7,10 @@ import com.dev.smurf.highmathcalculator.Numbers.Fraction
 fun gcd( a : Int , b : Int) : Int
 {
     if(b == 0)return a
-    else return gcd( b ,a % b )
+    else return gcd(b, a % b)
 }
 
-fun String.toFraction(): Fraction
-{
-    when
-    {
-        (this.contains('.'))->return Fraction(this.filterNot{ s -> (s == '.' )}.filterNot { s -> (s ==')' && (s == '(')) }.toInt() ,
-            10.pow( this.substringAfter('.').filterNot { s -> (s == ')') }.length))
-        (this.contains('/')) -> return Fraction(this.substringBefore('/').filterNot { s -> (s == '(') }.toInt(),
-            this.substringAfter('/').filterNot { s -> (s == ')') }.toInt())
-        else -> return Fraction(this.filterNot { s -> (s == '(' && s == ')' ) }.toInt(), 1)
-    }
-}
+
 
 fun Int.pow(x : Int) : Int
 {
@@ -29,57 +19,6 @@ fun Int.pow(x : Int) : Int
     for( i in 1..x)
         res *=this
     return res
-}
-
-fun String.translateToComplex(signIm : Char = '+' , signRe : Char = '+'  ) : ComplexNumber
-{
-    var line = this
-    if((signIm != '+' && signIm != '-') || (signRe != '+' && signRe != '-'))throw Exception("unnown char in complex amountOfRoots translation")
-    //разбиваем текущий столбец на отдельные цифры
-    var subIm = Fraction()
-    if(line.substringAfter(signIm).filterNot { s->(s == 'i') }.isBlank())subIm = Fraction(1,1)
-    else subIm = line.substringAfter(signIm).filterNot { s -> (s == 'i') }.toFraction()
-    var subRe = line.substringBefore(signIm).toFraction()
-
-    if(signRe == '-')subRe*= Fraction(-1,1)
-    if(signIm == '-')subIm*= Fraction(-1,1)
-    return ComplexNumber(subRe , subIm)
-}
-
-fun String.toComplex() : ComplexNumber
-{
-    var line = this
-    var signRe = '+'
-    if(line[0] == '-')
-    {
-        signRe = '-'
-        line = line.substringAfter('-')
-    }
-    when
-    {
-        line.contains('+') && line.contains('i', true) ->
-        {
-            return line.translateToComplex('+' , signRe )
-        }
-        line.contains('-') && line.contains('i')->
-        {
-            return line.translateToComplex('-' , signRe)
-        }
-        line.contains('i')->
-        {
-            var subIm = Fraction()
-            if(line.filterNot { s->(s == 'i') }.isBlank())subIm = Fraction(1,1)
-            else subIm = line.filterNot { s -> (s == 'i') }.toFraction()
-            if(signRe == '-')subIm*= Fraction(-1,1)
-            return ComplexNumber(_im = subIm)
-        }
-        else->
-        {
-            var subRe = line.toFraction()
-            if(signRe == '-')subRe *= Fraction(-1,1)
-            return ComplexNumber(_re = subRe)
-        }
-    }
 }
 
 fun String.countLines() : Int
@@ -286,41 +225,6 @@ fun String.removePluses() : String
     return result
 }
 
-fun String.toPolinomCofsString( symb : Char) : String
-{
-    var tmp = this.translateDegree().removePluses() + symb + '0' + ' '
-    var finalString = tmp.substringBefore(' ').substringBefore(symb).substringAfter('(').substringBefore(')') + ' '
-    Log.d("DEGUB@" , "Init Strings")
-    for(i in 0 until this.amountOfCofsInPolinom())
-    {
-        Log.d("DEBUG@" , "Cycle Starts _" + this.amountOfCofsInPolinom().toString())
-        //throw Exception("Cycle started")
-        var word1 = tmp.substringBefore(' ')
-        var word2 = tmp.substringAfter(' ').substringBefore(' ')
-        Log.d("DEBUG@" , "Words init _" + i.toString() )
-        for( j in 0 until (word1.substringAfter(symb).toInt() - word2.substringAfter(symb).toInt()))
-        {
-            if( j == (word1.substringAfter(symb).toInt() - word2.substringAfter(symb).toInt() - 1 ) )
-            {
-                finalString += word2.substringBefore(symb).substringAfter('(').substringBefore(')') + ' '
-            }
-            else
-            {
-                finalString += "0 "
-            }
-        }
-
-        Log.d("DEBUG@" , "finnile word after _" +i.toString() + ' ' + finalString)
-
-        tmp = tmp.substringAfter(' ')
-
-        Log.d("DEBUG@" , "tmp after_" + i.toString() + tmp)
-    }
-
-    Log.d("DEBUG@" , "Cycle finished")
-
-    return finalString
-}
 
 fun String.substringBeforeSymbol() : String
 {
@@ -395,19 +299,6 @@ fun String.fields(breakString : String) : MutableList<String>
     }while (str.contains(breakString))
 
     result.add(str.substringBefore(breakString))
-
-    return result
-}
-
-//returns strings where oldStr symbols was changed by newStr
-fun String.changeChar(oldChar : Char , newChar : Char) : String
-{
-    var result = ""
-
-    for(i in this)
-    {
-        result += if(i == oldChar)newChar else i
-    }
 
     return result
 }

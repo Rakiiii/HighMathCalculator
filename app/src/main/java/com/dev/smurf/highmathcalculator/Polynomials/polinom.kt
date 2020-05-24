@@ -4,9 +4,9 @@ import android.widget.EditText
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
-import com.dev.smurf.highmathcalculator.Utils.countWords
-import com.dev.smurf.highmathcalculator.Utils.toComplex
-import com.dev.smurf.highmathcalculator.Utils.toDegree
+import com.dev.smurf.highmathcalculator.StringsExtension.countWords
+import com.dev.smurf.highmathcalculator.StringsExtension.toComplexNumber
+import com.dev.smurf.highmathcalculator.StringsExtension.toDegree
 
 @Deprecated("must be replaced by new polynomial tree")
 class polinom( _size : Int)
@@ -27,7 +27,7 @@ class polinom( _size : Int)
         var cofLine = pol.text.toString().trim()
         for(i in  0 until size)
         {
-            cofs[i] = cofLine.substringBefore(' ').toComplex()
+            cofs[i] = cofLine.substringBefore(' ').toComplexNumber()
             cofLine = cofLine.substringAfter(' ')
         }
     }
@@ -37,7 +37,7 @@ class polinom( _size : Int)
         var line = _line.trim()
         for(i in 0 until size)
         {
-            cofs[i] = line.substringBefore(' ').toComplex()
+            cofs[i] = line.substringBefore(' ').toComplexNumber()
             line = line.substringAfter(' ')
         }
     }

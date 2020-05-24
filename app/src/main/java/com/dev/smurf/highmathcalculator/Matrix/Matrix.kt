@@ -1,13 +1,12 @@
 package com.dev.smurf.highmathcalculator.Matrix
 
-import android.util.Log
 import com.dev.smurf.highmathcalculator.Exceptions.*
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
-import com.dev.smurf.highmathcalculator.Utils.countLines
-import com.dev.smurf.highmathcalculator.Utils.countWords
-import com.dev.smurf.highmathcalculator.Utils.pow
-import com.dev.smurf.highmathcalculator.Utils.toComplex
+import com.dev.smurf.highmathcalculator.StringsExtension.countLines
+import com.dev.smurf.highmathcalculator.StringsExtension.countWords
+import com.dev.smurf.highmathcalculator.StringsExtension.pow
+import com.dev.smurf.highmathcalculator.StringsExtension.toComplexNumber
 
 //реализация работы с матрицей
 open class Matrix private constructor(
@@ -42,7 +41,7 @@ open class Matrix private constructor(
             //запоминаем содержимое поля ввода
             var info: String = txt.filterNot { s -> (s == '|') }
 
-            if (matrixWidth == 1 && matrixHeight == 1) matrices[0][0] = info.trim().toComplex()
+            if (matrixWidth == 1 && matrixHeight == 1) matrices[0][0] = info.trim().toComplexNumber()
             else
             {
                 //проходим все строки матрицы
@@ -70,7 +69,7 @@ open class Matrix private constructor(
                         subLine = subLine.substringAfter(' ').trim()
 
                         //добовляем элемент в матрицу
-                        matrices[i][j] = subWord.toComplex()
+                        matrices[i][j] = subWord.toComplexNumber()
                     }
                 }
             }

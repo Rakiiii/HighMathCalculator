@@ -1,9 +1,8 @@
 package com.dev.smurf.highmathcalculator.Numbers
 
 import com.dev.smurf.highmathcalculator.Exceptions.DivisionFractionByZeroException
-import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
-import com.dev.smurf.highmathcalculator.Utils.gcd
+import com.dev.smurf.highmathcalculator.StringsExtension.gcd
 import kotlin.math.absoluteValue
 
 class Fraction(_upper : Int = 0, _lower : Int = 1)
@@ -159,7 +158,10 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
 
     private fun cut() : Fraction
     {
-        val _gcd = gcd(this.upper.absoluteValue , this.lower.absoluteValue)
+        val _gcd = gcd(
+            this.upper.absoluteValue,
+            this.lower.absoluteValue
+        )
         this.upper /= _gcd
         this.lower /= _gcd
         return this

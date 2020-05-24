@@ -1,12 +1,8 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
-import com.dev.smurf.highmathcalculator.Exceptions.NoOperationForTypesException
-import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
-import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
+import com.dev.smurf.highmathcalculator.Exceptions.*
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
-import com.dev.smurf.highmathcalculator.Utils.amountOfCofsInPolinom
-import com.dev.smurf.highmathcalculator.Utils.removePluses
-import com.dev.smurf.highmathcalculator.Utils.toComplex
+import com.dev.smurf.highmathcalculator.StringsExtension.*
 
 class DiofantPolynomial private constructor(private val polynomial : MutableMap<String , ComplexNumber>): PolynomialBase()
 {
@@ -30,7 +26,7 @@ class DiofantPolynomial private constructor(private val polynomial : MutableMap<
                 if(polynomial.containsKey(tmp.last().toString()))
                 {
                     //get cof from string and convert it to complex number then plus it allready add cof
-                    val tmpValue = polynomial[tmp.last().toString()]?.plus(tmp.substringBefore(tmp.last()).toComplex())
+                    val tmpValue = polynomial[tmp.last().toString()]?.plus(tmp.substringBefore(tmp.last()).toComplexNumber())
 
                     //change cof
                     polynomial[tmp.last().toString()] = tmpValue!!
@@ -38,7 +34,7 @@ class DiofantPolynomial private constructor(private val polynomial : MutableMap<
                 else
                 {
                     //add new cof with new symbol
-                    polynomial[tmp.last().toString()] = tmp.substringBefore(tmp.last()).toComplex()
+                    polynomial[tmp.last().toString()] = tmp.substringBefore(tmp.last()).toComplexNumber()
                 }
                 str = str.substringAfter(' ')
             }
@@ -48,34 +44,6 @@ class DiofantPolynomial private constructor(private val polynomial : MutableMap<
 
         fun createEmptyPolynomial() = DiofantPolynomial()
     }
-    /*
-    constructor(obj : String)
-    {
-        var str = obj.substringBefore('|').filter { s -> (s != ' ') }.removePluses()
-
-            for(i in 0 until obj.amountOfCofsInPolinom())
-            {
-                //get one cof
-                val tmp = str.substringBefore(' ')
-
-                //add new cof to polynomial
-                //if cof contained
-                if(polynomial.containsKey(tmp.last().toString()))
-                {
-                    //get cof from string and convert it to complex number then plus it allready add cof
-                    val tmpValue = polynomial[tmp.last().toString()]?.plus(tmp.substringBefore(tmp.last()).toComplex())
-
-                    //change cof
-                    polynomial[tmp.last().toString()] = tmpValue!!
-                }
-                else
-                {
-                    //add new cof with new symbol
-                    polynomial[tmp.last().toString()] = tmp.substringBefore(tmp.last()).toComplex()
-                }
-                str = str.substringAfter(' ')
-            }
-    }*/
 
     override fun plus(obj: Any) : PolynomialBase
     {
