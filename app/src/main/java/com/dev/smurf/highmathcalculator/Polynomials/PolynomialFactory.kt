@@ -4,6 +4,9 @@ class PolynomialFactory
 {
     fun createPolynomial(obj: String): PolynomialBase
     {
-        return if (obj.contains('^')) ExponensialPolynomial(obj) else DiofantPolynomial(obj)
+        return if (obj.contains('^')) ExponensialPolynomial(obj)
+        else DiofantPolynomial.createDiofantPolynomial(
+            obj
+        )
     }
 }
