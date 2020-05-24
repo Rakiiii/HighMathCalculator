@@ -142,7 +142,8 @@ fun String.toComplexNumber(): ComplexNumber
     when
     {
         amountOfi == 0 -> return ComplexNumber(_re = trimmed.toFraction())
-        amountOfi == 1 && amountOfMinus == 0 && amountOfPlus == 0 -> return ComplexNumber(_im = trimmed.toFraction())
+        amountOfi == 1 && amountOfMinus == 0 && amountOfPlus == 0 ->
+            return ComplexNumber(_im = trimmed.filterNot { s -> s == 'i' }.toFraction())
         amountOfi == 1 && amountOfMinus < 2 && amountOfPlus == 1 ->
         {
             val complexNumber = trimmed.fields("+")

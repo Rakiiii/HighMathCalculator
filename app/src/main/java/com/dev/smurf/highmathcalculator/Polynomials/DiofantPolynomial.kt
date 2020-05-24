@@ -43,6 +43,12 @@ class DiofantPolynomial private constructor(private val polynomial : MutableMap<
         }
 
         fun createEmptyPolynomial() = DiofantPolynomial()
+
+        /*
+        fun isDiofantPolynomial(str : String) : Boolean
+        {
+
+        }*/
     }
 
     override fun plus(obj: Any) : PolynomialBase

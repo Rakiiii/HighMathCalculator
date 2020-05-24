@@ -2,6 +2,7 @@ package com.dev.smurf.highmathcalculator.CanvasExtension
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.util.Log
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
 import com.dev.smurf.highmathcalculator.PaintExtension.getFractionWidth
@@ -28,11 +29,11 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, y: Float, mPaint:
         complexNumber.isImagination() ->
         {
             //if imegination number render imeginary part and count i pos
-            val iVerticalPos = this.drawFraction(complexNumber.im, x, y, mPaint) + high / 2
+            val iVerticalPos = y + this.drawFraction(complexNumber.im, x, y, mPaint) - high / 2 - CanvasRenderSpecification.letterVerticalSpacing
 
-            val iHorizontalPos = mPaint.getFractionWidth(complexNumber.im)
+            val iHorizontalPos = x + mPaint.getFractionWidth(complexNumber.im)
 
-            this.drawText("i", x + iHorizontalPos, y + iVerticalPos, mPaint)
+            this.drawText("i",  iHorizontalPos, iVerticalPos, mPaint)
 
             return //iVerticalPos - high/2
         }
