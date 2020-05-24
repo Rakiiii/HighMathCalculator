@@ -1,6 +1,7 @@
 package com.example.smurf.mtarixcalc
 
 import androidx.lifecycle.ViewModel
+import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 
 
 //View model для Recycler view.list

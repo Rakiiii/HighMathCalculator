@@ -1,3 +1,7 @@
 package com.dev.smurf.highmathcalculator.Exceptions
 
-class WrongDataException(msg : String) : Exception(msg)
+open class WrongDataException() : Exception()
+{
+    override val message: String?
+        get() = "Wrong Data Exception"
+}

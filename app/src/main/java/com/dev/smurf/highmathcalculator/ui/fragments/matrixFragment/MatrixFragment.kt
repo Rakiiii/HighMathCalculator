@@ -16,12 +16,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
+import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapterImageView
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
-import com.example.smurf.mtarixcalc.MatrixGroup
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
@@ -55,7 +55,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     private var isImageAdapter = false
     private var isPaused = false
 
-    private var BtnFrgmentSet = mutableListOf<Fragment>()
+    private var btnFragmentSet = mutableListOf<Fragment>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,6 +74,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         //view model для сохранения содержимого recycler view
         mMatrixRecyclerViewModel =
             ViewModelProviders.of(this.activity!!).get(MatrixRecyclerViewModel::class.java)
+
 
         //инициализация view model для содержимого edittext
         mMatrixEdittextViewModel =
@@ -144,6 +145,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     //инициализация recyclerView
     private fun initRecyclerView()
     {
+        if(isRecycleViewInitted())return
         mMatrixRecyclerLayoutManager = LinearLayoutManager(context)
 
         mMatrixRecyclerTextAdapter =
@@ -172,18 +174,24 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     private fun initViewPager()
     {
+        if (isViewPagerInited())return
         if (activity != null)
         {
             mBtnMatrixViewPagerAdapter =
                 BtnViewPagerFragmentStateAdapter(
                     activity!!
                 )
-            BtnFrgmentSet.add(MatrixButtonGridFragment().addEventListener(this))
-            BtnFrgmentSet.add(MatrixButtonGridFragmentSecondPage().setListener(this))
-            mBtnMatrixViewPagerAdapter.setNewFragmentSet(BtnFrgmentSet)
+            btnFragmentSet.add(MatrixButtonGridFragment().addEventListener(this))
+            btnFragmentSet.add(MatrixButtonGridFragmentSecondPage().setListener(this))
+            mBtnMatrixViewPagerAdapter.setNewFragmentSet(btnFragmentSet)
             buttonViewPager.adapter = mBtnMatrixViewPagerAdapter
         }
 
+    }
+
+    private fun isViewPagerInited():Boolean
+    {
+        return ::mBtnMatrixViewPagerAdapter.isInitialized
     }
 
     override fun addToRecyclerView(obj: MatrixGroup)
@@ -216,6 +224,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         }
     }
 
+    //set text adapter
     private fun setTextAdapter()
     {
         if (!isPaused && isRecycleViewInitted())
@@ -230,6 +239,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     }
 
 
+    //add swipe deletting behaviour
     private fun enableSwipeToDeleteAndUndo()
     {
         val swipeToDeleteCallback = object : SwipeToDeleteCallback(context!!)
@@ -304,6 +314,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         itemTouchhelper.attachToRecyclerView(mMatrixRecyclerView)
     }
 
+    //loads data base
     private fun loadData()
     {
         if (!loaded)
@@ -313,6 +324,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         }
     }
 
+
+    //updating settings
     override fun updateSettings()
     {
         if (mMatrixPresenter.checkImageMode())
@@ -328,6 +341,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         }
     }
 
+    //get data from view model
     private fun restoreFromViewModel()
     {
         //востонавливаемся из view model
@@ -346,6 +360,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         secondMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.secondValue)
     }
 
+    //checks is recycler view inited
     private fun isRecycleViewInitted() =
         (::mMatrixRecyclerView.isInitialized &&
                 ::mMatrixRecyclerLayoutManager.isInitialized &&

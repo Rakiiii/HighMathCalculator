@@ -2,6 +2,7 @@ package com.dev.smurf.highmathcalculator.Polynomials
 
 import android.util.Log
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Utils.*
 
@@ -116,7 +117,7 @@ class ExponensialPolynomial : PolynomialBase
             //in any other case the type of right operand is wrong
             else ->
             {
-                throw WrongDataException("Unknown type for polynomial plus")
+                throw WrongTypeForOperationException("plus")
             }
         }
 
@@ -149,7 +150,7 @@ class ExponensialPolynomial : PolynomialBase
             //in any other case the type of right operand is wrong
             else ->
             {
-                throw WrongDataException("Unknown type for polynomial minus")
+                throw WrongTypeForOperationException("minus")
             }
         }
 
@@ -188,7 +189,7 @@ class ExponensialPolynomial : PolynomialBase
 
             else ->
             {
-                throw WrongDataException("Unknown type for polynomial multiplication")
+                throw WrongTypeForOperationException("times")
             }
         }
 
@@ -223,7 +224,7 @@ class ExponensialPolynomial : PolynomialBase
             }
             else ->
             {
-                throw WrongDataException("Unknown type for polynomial division")
+                throw WrongTypeForOperationException("division")
             }
         }
 

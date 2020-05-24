@@ -204,6 +204,11 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
         }
     }
 
+    fun onSwitchBtnFragmentClick(position : Int)
+    {
+        viewState.showToast("WIP")
+    }
+
     //нажатие на кнопку решения
     //@SuppressLint("StaticFieldLeak")
     fun onRootsOfClick(left: String)

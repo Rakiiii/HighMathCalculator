@@ -25,6 +25,8 @@ class CanvasRenderSpecification
         val PolynomialTopMargin = 6.0f
         val PolynomialBottomMargin = 6.0f
 
+        val deffRadious = 5.0f
+
         fun createBlackPainter() : Paint
         {
             val blackPainter = Paint(Color.BLACK)

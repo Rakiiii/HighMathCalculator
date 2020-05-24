@@ -3,8 +3,9 @@ package com.dev.smurf.highmathcalculator.CanvasExtension
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import com.dev.smurf.highmathcalculator.Utils.getComplexNumberWidth
-import com.example.smurf.mtarixcalc.Matrix
+import com.dev.smurf.highmathcalculator.Matrix.Matrix
+import com.dev.smurf.highmathcalculator.PaintExtension.getComplexNumberWidth
+import com.dev.smurf.highmathcalculator.PaintExtension.getProportionalDotsRadius
 
 
 //Extension for canvas to draw matrix
@@ -20,10 +21,10 @@ fun Canvas.drawMatrix(matrix: Matrix, x: Float, y: Float, mPaint: Paint): Pair<F
 
     //matrix of render positions
     //val renderMatrix: Array<Array<Float>> = Array(matrix.width, { Array(matrix.height, { 0.0f }) })
-    val renderMatrix: Array<Array<Float>> = Array(matrix.height, { Array(matrix.width, { 0.0f }) })
+    val renderMatrix: Array<Array<Float>> = Array(matrix.height) { Array(matrix.width, { 0.0f }) }
 
     //matrix rows vertical offset
-    val verticalRowsOffset: Array<Pair<Float, Boolean>> = Array(matrix.height, { Pair(0.0f, false) })
+    val verticalRowsOffset: Array<Pair<Float, Boolean>> = Array(matrix.height) { Pair(0.0f, false) }
 
     //array that contains max width of elem in every column
     val maxLengthArray = FloatArray(matrix.width)
@@ -142,6 +143,10 @@ fun Canvas.drawMatrix(matrix: Matrix, x: Float, y: Float, mPaint: Paint): Pair<F
 //Extension for canvas to draw matrix in brackets
 fun Canvas.drawMatrixInBrackets(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 {
+    if(matrix.isEmpty())return
+    if (matrix.isNumber())return drawComplex(matrix.matrices[0][0],x,y,mPaint)
+
+
     //high of the letter of the setted font
     val high = CanvasRenderSpecification.getLetterHigh(mPaint)
 
@@ -184,6 +189,10 @@ fun Canvas.drawMatrixInBrackets(matrix: Matrix, x: Float, y: Float, mPaint: Pain
 //Extension for canvas to draw matrix in Lines
 fun Canvas.drawMatrixInLines(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 {
+    if(matrix.isEmpty() )return
+    if (matrix.isNumber())return drawComplex(matrix.matrices[0][0],x,y,mPaint)
+
+
     //high of the letter of the setted font
     val high = CanvasRenderSpecification.getLetterHigh(mPaint)
 
@@ -211,4 +220,18 @@ fun Canvas.drawMatrixInLines(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 
     //restore old style
     mPaint.style = style
+}
+
+
+fun Canvas.drawMatrixInBracketsAsDots(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
+{
+    if (matrix.isEmpty())return
+    drawProporsionalDotsInBrackets(3,x,y,mPaint)
+}
+
+fun Canvas.drawMatrixInLinesAsDots(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
+{
+    if(matrix.isEmpty())return
+
+    drawProporsionalDotsInLines(3,x,y,mPaint.getProportionalDotsRadius(),mPaint)
 }

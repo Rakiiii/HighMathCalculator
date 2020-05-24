@@ -1,6 +1,7 @@
 package com.dev.smurf.highmathcalculator.Numbers
 
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.Utils.toComplex
 
 
@@ -28,7 +29,7 @@ class ComplexNumber( _re : Fraction = Fraction(),_im : Fraction = Fraction())
             {
                 return ComplexNumber(this.re + secNumber , this.im)
             }
-            else -> throw WrongDataException("Unknown type")
+            else -> throw WrongTypeForOperationException("plus")
         }
     }
 
@@ -50,7 +51,7 @@ class ComplexNumber( _re : Fraction = Fraction(),_im : Fraction = Fraction())
             {
                 return ComplexNumber(this.re * secNumber , this.im*secNumber)
             }
-            else -> throw WrongDataException("Unknown type")
+            else -> throw WrongTypeForOperationException("times")
         }
     }
 
@@ -71,7 +72,7 @@ class ComplexNumber( _re : Fraction = Fraction(),_im : Fraction = Fraction())
             {
                 return ComplexNumber(this.re - secNumber , this.im)
             }
-            else -> throw WrongDataException("Unknown type")
+            else -> throw WrongTypeForOperationException("minus")
         }
     }
 
@@ -92,7 +93,7 @@ class ComplexNumber( _re : Fraction = Fraction(),_im : Fraction = Fraction())
             {
                 return ComplexNumber(this.re / secNumber , this.im / secNumber)
             }
-            else -> throw WrongDataException("Unknown type")
+            else -> throw WrongTypeForOperationException("division")
         }
 
     }

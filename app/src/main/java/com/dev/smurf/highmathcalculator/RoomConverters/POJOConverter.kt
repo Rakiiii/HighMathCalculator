@@ -1,10 +1,10 @@
 package com.dev.smurf.highmathcalculator.RoomConverters
 
 import androidx.room.TypeConverter
+import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialFactory
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialRoots
-import com.example.smurf.mtarixcalc.Matrix
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,7 +23,7 @@ class POJOConverter
         //конвертация строки в матрицу
         @TypeConverter
         @JvmStatic
-        fun toMatrix(matrix: String): Matrix = Matrix(matrix)
+        fun toMatrix(matrix: String): Matrix = Matrix.createMatrix(matrix)
 
         //конвертация времени в строку
         @TypeConverter

@@ -1,6 +1,7 @@
 package com.example.smurf.mtarixcalc
 
 import android.widget.EditText
+import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
 import com.dev.smurf.highmathcalculator.Utils.countWords

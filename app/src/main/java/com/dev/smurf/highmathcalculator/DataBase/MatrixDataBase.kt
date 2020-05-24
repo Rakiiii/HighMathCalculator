@@ -2,7 +2,7 @@ package com.dev.smurf.highmathcalculator.DataBase
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.smurf.mtarixcalc.MatrixGroup
+import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 
 
 

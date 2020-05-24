@@ -17,4 +17,8 @@ interface PolynomialViewInterface : MvpView
 
     //установить новый список элементов RecyclerView
     fun setRecyclerViewList(ar : ArrayList<PolynomialGroup>)
+
+    //set @position btn fragment
+    @StateStrategyType(SkipStrategy::class)
+    fun setBtnFragment(position : Int)
 }

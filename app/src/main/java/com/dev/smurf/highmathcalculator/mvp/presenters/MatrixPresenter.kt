@@ -9,7 +9,7 @@ import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
-import com.example.smurf.mtarixcalc.MatrixGroup
+import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import kotlinx.coroutines.*
 import moxy.InjectViewState
 import moxy.MvpPresenter

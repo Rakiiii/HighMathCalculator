@@ -1,8 +1,9 @@
-package com.example.smurf.mtarixcalc
+package com.dev.smurf.highmathcalculator.ui.POJO
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.RoomConverters.POJOConverter
 import java.util.*
 

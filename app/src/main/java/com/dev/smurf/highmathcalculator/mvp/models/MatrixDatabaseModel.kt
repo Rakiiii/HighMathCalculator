@@ -3,7 +3,7 @@ package com.dev.smurf.highmathcalculator.mvp.models
 import android.content.Context
 import androidx.room.Room
 import com.dev.smurf.highmathcalculator.DataBase.MatrixDataBase
-import com.example.smurf.mtarixcalc.MatrixGroup
+import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 
 
 //модель работы с базой данных для матриц

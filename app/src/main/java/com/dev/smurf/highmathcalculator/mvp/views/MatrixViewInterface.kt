@@ -1,7 +1,6 @@
 package com.dev.smurf.highmathcalculator.mvp.views
 
-
-import com.example.smurf.mtarixcalc.MatrixGroup
+import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndStrategy
 import moxy.viewstate.strategy.SkipStrategy

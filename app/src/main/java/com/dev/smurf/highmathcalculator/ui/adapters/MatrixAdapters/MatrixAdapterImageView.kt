@@ -2,9 +2,6 @@ package com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters
 
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,20 +10,21 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawComplex
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInBrackets
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInLines
+import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRender
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.Utils.*
+import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
-import com.example.smurf.mtarixcalc.MatrixGroup
-import org.jetbrains.anko.image
 import org.jetbrains.anko.imageBitmap
-import org.jetbrains.anko.toast
 import java.text.SimpleDateFormat
 
 
-class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, val secondMatrix: EditText,val width : Float) :
+class MatrixAdapterImageView(
+    val context: Context,
+    val firstMatrix: EditText,
+    val secondMatrix: EditText,
+    val width: Float
+) :
     RecyclerView.Adapter<MatrixAdapterImageView.MatrixViewHolder>()
 {
 
@@ -93,26 +91,16 @@ class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, va
                 R.layout.matrix_expressions_imageview,
                 parent,
                 false
-            ), width
+            ), width - 140.0f
         )
     }
 
 
     override fun onBindViewHolder(holder: MatrixViewHolder, position: Int)
     {
-        try
-        {
-            holder.bind(listOfMatrices[position])
-        }catch (e : Exception)
-        {
-            context.toast(listOfMatrices[position].leftMatrix.toString())
-            var stackTarce = ""
-            for(i in e.stackTrace)
-            {
-                stackTarce += i.toString()
-            }
-            firstMatrix.text = SpannableStringBuilder(stackTarce)
-        }
+
+        holder.bind(listOfMatrices[position])
+
         //листенер для контекстного меню на левую матрицу
         holder.leftMatrix.setOnCreateContextMenuListener(
             ContextMenuListener(
@@ -144,7 +132,8 @@ class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, va
     }
 
 
-    class MatrixViewHolder constructor(itemView: View,val width: Float) : RecyclerView.ViewHolder(itemView)
+    class MatrixViewHolder constructor(itemView: View, val width: Float) :
+        RecyclerView.ViewHolder(itemView)
     {
         //val width: Float = 40.0f
 
@@ -156,7 +145,7 @@ class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, va
             private set
         var sign: ImageView = itemView.findViewById(R.id.operationSignMatrix)
             private set
-        var equalSign : ImageView = itemView.findViewById(R.id.equalsSignMatrix)
+        var equalSign: ImageView = itemView.findViewById(R.id.equalsSignMatrix)
         var timeMatrix: TextView = itemView.findViewById(R.id.timeMatrix)
 
         lateinit var leftMatrixValue: String
@@ -173,12 +162,15 @@ class MatrixAdapterImageView(val context: Context, val firstMatrix: EditText, va
 
             val blackPainter = CanvasRenderSpecification.createBlackPainter()
 
-            val bitmapSet = MatrixRender.renderMatrixSet(group,width,blackPainter)
+            val bitmapSet = MatrixRender.renderWithStrategy(group,width,blackPainter)
+            // = MatrixRender.renderMatrixSet(group, width, blackPainter)
             leftMatrix.imageBitmap = bitmapSet.leftMatrixBitmap
-            if(!bitmapSet.rightMatrixBitmap.IsEmpty())rightMatrix.imageBitmap = bitmapSet.rightMatrixBitmap
-            sign.imageBitmap = bitmapSet.signumBitmap
+            if (!bitmapSet.rightMatrixBitmap.IsEmpty()) rightMatrix.imageBitmap =
+                bitmapSet.rightMatrixBitmap
+            sign.imageBitmap = bitmapSet.signBitmap
             resMatrix.imageBitmap = bitmapSet.resultMatrixBitmap
-            equalSign.imageBitmap = bitmapSet.equlsSignumBitmap
+            equalSign.imageBitmap = bitmapSet.equalsSignBitmap
+
 
             group.time.let {
                 val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")

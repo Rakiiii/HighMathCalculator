@@ -1,6 +1,8 @@
 package com.dev.smurf.highmathcalculator.Numbers
 
+import com.dev.smurf.highmathcalculator.Exceptions.DivisionFractionByZeroException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.Utils.gcd
 import kotlin.math.absoluteValue
 
@@ -33,7 +35,7 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
             {
                 return Fraction(this.upper+right*this.lower , this.lower)
             }
-            else -> throw WrongDataException("Unknown type for plus operation")
+            else -> throw WrongTypeForOperationException("plus")
         }
     }
 
@@ -54,7 +56,7 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
                 return res.cut()
             }
             is Int -> return Fraction(this.upper-right*this.lower , this.lower)
-            else -> throw WrongDataException("Unknown type")
+            else -> throw WrongTypeForOperationException("minus")
         }
     }
 
@@ -66,7 +68,7 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
             {
 
                 if (this.upper == 0) return Fraction()
-                if (right.upper == 0) throw WrongDataException("Can't divide by zero")
+                if (right.upper == 0) throw DivisionFractionByZeroException()
                 val res = Fraction(this.upper * right.lower, this.lower * right.upper)
                 if (res.lower < 0) {
                     res.upper *= -1
@@ -75,7 +77,7 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
                 return res.cut()
             }
             is Int -> return Fraction(this.upper , this.lower*right)
-            else -> throw WrongDataException("Unknown type")
+            else -> throw WrongTypeForOperationException("division")
         }
     }
 
@@ -96,7 +98,7 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
                 return res.cut()
             }
             is Int -> return Fraction(this.upper*right , this.lower)
-            else -> throw WrongDataException("Unknown type")
+            else -> throw WrongTypeForOperationException("times")
         }
     }
 

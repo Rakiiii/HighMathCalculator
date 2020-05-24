@@ -84,13 +84,10 @@
 
                         android:hint="@string/hintPolinomB"/>
 
-                <GridLayout
-
-                        android:id="@+id/gridBtn"
+                <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/buttonViewPagerPolynomail"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:columnCount="3"
-                        android:orientation="horizontal"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="5dp"
@@ -99,35 +96,9 @@
                         app:layout_constraintTop_toBottomOf="@id/secondPolinom"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        >
+                        app:layout_constraintBottom_toBottomOf="parent">
 
-                    <Button
-                            style="@style/btnStyle"
-                            android:id="@+id/btnPolPlus"
-                            android:text="@string/btnPlus"/>
-                    <Button
-                            style="@style/btnStyle"
-                            android:id="@+id/btnPolMinus"
-                            android:text="@string/btnMinus"/>
-                    <Button
-                            style="@style/btnStyle"
-                            android:id="@+id/btnPolTimes"
-                            android:text="@string/btnTimes"/>
-                    <Button
-                            style="@style/btnStyle"
-                            android:id="@+id/btnPolRootsA"
-                            android:text="@string/btnRootsA"/>
-                    <Button
-                            style="@style/btnStyle"
-                            android:id="@+id/btnPolRootsB"
-                            android:text="@string/btnRootsB"/>
-                    <Button
-                            style="@style/btnStyle"
-                            android:id="@+id/btnPolDiv"
-                            android:text="@string/btnDivision"/>
-
-                </GridLayout>
+                </androidx.viewpager2.widget.ViewPager2>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

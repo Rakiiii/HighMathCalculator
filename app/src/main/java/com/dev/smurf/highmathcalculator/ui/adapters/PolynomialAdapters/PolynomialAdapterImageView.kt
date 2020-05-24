@@ -15,8 +15,8 @@ import com.dev.smurf.highmathcalculator.CanvasExtension.drawEquation
 import com.dev.smurf.highmathcalculator.CanvasExtension.drawPolynomial
 import com.dev.smurf.highmathcalculator.CanvasExtension.drawPolynomialRoots
 import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.Utils.getPolynomialHigh
-import com.dev.smurf.highmathcalculator.Utils.getPolynomialWidth
+import com.dev.smurf.highmathcalculator.PaintExtension.getPolynomialHigh
+import com.dev.smurf.highmathcalculator.PaintExtension.getPolynomialWidth
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import org.jetbrains.anko.imageBitmap

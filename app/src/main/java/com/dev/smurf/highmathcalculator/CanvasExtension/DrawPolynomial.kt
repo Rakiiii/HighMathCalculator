@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialRoots
-import com.dev.smurf.highmathcalculator.Utils.getComplexNumberWidth
+import com.dev.smurf.highmathcalculator.PaintExtension.getComplexNumberWidth
 
 //draw polinom on canvas returns last point of polynomial render and vertical offset for render signs
 fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint: Paint): Pair<Float, Float>

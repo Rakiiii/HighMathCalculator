@@ -1,6 +1,8 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
+import com.dev.smurf.highmathcalculator.Exceptions.NoOperationForTypesException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Utils.amountOfCofsInPolinom
 import com.dev.smurf.highmathcalculator.Utils.removePluses
@@ -58,7 +60,7 @@ class DiofantPolynomial : PolynomialBase
                     diofantPlusToKeyInMap(res.polynomial,"0",obj)
                     return res
                 }
-                else -> throw WrongDataException("UnknownTypeForPolinomPlus")
+                else -> throw WrongTypeForOperationException("plus")
             }
     }
 
@@ -80,18 +82,18 @@ class DiofantPolynomial : PolynomialBase
                 diofantMinusToKeyInMap(res.polynomial, "0", obj)
                 return res
             }
-            else -> throw WrongDataException("UnknownTypeForPolinomMinus")
+            else -> throw WrongTypeForOperationException("minus")
         }
     }
 
     override fun times(obj: Any) : PolynomialBase
     {
-        throw WrongDataException("No Operation Times For Diofant Polinoms")
+        throw NoOperationForTypesException("time","Diofant Polynomial")
     }
 
     override fun div(obj: Any) : Pair<PolynomialBase,PolynomialBase>
     {
-        throw WrongDataException("No Operation Division For Diofant Polinoms")
+        throw NoOperationForTypesException("division","Diofant Polynomial")
     }
 
 

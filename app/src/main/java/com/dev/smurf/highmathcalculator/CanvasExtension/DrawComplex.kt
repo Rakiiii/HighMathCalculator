@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
-import com.dev.smurf.highmathcalculator.Utils.getFractionWidth
+import com.dev.smurf.highmathcalculator.PaintExtension.getFractionWidth
 import kotlin.math.absoluteValue
 
 //Extension for canvas to draw complex number

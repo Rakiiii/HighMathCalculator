@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.fragments.polynomialFragment.PolynomialButtonsGridFirstPageFragment">
+
+    <GridLayout
+            android:id="@+id/gridPolynomialBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:orientation="horizontal">
+
+
+        <Button
+                style="@style/btnStyle"
+                android:id="@+id/btnPolPlus"
+                android:text="@string/btnPlus"/>
+        <Button
+                style="@style/btnStyle"
+                android:id="@+id/btnPolMinus"
+                android:text="@string/btnMinus"/>
+        <Button
+                style="@style/btnStyle"
+                android:id="@+id/btnPolTimes"
+                android:text="@string/btnTimes"/>
+
+
+        <GridLayout
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_gravity="fill"
+                android:columnCount="2"
+                android:orientation="horizontal"
+                android:layout_marginBottom="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_columnWeight="1">
+
+            <Button
+                    android:id="@+id/btnSwitchBtnFragmentPolynomialFP"
+                    style="@style/SubBtnStyle"
+                    android:layout_columnWeight="1"
+                    android:text="@string/btnSwitch" />
+
+            <Button
+                    android:id="@+id/btnPolDivision"
+                    style="@style/SubBtnStyle"
+                    android:layout_columnWeight="3"
+                    android:text="@string/btnDivision"/>
+
+
+        </GridLayout>
+
+        <Button
+                style="@style/btnStyle"
+                android:id="@+id/btnPolRootsA"
+                android:text="@string/btnRootsA"/>
+        <Button
+                style="@style/btnStyle"
+                android:id="@+id/btnPolRootsB"
+                android:text="@string/btnRootsB"/>
+
+    </GridLayout>
+
+</FrameLayout>
