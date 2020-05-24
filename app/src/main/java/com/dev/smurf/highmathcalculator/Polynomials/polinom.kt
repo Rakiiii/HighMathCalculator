@@ -8,7 +8,7 @@ import com.dev.smurf.highmathcalculator.Utils.countWords
 import com.dev.smurf.highmathcalculator.Utils.toComplex
 import com.dev.smurf.highmathcalculator.Utils.toDegree
 
-//depricated
+@Deprecated("must be replaced by new polynomial tree")
 class polinom( _size : Int)
 {
     val size : Int = _size
