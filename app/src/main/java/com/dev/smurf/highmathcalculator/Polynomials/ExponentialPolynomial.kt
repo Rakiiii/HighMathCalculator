@@ -9,14 +9,16 @@ import com.dev.smurf.highmathcalculator.Utils.*
 
 class ExponentialPolynomial private constructor(
     //contains polynomial in form degree : cof where degree is int and cof is complex number
-    private var polynomial: ArrayList<Pair<Int, ComplexNumber>>
+    private var polynomial: ArrayList<Pair<Int, ComplexNumber>>,
+    private val variableSymbol: Char = defaultSymbol
 ) : PolynomialBase()
 {
     companion object
     {
-        const val defaultSymbol = "x"
+        const val defaultSymbol = 'x'
 
-        fun createExponentialPolynomial(str: String): ExponentialPolynomial
+        @Deprecated("use createExponentialPolynomial instead for input format control")
+        fun createExponentialPolynomials(str: String): ExponentialPolynomial
         {
             val polynomial = arrayListOf<Pair<Int, ComplexNumber>>()
 
@@ -72,11 +74,80 @@ class ExponentialPolynomial private constructor(
 
         fun createEmptyExponentialPolynomial() = ExponentialPolynomial()
 
-        /*
-        fun createExponentialPolynomials(str : String) : ExponentialPolynomial
-        {
 
-        }*/
+        fun createExponentialPolynomial(str: String): ExponentialPolynomial
+        {
+            isExponentialPolynomial(str)
+
+            val parsed = mutableMapOf<Int, ComplexNumber>()
+
+            var polynomialString =
+                str.filterNot { s -> (s == ' ') || (s == '\n') }.degreesToNormalForm().toLowerCase()
+            var pos = polynomialString.getFirstCofSeparatorPosition()
+
+            var symbol = defaultSymbol
+
+            while (pos != -1)
+            {
+                val part = polynomialString.substring(0,pos)
+                val cofParsed = parsePart(part)
+                if (cofParsed.third != defaultSymbol) symbol = cofParsed.third
+
+                parsed[cofParsed.first] =
+                    parsed[cofParsed.first] ?: ComplexNumber() + cofParsed.second
+
+                polynomialString =
+                    if (polynomialString[pos] == '-') polynomialString.substring(
+                        pos,
+                        polynomialString.length
+                    )
+                    else polynomialString.substring(pos + 1, polynomialString.length)
+
+                pos = polynomialString.getFirstCofSeparatorPosition()
+            }
+            val cofParsed = parsePart(polynomialString)
+            if (cofParsed.third != defaultSymbol) symbol = cofParsed.third
+
+            parsed[cofParsed.first] = parsed[cofParsed.first] ?: ComplexNumber() + cofParsed.second
+
+            val maxDegree = parsed.maxBy { it.key }?.key ?: 0
+
+            for ( i in 0..maxDegree)
+            {
+                if (!parsed.containsKey(i))
+                {
+                    parsed[i] = ComplexNumber()
+                }
+            }
+
+            val polynomial = ArrayList<Pair<Int, ComplexNumber>>(0)
+
+            for (part in parsed)
+            {
+                polynomial.add(Pair(part.key, part.value))
+            }
+
+            polynomial.sortBy { it.first }
+            polynomial.reverse()
+
+            return ExponentialPolynomial(polynomial = polynomial,variableSymbol = symbol)
+        }
+
+        fun parsePart(part: String): Triple<Int, ComplexNumber, Char>
+        {
+            val cof = part.substringBeforeSymbol('i').toComplexNumber()
+
+
+            val variable = part.substringAfterSymbolIncluded('i')
+            var degree = 0
+
+            if (variable != "")
+            {
+                degree = variable.substringAfter('^').toInt()
+            }
+
+            return Triple(degree, cof, if (variable != "") variable[0] else defaultSymbol)
+        }
 
         fun isExponentialPolynomial(str: String)
         {
@@ -109,7 +180,7 @@ class ExponentialPolynomial private constructor(
 
                 val variable = partForCheck.substringAfterSymbolIncluded('i')
 
-                variableChar = checkExponentialPolynomialVariable(str,variable,variableChar)
+                variableChar = checkExponentialPolynomialVariable(str, variable, variableChar)
 
                 polynomial =
                     if (polynomial[pos] == '-') polynomial.substring(pos, polynomial.length)
@@ -118,20 +189,24 @@ class ExponentialPolynomial private constructor(
                 pos = polynomial.getFirstCofSeparatorPosition()
             }
 
-            if( polynomial != "")
+            if (polynomial != "")
             {
                 val cof = polynomial.substringBeforeSymbol('i')
                 if (cof.isNotComplexNumber()) throw WrongPolynomialCofFormatException(str, cof)
 
                 val variable = polynomial.substringAfterSymbolIncluded('i')
 
-                checkExponentialPolynomialVariable(str,variable,variableChar)
+                checkExponentialPolynomialVariable(str, variable, variableChar)
             }
         }
 
-        private fun checkExponentialPolynomialVariable(str : String,variable : String,variableChar : Char) : Char
+        private fun checkExponentialPolynomialVariable(
+            str: String,
+            variable: String,
+            variableChar: Char
+        ): Char
         {
-            var returnChar : Char = variableChar
+            var returnChar: Char = variableChar
             when
             {
                 variable != "" ->
@@ -170,7 +245,7 @@ class ExponentialPolynomial private constructor(
                         variable
                     )
 
-                    if (variableDegree.filterNot { s -> s in '0'..'9' } != "") throw WrongSymbolAtExponetialPolynomialInputException(
+                    if (variableDegree.filterNot { s -> s in '0'..'9' } != "" || variableDegree.toIntOrNull() == null) throw WrongSymbolAtExponetialPolynomialInputException(
                         str,
                         variableDegree
                     )
@@ -370,7 +445,7 @@ class ExponentialPolynomial private constructor(
 
         for (i in polynomial)
         {
-            string += i.second.toString() + defaultSymbol + "^" + i.first.toString().toDegree()
+            string += i.second.toString() + variableSymbol + "^" + i.first.toString().toDegree()
             if (i != polynomial.last()) string += "+"
         }
 
@@ -386,7 +461,7 @@ class ExponentialPolynomial private constructor(
         {
             if (i.first != 0) renderFormat.add(
                 Pair(
-                    defaultSymbol + "^" + i.first.toString().toDegree(), i.second
+                    variableSymbol + "^" + i.first.toString().toDegree(), i.second
                 )
             )
             else renderFormat.add(Pair("", i.second))
