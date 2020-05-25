@@ -1,17 +1,17 @@
 package com.dev.smurf.highmathcalculator.Matrix
 
 import com.dev.smurf.highmathcalculator.Exceptions.*
+import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.DifferentAmountOfElementsInMatrixLineException
+import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongElemntAtMatrixInputException
+import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongSymbolAtMatrixInputException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
-import com.dev.smurf.highmathcalculator.StringsExtension.countLines
-import com.dev.smurf.highmathcalculator.StringsExtension.countWords
-import com.dev.smurf.highmathcalculator.StringsExtension.pow
-import com.dev.smurf.highmathcalculator.StringsExtension.toComplexNumber
+import com.dev.smurf.highmathcalculator.StringsExtension.*
 
 //реализация работы с матрицей
 open class Matrix private constructor(
-    public val width: Int,
-    public val height: Int,
+    val width: Int,
+    val height: Int,
     m: Array<Array<ComplexNumber>>
 )
 {
@@ -30,7 +30,8 @@ open class Matrix private constructor(
 
     companion object
     {
-        fun createMatrix(txt: String): Matrix
+        @Deprecated(message = "createMatrix must be used instead, for normal input format control")
+        fun createMatrixx(txt: String): Matrix
         {
             if (txt == "") return EmptyMatrix
             val matrixWidth = txt.substringBefore('\n').trim().countWords()
@@ -41,7 +42,8 @@ open class Matrix private constructor(
             //запоминаем содержимое поля ввода
             var info: String = txt.filterNot { s -> (s == '|') }
 
-            if (matrixWidth == 1 && matrixHeight == 1) matrices[0][0] = info.trim().toComplexNumber()
+            if (matrixWidth == 1 && matrixHeight == 1) matrices[0][0] =
+                info.trim().toComplexNumber()
             else
             {
                 //проходим все строки матрицы
@@ -57,7 +59,10 @@ open class Matrix private constructor(
                     //проверяем полная ли матрица
                     if (matrixWidth != subLine.countWords())
                     //если не полна кидаем ощибку
-                        throw DifferentElementsInInitStringLinesException()
+                        throw DifferentAmountOfElementsInMatrixLineException(
+                            input = txt,
+                            unrecognizedPart = subLine
+                        )
 
                     //проходим все столбцы
                     for (j in 0 until matrixWidth)
@@ -94,6 +99,66 @@ open class Matrix private constructor(
 
         fun createMatrixAsNumber(number: ComplexNumber) =
             Matrix(1, 1, Array(1) { Array(1) { number } })
+
+        fun isMatrix(str: String)
+        {
+            if (str == "")return
+            val matrixString =
+                str.filterNot { s ->
+                    (s in '0'..'9') || (s == '\n') || (s == ' ') || (s == '(')
+                            || (s == ')') || (s == 'i') || (s == '+') || (s == '-') || (s == '/')
+                }
+            if (matrixString != "") throw WrongSymbolAtMatrixInputException(str, matrixString)
+
+            val lines = str.trim { s -> s == ' ' || s == '\n' }.fields("\n")
+
+            var lineLength = -1
+
+            for (line in lines)
+            {
+                val elements = line.trim { s -> s == ' ' || s == '\n' }.fields(" ")
+                if (lineLength == -1) lineLength = elements.size
+                if (lineLength != -1 && elements.size != lineLength) throw DifferentAmountOfElementsInMatrixLineException(
+                    str,
+                    line
+                )
+
+                for (element in elements)
+                {
+                    if (element.fulfilCofs().isNotComplexNumber()) throw WrongElemntAtMatrixInputException(
+                        str,
+                        element
+                    )
+                }
+            }
+        }
+
+        fun createMatrix(str: String): Matrix
+        {
+            isMatrix(str)
+            if(str == "")return EmptyMatrix
+
+
+
+            val lines = str.trim { s -> s == ' ' || s == '\n' }.fields("\n")
+            val matrixHeight = lines.size
+            val matrxWidth  = lines[0].trim { s -> s == ' ' || s == '\n' }.fields(" ").size
+
+            val  matrix= Array(matrixHeight){arrayOf<ComplexNumber>() }
+                for(line in lines.indices)
+            {
+                val elements = lines[line].trim { s -> s == ' ' || s == '\n' }.fields(" ")
+                val nextMatrixLine = Array<ComplexNumber>(matrxWidth){ComplexNumber()}
+                for(element in elements.indices)
+                {
+                    nextMatrixLine[element] = elements[element].fulfilCofs().toComplexNumber()
+                }
+                matrix[line] = nextMatrixLine
+            }
+
+
+            return Matrix(width = matrxWidth,height = matrixHeight, m = matrix)
+        }
 
     }
 
@@ -464,6 +529,6 @@ open class Matrix private constructor(
         return width == 0 && height == 0
     }
 
-     fun isNumber() = (width == 1 && height == 1)
+    fun isNumber() = (width == 1 && height == 1)
 
 }
