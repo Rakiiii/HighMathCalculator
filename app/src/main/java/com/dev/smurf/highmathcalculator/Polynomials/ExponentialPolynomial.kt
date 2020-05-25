@@ -1,10 +1,7 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
 import android.util.Log
-import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongAmountOfBracketsInPolynomialException
-import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongExponentialPolynomialVariableFormat
-import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongPolynomialCofFormatException
-import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongSymbolInPolynomialInputException
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.*
 import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.StringsExtension.*
@@ -79,11 +76,14 @@ class ExponentialPolynomial private constructor(
         {
             val amountOfLeftBrackets = str.count { s -> s == '(' }
             val amountOfRightBrackets = str.count { s -> s == ')' }
-            if(amountOfLeftBrackets != amountOfRightBrackets)throw WrongAmountOfBracketsInPolynomialException("","")
+            if (amountOfLeftBrackets != amountOfRightBrackets) throw WrongAmountOfBracketsInPolynomialException(
+                str,
+                ""
+            )
 
-            val trimmed =
+            var polynomial =
                 str.filterNot { s -> (s == ' ') || (s == '\n') }.degreesToNormalForm().toLowerCase()
-            val wrongSymbolsString = trimmed.filterNot { s -> isGoodSymbol(s) }
+            val wrongSymbolsString = polynomial.filterNot { s -> isGoodSymbol(s) }
 
             if (wrongSymbolsString != "") throw WrongSymbolInPolynomialInputException(
                 str,
@@ -92,29 +92,98 @@ class ExponentialPolynomial private constructor(
 
             var variableChar = ' '
 
-            var pos = trimmed.getFirstCofSeparatorPosition()
+            var pos = polynomial.getFirstCofSeparatorPosition()
 
             while (pos != -1)
             {
-                val partForCheck = trimmed.substring(0, pos)
+                val partForCheck = polynomial.substring(0, pos)
 
                 val cof = partForCheck.substringBeforeSymbol('i')
                 if (cof.isNotComplexNumber()) throw WrongPolynomialCofFormatException(str, cof)
 
                 val variable = partForCheck.substringAfterSymbolIncluded('i')
 
-                if (variable != "")
+                variableChar = checkExponentialPolynomialVariable(str,variable,variableChar)
+
+                polynomial =
+                    if (polynomial[pos] == '-') polynomial.substring(pos, polynomial.length)
+                    else polynomial.substring(pos + 1, polynomial.length)
+
+                pos = polynomial.getFirstCofSeparatorPosition()
+            }
+
+            if( polynomial != "")
+            {
+                val cof = polynomial.substringBeforeSymbol('i')
+                if (cof.isNotComplexNumber()) throw WrongPolynomialCofFormatException(str, cof)
+
+                val variable = polynomial.substringAfterSymbolIncluded('i')
+
+                checkExponentialPolynomialVariable(str,variable,variableChar)
+            }
+        }
+
+        private fun checkExponentialPolynomialVariable(str : String,variable : String,variableChar : Char) : Char
+        {
+            var returnChar : Char = variableChar
+            when
+            {
+                variable != "" ->
                 {
-                    if (!variable.contains('^') && (variable.length > 1)) throw WrongExponentialPolynomialVariableFormat(
+                }
+                variable.contains('^') ->
+                {
+                    if (variable.filterNot { s -> (s == '^') || (s in '0'..'9') || (s in 'a'..'z') } != "")
+                        throw WrongSymbolAtExponetialPolynomialInputException(
+                            str,
+                            variable
+                        )
+
+                    if (variable.count { s -> s == '^' } != 1) throw TooManyDegreeSymbolsInExponentialPolynomialVariableException(
+                        str,
+                        ""
+                    )
+
+
+                    val variableSymbol = variable.substringBefore('^')
+                    val variableDegree = variable.substringAfter('^')
+
+                    if (variableSymbol == "") throw WrongExponensialSymbolPositionException(
                         str,
                         variable
                     )
 
+                    if (variableSymbol.length != 1) throw WrongExponentialPolynomialVariableFormat(
+                        str,
+                        variable
+                    )
 
+                    if (variableChar == ' ') returnChar = variableSymbol[0]
+                    if (variableSymbol[0] != variableChar && variableSymbol[0] != returnChar) throw WrongSymbolAtExponetialPolynomialInputException(
+                        str,
+                        variable
+                    )
+
+                    if (variableDegree.filterNot { s -> s in '0'..'9' } != "") throw WrongSymbolAtExponetialPolynomialInputException(
+                        str,
+                        variableDegree
+                    )
+                }
+                else ->
+                {
+                    if (variable.length > 1) throw WrongExponentialPolynomialVariableFormat(
+                        str,
+                        variable
+                    )
+
+                    if (variableChar == ' ') returnChar = variable[0]
+                    if (variable[0] != variableChar && variable[0] != returnChar) throw WrongSymbolAtExponetialPolynomialInputException(
+                        str,
+                        variable
+                    )
                 }
             }
-
-
+            return returnChar
         }
 
         private fun isGoodSymbol(s: Char): Boolean

@@ -60,7 +60,7 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
         {
             val amountOfLeftBrackets = str.count { s -> s == '(' }
             val amountOfRightBrackets = str.count { s -> s == ')' }
-            if(amountOfLeftBrackets != amountOfRightBrackets)throw WrongAmountOfBracketsInPolynomialException("","")
+            if(amountOfLeftBrackets != amountOfRightBrackets)throw WrongAmountOfBracketsInPolynomialException(str,"")
 
             var polynomial =
                 str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofs()

@@ -2,6 +2,7 @@ package com.dev.smurf.highmathcalculator.Matrix
 
 import com.dev.smurf.highmathcalculator.Exceptions.*
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.DifferentAmountOfElementsInMatrixLineException
+import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongAmountOfBracketsInMatrixException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongElemntAtMatrixInputException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongSymbolAtMatrixInputException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
@@ -103,6 +104,11 @@ open class Matrix private constructor(
         fun isMatrix(str: String)
         {
             if (str == "")return
+
+            val amountOfLeftBrackets = str.count { s -> s == '(' }
+            val amountOfRightBrackets = str.count { s -> s == ')' }
+            if(amountOfLeftBrackets != amountOfRightBrackets)throw WrongAmountOfBracketsInMatrixException(str,"")
+
             val matrixString =
                 str.filterNot { s ->
                     (s in '0'..'9') || (s == '\n') || (s == ' ') || (s == '(')
