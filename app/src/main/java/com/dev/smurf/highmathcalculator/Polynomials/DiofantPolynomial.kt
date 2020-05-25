@@ -1,6 +1,7 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
 import com.dev.smurf.highmathcalculator.Exceptions.*
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongAmountOfBracketsInPolynomialException
 import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongPolynomialCofFormatException
 import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongDiofantPolynomialVariableLengthException
 import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongSymbolInPolynomialInputException
@@ -57,9 +58,12 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
 
         fun isDiofantPolynomial(str: String)
         {
+            val amountOfLeftBrackets = str.count { s -> s == '(' }
+            val amountOfRightBrackets = str.count { s -> s == ')' }
+            if(amountOfLeftBrackets != amountOfRightBrackets)throw WrongAmountOfBracketsInPolynomialException("","")
 
             var polynomial =
-                str.filterNot { s -> (s == ' ') || (s == '\n')}.toLowerCase().fulfilCofs()
+                str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofs()
             val wrongSymbolString = polynomial.filterNot { s -> isGoodSymbol(s) }
             if (wrongSymbolString != "") throw WrongSymbolInPolynomialInputException(
                 str,
@@ -72,7 +76,6 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
 
                 val cofForCheck = polynomial.substring(0, pos)
 
-                //Log.d("pol@","cofForCheck:"+cofForCheck+" pos:"+pos.toString()+" indefOf:"+polynomial.indexOf('+').toString())
 
                 val variable = cofForCheck.substringAfterSymbolIncluded('i')
                 if (variable.length > 1) throw WrongDiofantPolynomialVariableLengthException(
