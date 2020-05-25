@@ -1,88 +1,130 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
 import com.dev.smurf.highmathcalculator.Exceptions.*
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongDiofantPolynomialCofFormatException
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongDiofantPolynomialVariableLengthException
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongSymbolInDiofantPolynomialInputException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.StringsExtension.*
 
-class DiofantPolynomial private constructor(private val polynomial : MutableMap<String , ComplexNumber>): PolynomialBase()
+class DiofantPolynomial private constructor(private val polynomial: MutableMap<String, ComplexNumber>) :
+    PolynomialBase()
 {
 
-    private constructor() : this(polynomial = mutableMapOf<String , ComplexNumber>())
+    private constructor() : this(polynomial = mutableMapOf<String, ComplexNumber>())
 
     companion object
     {
-        fun createDiofantPolynomial(obj : String) : DiofantPolynomial
+
+        fun createDiofantPolynomial(str : String) : DiofantPolynomial
         {
-            val polynomial : MutableMap<String , ComplexNumber> = mutableMapOf()
-            var str = obj.substringBefore('|').filter { s -> (s != ' ') }.removePluses()
+            isDiofantPolynomial(str)
+            val polynomial: MutableMap<String, ComplexNumber> = mutableMapOf()
 
-            for(i in 0 until obj.amountOfCofsInPolinom())
+            var polynomialString = str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofs()
+
+            var pos = polynomialString.getFirstCofSeparatorPosition()
+            while (pos != -1)
             {
-                //get one cof
-                val tmp = str.substringBefore(' ')
+                val part = polynomialString.substring(0,pos)
+                val variable = part.substringAfterSymbolIncluded('i')
+                val cof = part.substringBeforeSymbol('i')
 
-                //add new cof to polynomial
-                //if cof contained
-                if(polynomial.containsKey(tmp.last().toString()))
-                {
-                    //get cof from string and convert it to complex number then plus it allready add cof
-                    val tmpValue = polynomial[tmp.last().toString()]?.plus(tmp.substringBefore(tmp.last()).toComplexNumber())
+                //if variable allready existed then we plus it cof with this one, if not existe then add this
+                //plus to 0 complex number as same as set new
+                polynomial[variable] = polynomial[variable]?: ComplexNumber() + cof.toComplexNumber()
 
-                    //change cof
-                    polynomial[tmp.last().toString()] = tmpValue!!
-                }
-                else
-                {
-                    //add new cof with new symbol
-                    polynomial[tmp.last().toString()] = tmp.substringBefore(tmp.last()).toComplexNumber()
-                }
-                str = str.substringAfter(' ')
+                polynomialString =
+                    if (polynomialString[pos] == '-') polynomialString.substring(pos,polynomialString.length)
+                    else polynomialString.substring(pos + 1,polynomialString.length)
+
+                pos = polynomialString.getFirstCofSeparatorPosition()
             }
+            val variable = polynomialString.substringAfterSymbolIncluded('i')
+            val cof = polynomialString.substringBeforeSymbol('i')
+            polynomial[variable] = polynomial[variable]?: ComplexNumber() + cof.toComplexNumber()
 
             return DiofantPolynomial(polynomial)
         }
 
         fun createEmptyPolynomial() = DiofantPolynomial()
 
-        /*
-        fun isDiofantPolynomial(str : String) : Boolean
+
+        fun isDiofantPolynomial(str: String): Boolean
         {
 
-        }*/
-    }
-
-    override fun plus(obj: Any) : PolynomialBase
-    {
-            val res = this.Copy()
-            when(obj)
-            {
-                is DiofantPolynomial ->
-                {
-                    for(i in obj.polynomial)
-                    {
-                        diofantPlusToKeyInMap(res.polynomial,i.key,i.value)
-                    }
-                    return res
-                }
-                is ComplexNumber ->
-                {
-                    diofantPlusToKeyInMap(res.polynomial,"0",obj)
-                    return res
-                }
-                else -> throw WrongTypeForOperationException("plus")
+            var polynomial = str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofs()
+            val wrongSymbolString = polynomial.filterNot { s ->
+                (s in '0'..'9') || (s in 'a'..'z') || (s == '/') || (s == '.') || (s == '(') || (s == ')') || (s == '+')
+                        || (s == '-' || (s == 'i'))
             }
+            if (wrongSymbolString != "") throw WrongSymbolInDiofantPolynomialInputException(str,wrongSymbolString)
+
+            var pos = polynomial.getFirstCofSeparatorPosition()
+            while (pos != -1)
+            {
+
+                val cofForCheck = polynomial.substring(0 , pos)
+
+                //Log.d("pol@","cofForCheck:"+cofForCheck+" pos:"+pos.toString()+" indefOf:"+polynomial.indexOf('+').toString())
+
+                val variable = cofForCheck.substringAfterSymbolIncluded('i')
+                if (variable.length > 1) throw WrongDiofantPolynomialVariableLengthException(polynomial,variable)
+                val cof = cofForCheck.substringBeforeSymbol('i')
+                if (cof.isNotComplexNumber()) throw WrongDiofantPolynomialCofFormatException(polynomial,cof)
+
+                polynomial =
+                    if (polynomial[pos] == '-') polynomial.substring(pos,polynomial.length)
+                    else polynomial.substring(pos + 1,polynomial.length)
+
+                pos = polynomial.getFirstCofSeparatorPosition()
+            }
+            if (polynomial != "")
+            {
+                val variable = polynomial.substringAfterSymbolIncluded('i')
+                if (variable.length > 1) throw WrongDiofantPolynomialVariableLengthException(str,variable)
+                val cof = polynomial.substringBeforeSymbol('i')
+                if (cof.isNotComplexNumber()) throw WrongDiofantPolynomialCofFormatException(str,cof)
+            }
+
+            return true
+        }
+
+        fun isNotDiofantPolynomial(str : String) = !isDiofantPolynomial(str)
     }
 
-    override fun minus(obj: Any) : PolynomialBase
+    override fun plus(obj: Any): PolynomialBase
     {
         val res = this.Copy()
-        when(obj)
+        when (obj)
         {
             is DiofantPolynomial ->
             {
-                for(i in obj.polynomial)
+                for (i in obj.polynomial)
                 {
-                    diofantMinusToKeyInMap(res.polynomial, i.key , i.value)
+                    diofantPlusToKeyInMap(res.polynomial, i.key, i.value)
+                }
+                return res
+            }
+            is ComplexNumber ->
+            {
+                diofantPlusToKeyInMap(res.polynomial, "0", obj)
+                return res
+            }
+            else -> throw WrongTypeForOperationException("plus")
+        }
+    }
+
+    override fun minus(obj: Any): PolynomialBase
+    {
+        val res = this.Copy()
+        when (obj)
+        {
+            is DiofantPolynomial ->
+            {
+                for (i in obj.polynomial)
+                {
+                    diofantMinusToKeyInMap(res.polynomial, i.key, i.value)
                 }
                 return res
             }
@@ -95,14 +137,14 @@ class DiofantPolynomial private constructor(private val polynomial : MutableMap<
         }
     }
 
-    override fun times(obj: Any) : PolynomialBase
+    override fun times(obj: Any): PolynomialBase
     {
-        throw NoOperationForTypesException("time","Diofant Polynomial")
+        throw NoOperationForTypesException("time", "Diofant Polynomial")
     }
 
-    override fun div(obj: Any) : Pair<PolynomialBase,PolynomialBase>
+    override fun div(obj: Any): Pair<PolynomialBase, PolynomialBase>
     {
-        throw NoOperationForTypesException("division","Diofant Polynomial")
+        throw NoOperationForTypesException("division", "Diofant Polynomial")
     }
 
 
@@ -110,7 +152,7 @@ class DiofantPolynomial private constructor(private val polynomial : MutableMap<
     {
         val copy = DiofantPolynomial()
 
-        for(i in this.polynomial)
+        for (i in this.polynomial)
         {
             copy.polynomial[i.key] = i.value.Copy()
         }
@@ -128,7 +170,7 @@ class DiofantPolynomial private constructor(private val polynomial : MutableMap<
     {
         var string = ""
 
-        for( i in polynomial)
+        for (i in polynomial)
         {
             string += i.value.toString() + i.key + "+"
         }
@@ -140,11 +182,11 @@ class DiofantPolynomial private constructor(private val polynomial : MutableMap<
     //returns array of cofs and symbols to render polynomial on canvas
     override fun renderFormat(): ArrayList<Pair<String, ComplexNumber>>
     {
-        val renderFormat : ArrayList<Pair<String,ComplexNumber>> = arrayListOf()
+        val renderFormat: ArrayList<Pair<String, ComplexNumber>> = arrayListOf()
 
-        for(i in polynomial)
+        for (i in polynomial)
         {
-            renderFormat.add(Pair(i.key,i.value))
+            renderFormat.add(Pair(i.key, i.value))
         }
 
         return renderFormat

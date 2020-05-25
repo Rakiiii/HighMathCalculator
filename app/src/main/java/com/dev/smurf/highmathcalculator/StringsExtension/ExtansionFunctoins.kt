@@ -4,150 +4,149 @@ import android.util.Log
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
 
-fun gcd( a : Int , b : Int) : Int
+fun gcd(a: Int, b: Int): Int
 {
-    if(b == 0)return a
+    if (b == 0) return a
     else return gcd(b, a % b)
 }
 
 
-
-fun Int.pow(x : Int) : Int
+fun Int.pow(x: Int): Int
 {
-    if (x == 0)return 1
-    var res : Int = 1
-    for( i in 1..x)
-        res *=this
+    if (x == 0) return 1
+    var res: Int = 1
+    for (i in 1..x)
+        res *= this
     return res
 }
 
-fun String.countLines() : Int
+fun String.countLines(): Int
 {
     var counter = 0
-    for(i in this)if(i == '\n')counter++
+    for (i in this) if (i == '\n') counter++
     return counter + 1
 }
 
-fun String.countWords() : Int
+fun String.countWords(): Int
 {
     var counter = 0
-    for( i in this)if( i == ' ')counter ++
+    for (i in this) if (i == ' ') counter++
     return counter + 1
 }
 
-fun Int.factorial() : Int
+fun Int.factorial(): Int
 {
-    if(this < 0)throw Exception("FactorialBelowZeroException")
+    if (this < 0) throw Exception("FactorialBelowZeroException")
     var res = 1
     var tmp = this
-    while(tmp > 0)
+    while (tmp > 0)
     {
-        res *=tmp
-        tmp --
+        res *= tmp
+        tmp--
     }
     return res
 }
 
-fun binCofs(n : Int , k : Int) = ( ( n.factorial() ) / ( k.factorial() * ( n - k ).factorial() ) )
+fun binCofs(n: Int, k: Int) = ((n.factorial()) / (k.factorial() * (n - k).factorial()))
 
-fun Int.comb( leng : Int) : Int
+fun Int.comb(leng: Int): Int
 {
     var res = 0
     var counter = 1
-    for(i in 0 until leng)
+    for (i in 0 until leng)
     {
-        res = (res*10) + counter
-        counter ++
+        res = (res * 10) + counter
+        counter++
     }
     return res
 }
 
-fun Int.equals (other : Fraction) : Boolean
+fun Int.equals(other: Fraction): Boolean
 {
-    if ( (other.upper % other.lower) == 0) return ( (other.upper/other.lower) == this)
+    if ((other.upper % other.lower) == 0) return ((other.upper / other.lower) == this)
     else return false
 }
 
-fun String.toDegree():String
+fun String.toDegree(): String
 {
     var res = ""
-    for( i in this)
+    for (i in this)
     {
-        when(i)
+        when (i)
         {
-            '0'->res += '⁰'
-            '1'->res += '¹'
-            '2'->res += '²'
-            '3'->res += '³'
-            '4'->res += '⁴'
-            '5'->res += '⁵'
-            '6'->res += '⁶'
-            '7'->res += '⁷'
-            '8'->res += '⁸'
-            '9'->res += '⁹'
-            else ->throw Exception("UnknownSymbolInDegree")
+            '0' -> res += '⁰'
+            '1' -> res += '¹'
+            '2' -> res += '²'
+            '3' -> res += '³'
+            '4' -> res += '⁴'
+            '5' -> res += '⁵'
+            '6' -> res += '⁶'
+            '7' -> res += '⁷'
+            '8' -> res += '⁸'
+            '9' -> res += '⁹'
+            else -> throw Exception("UnknownSymbolInDegree")
         }
     }
 
     return res
 }
 
-fun String.toNumber():String
+fun String.toNumber(): String
 {
-    var res =""
+    var res = ""
 
-    for( i in this)
+    for (i in this)
     {
-        when(i)
+        when (i)
         {
-            '⁰'->res += '0'
-            '¹'->res += '1'
-            '²'->res += '2'
-            '³'->res += '3'
-            '⁴'->res += '4'
-            '⁵'->res += '5'
-            '⁶'->res += '6'
-            '⁷'->res += '7'
-            '⁸'->res += '8'
-            '⁹'->res += '9'
-            else ->throw Exception("UnknownSymbolInDegree")
+            '⁰' -> res += '0'
+            '¹' -> res += '1'
+            '²' -> res += '2'
+            '³' -> res += '3'
+            '⁴' -> res += '4'
+            '⁵' -> res += '5'
+            '⁶' -> res += '6'
+            '⁷' -> res += '7'
+            '⁸' -> res += '8'
+            '⁹' -> res += '9'
+            else -> throw Exception("UnknownSymbolInDegree")
         }
     }
 
     return res
 }
 
-fun String.translateDegree():String
+fun String.translateDegree(): String
 {
-    var res =""
+    var res = ""
 
-    for( i in this)
+    for (i in this)
     {
-        when(i)
+        when (i)
         {
-            '⁰'->res += '0'
-            '¹'->res += '1'
-            '²'->res += '2'
-            '³'->res += '3'
-            '⁴'->res += '4'
-            '⁵'->res += '5'
-            '⁶'->res += '6'
-            '⁷'->res += '7'
-            '⁸'->res += '8'
-            '⁹'->res += '9'
-            else ->res += i
+            '⁰' -> res += '0'
+            '¹' -> res += '1'
+            '²' -> res += '2'
+            '³' -> res += '3'
+            '⁴' -> res += '4'
+            '⁵' -> res += '5'
+            '⁶' -> res += '6'
+            '⁷' -> res += '7'
+            '⁸' -> res += '8'
+            '⁹' -> res += '9'
+            else -> res += i
         }
     }
 
     return res
 }
 
-fun String.degreesToNormalForm() : String
+fun String.degreesToNormalForm(): String
 {
     var result = ""
-    for ( i in this)
+    for (i in this)
     {
-        if(i.isDegree())
+        if (i.isDegree())
         {
             result += i.toString().translateDegree()
         }
@@ -159,78 +158,95 @@ fun String.degreesToNormalForm() : String
     return result
 }
 
-fun Char.isDegree() : Boolean
+fun Char.isDegree(): Boolean
 {
-    when(this)
+    when (this)
     {
-        '⁰'->return true
-        '¹'->return true
-        '²'->return true
-        '³'->return true
-        '⁴'->return true
-        '⁵'->return true
-        '⁶'->return true
-        '⁷'->return true
-        '⁸'->return true
-        '⁹'->return true
-        else ->return false
+        '⁰' -> return true
+        '¹' -> return true
+        '²' -> return true
+        '³' -> return true
+        '⁴' -> return true
+        '⁵' -> return true
+        '⁶' -> return true
+        '⁷' -> return true
+        '⁸' -> return true
+        '⁹' -> return true
+        else -> return false
     }
 }
 
-fun String.amountOfCofsInPolinom() : Int
+fun String.amountOfCofsInPolinom(): Int
 {
     var counter = 1
     var flagOfClose = true
-    for( i in this)
+    for (i in this)
     {
-        when(i)
+        when (i)
         {
-            '('-> flagOfClose = false
-            ')'->flagOfClose = true
-            '+'->if(flagOfClose)counter++
-            '-'->if(flagOfClose)counter++
-            else->false
+            '(' -> flagOfClose = false
+            ')' -> flagOfClose = true
+            '+' -> if (flagOfClose) counter++
+            '-' -> if (flagOfClose) counter++
+            else -> false
         }
     }
     return counter
 }
 
-fun String.removePluses() : String
+fun String.removePluses(): String
 {
     var result = ""
     var flagOfClose = true
-    for( i in (this as CharSequence) )
+    for (i in (this as CharSequence))
     {
-        when(i)
+        when (i)
         {
-            '('->
+            '(' ->
             {
                 flagOfClose = false
                 result += i
             }
-            ')'->
+            ')' ->
             {
                 flagOfClose = true
                 result += i
             }
-            '+'->
+            '+' ->
             {
-                if(!flagOfClose) result += i
+                if (!flagOfClose) result += i
                 else result += ' '
             }
 
-            else->result += i
+            else -> result += i
         }
     }
     return result
 }
 
-
-fun String.substringBeforeSymbol() : String
+//returns position of first minus or plus which is separating polynomial cofs in parts or -1
+fun String.getFirstCofSeparatorPosition(): Int
 {
-    for(i in this)
+    var flagOfClose = true
+    for (i in this.indices)
     {
-        if( (i in 'a'..'z') || (i in 'A'..'Z') )
+        when (this[i])
+        {
+            '(' -> flagOfClose = false
+            ')' -> flagOfClose = true
+            '+' -> if (flagOfClose && i != 0) return i
+            '-' -> if (flagOfClose && i != 0) return i
+        }
+    }
+    return -1
+}
+
+
+fun String.substringBeforeSymbol(): String
+{
+    for (i in this)
+    {
+        if ((i in 'a'..'z') || (i in 'A'..'Z'))
         {
             return this.substringBefore(i)
         }
@@ -238,11 +254,64 @@ fun String.substringBeforeSymbol() : String
     return this
 }
 
-fun String.substringAfterSymbol() : String
+fun String.substringBeforeSymbol(isNotSymbol: Char): String
 {
-    for(i in this)
+    for (i in this)
     {
-        if( (i in 'a'..'z') || (i in 'A'..'Z'))
+        if (((i in 'a'..'z') || (i in 'A'..'Z')) && i != isNotSymbol)
+        {
+            return this.substringBefore(i)
+        }
+    }
+    return this
+}
+
+fun String.separateBySymbol(symbol: String = " "): Array<String>
+{
+    val result: Array<String> = arrayOf()
+    var tmpString = this
+
+    while (tmpString.contains(symbol))
+    {
+        result.plus(tmpString.substringBefore(symbol))
+
+        tmpString = tmpString.substringAfter(symbol)
+    }
+
+    return result
+}
+
+fun String.substringAfterSymbolIncluded(): String
+{
+    for (i in this)
+    {
+        if ((i in 'a'..'z') || (i in 'A'..'Z'))
+        {
+            return (i + this.substringAfter(i))
+
+        }
+    }
+    return this
+}
+
+fun String.substringAfterSymbolIncluded(isNotSymbol: Char): String
+{
+    for (i in this)
+    {
+        if (((i in 'a'..'z') || (i in 'A'..'Z')) && (i != isNotSymbol))
+            {
+                return (i + this.substringAfter(i))
+
+            }
+    }
+    return this
+}
+
+fun String.substringAfterSymbol(): String
+{
+    for (i in this)
+    {
+        if ((i in 'a'..'z') || (i in 'A'..'Z'))
         {
             return this.substringAfter(i)
 
@@ -251,28 +320,13 @@ fun String.substringAfterSymbol() : String
     return this
 }
 
-fun String.separateBySymbol(symbol : String = " ") : Array<String>
+fun String.substringAfterSymbol(isNotSymbol: Char): String
 {
-    val result : Array<String> = arrayOf()
-    var tmpString = this
-
-    while(tmpString.contains( symbol ))
+    for (i in this)
     {
-        result.plus( tmpString.substringBefore(symbol))
-
-        tmpString = tmpString.substringAfter(symbol)
-    }
-
-    return result
-}
-
-fun String.substringAfterSymbolIncluded() : String
-{
-    for(i in this)
-    {
-        if( (i in 'a'..'z') || (i in 'A'..'Z'))
+        if (((i in 'a'..'z') || (i in 'A'..'Z')) && (i != isNotSymbol))
         {
-            return (i+this.substringAfter(i))
+            return this.substringAfter(i)
 
         }
     }
@@ -280,13 +334,13 @@ fun String.substringAfterSymbolIncluded() : String
 }
 
 //returns MuableList of strings get from separation of string by str
-fun String.fields(breakString : String) : MutableList<String>
+fun String.fields(breakString: String): MutableList<String>
 {
     val result = mutableListOf<String>()
 
     var str = this
 
-    if(!str.contains(breakString) )
+    if (!str.contains(breakString))
     {
         result.add(str.substringBefore(breakString))
 
@@ -296,7 +350,7 @@ fun String.fields(breakString : String) : MutableList<String>
     {
         result.add(str.substringBefore(breakString))
         str = str.substringAfter(breakString)
-    }while (str.contains(breakString))
+    } while (str.contains(breakString))
 
     result.add(str.substringBefore(breakString))
 

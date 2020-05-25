@@ -19,6 +19,8 @@ fun String.fulfilCofs(): String
         filled = filled.substring(0, pos + 1) + "1" + filled.substring(pos + 1, filled.length)
     }
 
+    Log.d("complex@","source:"+this+" filled:"+filled)
+
     return filled
 }
 
