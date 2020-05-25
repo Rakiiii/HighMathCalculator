@@ -50,7 +50,7 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
         fun createEmptyPolynomial() = DiofantPolynomial()
 
 
-        fun isDiofantPolynomial(str: String): Boolean
+        fun isDiofantPolynomial(str: String)
         {
 
             var polynomial = str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofs()
@@ -86,11 +86,7 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
                 val cof = polynomial.substringBeforeSymbol('i')
                 if (cof.isNotComplexNumber()) throw WrongDiofantPolynomialCofFormatException(str,cof)
             }
-
-            return true
         }
-
-        fun isNotDiofantPolynomial(str : String) = !isDiofantPolynomial(str)
     }
 
     override fun plus(obj: Any): PolynomialBase
