@@ -1,6 +1,7 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
 import android.util.Log
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongPolynomialCofFormatException
 import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongSymbolInPolynomialInputException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
@@ -85,7 +86,17 @@ class ExponentialPolynomial private constructor(
 
             while (pos != -1)
             {
+                val partForCheck = trimmed.substring(0,pos)
 
+                val cof = partForCheck.substringBeforeSymbol('i')
+                if(cof.isNotComplexNumber())throw WrongPolynomialCofFormatException(str,cof)
+
+                val variable = partForCheck.substringAfterSymbolIncluded('i')
+
+                if ( variable != "")
+                {
+
+                }
             }
 
 

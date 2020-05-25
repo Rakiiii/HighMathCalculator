@@ -1,7 +1,7 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
 import com.dev.smurf.highmathcalculator.Exceptions.*
-import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongDiofantPolynomialCofFormatException
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongPolynomialCofFormatException
 import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongDiofantPolynomialVariableLengthException
 import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongSymbolInPolynomialInputException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
@@ -80,7 +80,7 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
                     variable
                 )
                 val cof = cofForCheck.substringBeforeSymbol('i')
-                if (cof.isNotComplexNumber()) throw WrongDiofantPolynomialCofFormatException(
+                if (cof.isNotComplexNumber()) throw WrongPolynomialCofFormatException(
                     polynomial,
                     cof
                 )
@@ -99,7 +99,7 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
                     variable
                 )
                 val cof = polynomial.substringBeforeSymbol('i')
-                if (cof.isNotComplexNumber()) throw WrongDiofantPolynomialCofFormatException(
+                if (cof.isNotComplexNumber()) throw WrongPolynomialCofFormatException(
                     str,
                     cof
                 )

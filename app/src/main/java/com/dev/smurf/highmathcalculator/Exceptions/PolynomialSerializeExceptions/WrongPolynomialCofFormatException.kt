@@ -1,6 +1,6 @@
 package com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions
 
-class WrongDiofantPolynomialCofFormatException(input: String, unrecognizablePart: String):
+class WrongPolynomialCofFormatException(input: String, unrecognizablePart: String):
     WrongPolynomialInputFormatException(input = input, unrecognizablePart = unrecognizablePart)
 {
     override val message: String?

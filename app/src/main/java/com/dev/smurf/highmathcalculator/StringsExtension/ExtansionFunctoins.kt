@@ -291,7 +291,7 @@ fun String.substringAfterSymbolIncluded(): String
 
         }
     }
-    return this
+    return ""
 }
 
 fun String.substringAfterSymbolIncluded(isNotSymbol: Char): String
@@ -304,7 +304,7 @@ fun String.substringAfterSymbolIncluded(isNotSymbol: Char): String
 
             }
     }
-    return this
+    return ""
 }
 
 fun String.substringAfterSymbol(): String
@@ -317,7 +317,7 @@ fun String.substringAfterSymbol(): String
 
         }
     }
-    return this
+    return ""
 }
 
 fun String.substringAfterSymbol(isNotSymbol: Char): String
