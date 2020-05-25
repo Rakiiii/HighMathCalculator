@@ -131,7 +131,7 @@ class ComplexNumber( _re : Fraction = Fraction(),_im : Fraction = Fraction())
             //действительная часть 0 возарвщвем только мнимую
             re == Fraction() -> return im.toString() + 'i'
 
-            im < Fraction() -> return ( '(' + re.toString()+ '+' + im.toString() + 'i' + ')')
+            im < Fraction() -> return ( '(' + re.toString() + im.toString() + 'i' + ')')
 
             else -> return ('('+re.toString() + '+' + im.toString() + 'i'+')')
 

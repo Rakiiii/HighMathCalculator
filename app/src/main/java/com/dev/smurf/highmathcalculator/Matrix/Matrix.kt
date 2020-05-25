@@ -103,16 +103,20 @@ open class Matrix private constructor(
 
         fun isMatrix(str: String)
         {
-            if (str == "")return
+            if (str == "") return
 
             val amountOfLeftBrackets = str.count { s -> s == '(' }
             val amountOfRightBrackets = str.count { s -> s == ')' }
-            if(amountOfLeftBrackets != amountOfRightBrackets)throw WrongAmountOfBracketsInMatrixException(str,"")
+            if (amountOfLeftBrackets != amountOfRightBrackets) throw WrongAmountOfBracketsInMatrixException(
+                str,
+                ""
+            )
 
             val matrixString =
                 str.filterNot { s ->
                     (s in '0'..'9') || (s == '\n') || (s == ' ') || (s == '(')
-                            || (s == ')') || (s == 'i') || (s == '+') || (s == '-') || (s == '/')
+                            || (s == ')') || (s == 'i') || (s == '+')
+                            || (s == '-') || (s == '/') || (s == '.')
                 }
             if (matrixString != "") throw WrongSymbolAtMatrixInputException(str, matrixString)
 
@@ -131,7 +135,9 @@ open class Matrix private constructor(
 
                 for (element in elements)
                 {
-                    if (element.fulfilCofs().isNotComplexNumber()) throw WrongElemntAtMatrixInputException(
+                    if (element.fulfilCofs()
+                            .isNotComplexNumber()
+                    ) throw WrongElemntAtMatrixInputException(
                         str,
                         element
                     )
@@ -142,20 +148,19 @@ open class Matrix private constructor(
         fun createMatrix(str: String): Matrix
         {
             isMatrix(str)
-            if(str == "")return EmptyMatrix
-
+            if (str == "") return EmptyMatrix
 
 
             val lines = str.trim { s -> s == ' ' || s == '\n' }.fields("\n")
             val matrixHeight = lines.size
-            val matrxWidth  = lines[0].trim { s -> s == ' ' || s == '\n' }.fields(" ").size
+            val matrxWidth = lines[0].trim { s -> s == ' ' || s == '\n' }.fields(" ").size
 
-            val  matrix= Array(matrixHeight){arrayOf<ComplexNumber>() }
-                for(line in lines.indices)
+            val matrix = Array(matrixHeight) { arrayOf<ComplexNumber>() }
+            for (line in lines.indices)
             {
                 val elements = lines[line].trim { s -> s == ' ' || s == '\n' }.fields(" ")
-                val nextMatrixLine = Array<ComplexNumber>(matrxWidth){ComplexNumber()}
-                for(element in elements.indices)
+                val nextMatrixLine = Array<ComplexNumber>(matrxWidth) { ComplexNumber() }
+                for (element in elements.indices)
                 {
                     nextMatrixLine[element] = elements[element].fulfilCofs().toComplexNumber()
                 }
@@ -163,7 +168,7 @@ open class Matrix private constructor(
             }
 
 
-            return Matrix(width = matrxWidth,height = matrixHeight, m = matrix)
+            return Matrix(width = matrxWidth, height = matrixHeight, m = matrix)
         }
 
     }
