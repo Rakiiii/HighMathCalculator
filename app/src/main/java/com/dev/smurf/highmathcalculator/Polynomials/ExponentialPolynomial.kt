@@ -75,9 +75,20 @@ class ExponentialPolynomial private constructor(
         fun isExponentialPolynomial(str: String)
         {
             val trimmed = str.filterNot { s -> (s == ' ') || (s == '\n') }.degreesToNormalForm().toLowerCase()
-            val filtered = trimmed.filterNot { s -> isGoodSymbol(s)}
+            val wrongSymbolsString = trimmed.filterNot { s -> isGoodSymbol(s)}
 
-            if (filtered != "")throw WrongSymbolInPolynomialInputException(str,filtered)
+            if (wrongSymbolsString != "")throw WrongSymbolInPolynomialInputException(str,wrongSymbolsString)
+
+            var variableChar = ' '
+
+            var pos = trimmed.getFirstCofSeparatorPosition()
+
+            while (pos != -1)
+            {
+
+            }
+
+
         }
 
         private fun isGoodSymbol(s: Char): Boolean

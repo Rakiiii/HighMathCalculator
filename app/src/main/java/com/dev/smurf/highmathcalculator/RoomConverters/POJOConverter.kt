@@ -2,6 +2,7 @@ package com.dev.smurf.highmathcalculator.RoomConverters
 
 import androidx.room.TypeConverter
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
+import com.dev.smurf.highmathcalculator.Polynomials.DiofantPolynomial
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialFactory
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialRoots
@@ -69,7 +70,13 @@ class POJOConverter
         @JvmStatic
         fun toPolynomial(polynomial : String) : PolynomialBase?
         {
-            return if(polynomial != "")PolynomialFactory().createPolynomial(polynomial) else null
+            try
+            {
+                return if(polynomial != "")PolynomialFactory().createPolynomial(polynomial) else null
+            }catch (e :Exception)
+            {
+                return DiofantPolynomial.createEmptyPolynomial()
+            }
         }
 
 

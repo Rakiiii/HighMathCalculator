@@ -59,7 +59,7 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
         {
 
             var polynomial =
-                str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofs()
+                str.filterNot { s -> (s == ' ') || (s == '\n')}.toLowerCase().fulfilCofs()
             val wrongSymbolString = polynomial.filterNot { s -> isGoodSymbol(s) }
             if (wrongSymbolString != "") throw WrongSymbolInPolynomialInputException(
                 str,
