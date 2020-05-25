@@ -19,8 +19,6 @@ fun String.fulfilCofs(): String
         filled = filled.substring(0, pos + 1) + "1" + filled.substring(pos + 1, filled.length)
     }
 
-    Log.d("complex@","source:"+this+" filled:"+filled)
-
     return filled
 }
 
@@ -125,7 +123,6 @@ fun String.toComplexNumber(): ComplexNumber
     val filled = fulfilCofs()
     if (filled.isNotComplexNumber())
     {
-        Log.d("complex@", filled)
         return ComplexNumber()
     }
     //remove unnessasery symbols
@@ -165,7 +162,7 @@ fun String.toComplexNumber(): ComplexNumber
         {
             val complexNumber = trimmed.fields("-")
             complexNumber[1] = "-" + complexNumber[1]
-            //Log.d("complex@","original:"+this+" filled:"+filled+" trimmed:"+trimmed)
+
             val im =
                 if (complexNumber[0].contains('i')) complexNumber[0].filterNot { s -> s == 'i' }
                     .toFraction()
@@ -175,7 +172,7 @@ fun String.toComplexNumber(): ComplexNumber
                 if (!complexNumber[0].contains('i')) complexNumber[0].filterNot { s -> s == 'i' }
                     .toFraction()
                 else complexNumber[1].filterNot { s -> s == 'i' }.toFraction()
-            //Log.d("complex@","original:"+this+" filled:"+filled+" trimmed:"+trimmed+" re:"+re.toString()+" im:"+im.toString())
+
             return ComplexNumber(_re = re, _im = im)
         }
 

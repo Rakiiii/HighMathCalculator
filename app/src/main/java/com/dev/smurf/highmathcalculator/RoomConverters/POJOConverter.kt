@@ -70,13 +70,7 @@ class POJOConverter
         @JvmStatic
         fun toPolynomial(polynomial : String) : PolynomialBase?
         {
-            try
-            {
                 return if(polynomial != "")PolynomialFactory().createPolynomial(polynomial) else null
-            }catch (e :Exception)
-            {
-                return DiofantPolynomial.createEmptyPolynomial()
-            }
         }
 
 
