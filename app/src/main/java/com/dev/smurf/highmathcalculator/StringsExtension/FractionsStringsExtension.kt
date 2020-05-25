@@ -66,7 +66,7 @@ fun String.toFraction(): Fraction
 
     //remove some symbols that are not important, plus start and end breakets
     val trimmed =
-        this.filterNot { s -> (s == ' ') || (s == '\n') }.filterNot { s -> (s == '(') || (s == ')') }
+        this.filterNot { s -> (s == ' ') || (s == '\n') || (s == '(') || (s == ')') }
 
     if (trimmed.contains('.'))
     {
