@@ -8,7 +8,7 @@ fun String.isFraction(): Boolean
 
     //remove some symbols that are not important, plus start and end breakets
     val trimmed =
-        this.filterNot { s -> (s == ' ') || (s == '\n') }.filterNot { s -> (s == '(') || (s == ')') }
+        this.filterNot { s -> (s == ' ') || (s == '\n') ||  (s == '(') || (s == ')') }
 
     //if after all string contains any other symbols then digits,minus and devision then it's not fraction
     if (trimmed.filterNot { s -> (s in '0'..'9') || (s == '-') || (s == '/') } != "")
@@ -45,13 +45,15 @@ fun String.isDecimalFraction(): Boolean
 {
     //remove some symbols that are not important, plus start and end breakets
     val trimmed =
-        this.filterNot { s -> (s == ' ') || (s == '\n') }.filterNot { s -> (s == '(') || (s == ')') }
+        this.filterNot { s -> (s == ' ') || (s == '\n') || (s == '(') || (s == ')') }
 
     //if after all string contains any other symbols then digits,minus and devision then it's not fraction
     if (trimmed.filterNot { s -> (s in '0'..'9') || (s == '-') || (s == '.') } != "")
         return false
 
     if (trimmed.count{ s -> s =='.'} > 1 || trimmed.count{ s -> s =='-'} > 1)return false
+    //if we have no symbols after or before dots [ "123." or ".1234" ] it's not looks like decimal fraction
+    if(trimmed.substringAfter('.') == "" || trimmed.substringBefore('.') == "")return false
     return trimmed.filterNot { s -> s == '.' }.toIntOrNull() != null
 }
 
