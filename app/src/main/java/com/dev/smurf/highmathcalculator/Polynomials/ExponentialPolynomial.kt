@@ -72,6 +72,12 @@ class ExponentialPolynomial private constructor(
 
         fun createEmptyExponentialPolynomial() = ExponentialPolynomial()
 
+        /*
+        fun createExponentialPolynomials(str : String) : ExponentialPolynomial
+        {
+
+        }*/
+
         fun isExponentialPolynomial(str: String)
         {
             val amountOfLeftBrackets = str.count { s -> s == '(' }
