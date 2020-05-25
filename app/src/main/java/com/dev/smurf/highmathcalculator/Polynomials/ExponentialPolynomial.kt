@@ -6,6 +6,7 @@ import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationExceptio
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.StringsExtension.*
 import com.dev.smurf.highmathcalculator.Utils.*
+import java.lang.Exception
 
 class ExponentialPolynomial private constructor(
     //contains polynomial in form degree : cof where degree is int and cof is complex number
@@ -89,7 +90,7 @@ class ExponentialPolynomial private constructor(
 
             while (pos != -1)
             {
-                val part = polynomialString.substring(0,pos)
+                val part = polynomialString.substring(0, pos)
                 val cofParsed = parsePart(part)
                 if (cofParsed.third != defaultSymbol) symbol = cofParsed.third
 
@@ -112,7 +113,7 @@ class ExponentialPolynomial private constructor(
 
             val maxDegree = parsed.maxBy { it.key }?.key ?: 0
 
-            for ( i in 0..maxDegree)
+            for (i in 0..maxDegree)
             {
                 if (!parsed.containsKey(i))
                 {
@@ -130,7 +131,7 @@ class ExponentialPolynomial private constructor(
             polynomial.sortBy { it.first }
             polynomial.reverse()
 
-            return ExponentialPolynomial(polynomial = polynomial,variableSymbol = symbol)
+            return ExponentialPolynomial(polynomial = polynomial, variableSymbol = symbol)
         }
 
         fun parsePart(part: String): Triple<Int, ComplexNumber, Char>
@@ -209,7 +210,7 @@ class ExponentialPolynomial private constructor(
             var returnChar: Char = variableChar
             when
             {
-                variable != "" ->
+                variable == "" ->
                 {
                 }
                 variable.contains('^') ->
@@ -258,6 +259,7 @@ class ExponentialPolynomial private constructor(
                     )
 
                     if (variableChar == ' ') returnChar = variable[0]
+
                     if (variable[0] != variableChar && variable[0] != returnChar) throw WrongSymbolAtExponetialPolynomialInputException(
                         str,
                         variable
@@ -445,8 +447,13 @@ class ExponentialPolynomial private constructor(
 
         for (i in polynomial)
         {
-            string += i.second.toString() + variableSymbol + "^" + i.first.toString().toDegree()
-            if (i != polynomial.last()) string += "+"
+            if (i.second != ComplexNumber())
+            {
+                string += i.second.toString() + (if (i.first != 0) variableSymbol + "^" + i.first.toString()
+                    .toDegree()
+                else "")
+                if (i != polynomial.last()) string += "+"
+            }
         }
 
         return string
@@ -459,12 +466,15 @@ class ExponentialPolynomial private constructor(
 
         for (i in polynomial)
         {
-            if (i.first != 0) renderFormat.add(
-                Pair(
-                    variableSymbol + "^" + i.first.toString().toDegree(), i.second
+            if (i.second != ComplexNumber())
+            {
+                if (i.first != 0) renderFormat.add(
+                    Pair(
+                        variableSymbol + "^" + i.first.toString().toDegree(), i.second
+                    )
                 )
-            )
-            else renderFormat.add(Pair("", i.second))
+                else renderFormat.add(Pair("", i.second))
+            }
         }
 
         return renderFormat
