@@ -1,6 +1,7 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
 import android.util.Log
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.WrongSymbolInPolynomialInputException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.StringsExtension.*
@@ -70,9 +71,24 @@ class ExponentialPolynomial private constructor(
         }
 
         fun createEmptyExponentialPolynomial() = ExponentialPolynomial()
+
+        fun isExponentialPolynomial(str: String)
+        {
+            val trimmed = str.filterNot { s -> (s == ' ') || (s == '\n') }.degreesToNormalForm().toLowerCase()
+            val filtered = trimmed.filterNot { s -> isGoodSymbol(s)}
+
+            if (filtered != "")throw WrongSymbolInPolynomialInputException(str,filtered)
+        }
+
+        private fun isGoodSymbol(s: Char): Boolean
+        {
+            return (s in '0'..'9') || (s in 'a'..'z') || (s == '^') || (s == '/') || (s == '+') || (s == '-') ||(
+                s == '.'
+            ) || (s == '(') || (s == ')')
+        }
     }
 
-    private constructor():this(polynomial = arrayListOf<Pair<Int, ComplexNumber>>())
+    private constructor() : this(polynomial = arrayListOf<Pair<Int, ComplexNumber>>())
 
     //returns polynomials degree
     override fun degree() = polynomial.size

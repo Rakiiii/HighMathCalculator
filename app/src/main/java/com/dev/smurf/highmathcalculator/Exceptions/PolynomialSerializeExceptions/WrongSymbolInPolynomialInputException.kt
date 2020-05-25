@@ -1,6 +1,6 @@
 package com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions
 
-class WrongSymbolInDiofantPolynomialInputException(input: String, unrecognizablePart: String) :
+class WrongSymbolInPolynomialInputException(input: String, unrecognizablePart: String) :
     WrongPolynomialInputFormatException(input = input, unrecognizablePart = unrecognizablePart)
 {
     override val message: String?
