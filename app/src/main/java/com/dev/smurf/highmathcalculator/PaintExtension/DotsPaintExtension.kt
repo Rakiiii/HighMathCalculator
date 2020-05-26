@@ -4,6 +4,12 @@ import android.graphics.Paint
 import android.graphics.Rect
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 
+fun Paint.getDefaultHorizontalSpace(): Float
+{
+    val rect = Rect()
+    getTextBounds("w",0,1,rect)
+    return rect.width().toFloat()/4
+}
 
 fun Paint.getDotsSpaceSize(radius: Float) = radius / 2
 

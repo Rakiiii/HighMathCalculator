@@ -1,6 +1,7 @@
 package com.dev.smurf.highmathcalculator.PaintExtension
 
 import android.graphics.Paint
+import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
 
 //returns length of @fraction in paint param
@@ -56,3 +57,11 @@ fun Paint.getFractionWidth(fraction: Fraction): Float
     return overallLength
 }
 
+fun Paint.getFractionLineVerticalOffset(fraction: Fraction): Float
+{
+    if (fraction.isInt()) return (2 * CanvasRenderSpecification.getLetterHigh(this) + CanvasRenderSpecification.getLineWidth(
+        this
+    ) + 2 * CanvasRenderSpecification.letterVerticalSpacing) / 2
+
+    return CanvasRenderSpecification.getLetterHigh(this) + CanvasRenderSpecification.letterVerticalSpacing
+}

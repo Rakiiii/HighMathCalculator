@@ -18,7 +18,7 @@ class CanvasRenderSpecification
 
         val textSize = 40.0f
 
-        val strokeWidth = 5.0f
+        val strokeWidth = 2.0f
 
         val defspaceSize = 5.0f
 

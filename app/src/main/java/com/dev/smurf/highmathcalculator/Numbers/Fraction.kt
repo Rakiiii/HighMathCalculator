@@ -11,7 +11,7 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
     var upper = _upper
     private set
 
-    var lower = _lower
+    var lower = if(_lower != 0)_lower else 1
     private set
 
     operator fun plus(right : Any?) : Fraction
@@ -131,6 +131,11 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
 
     override fun toString(): String
     {
+        /*
+        if(isDecimal())
+        {
+            var str = upper.toString().substring(0,lower.toString().length)
+        }*/
         if (lower == 1)return upper.toString()
         else
         {
@@ -174,18 +179,6 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
             return upper.absoluteValue.toString().length
         else
             return lower.absoluteValue.toString().length
-        /*
-        var str = this.toString()
-        if( str.substringBefore('/').length > str.substringAfter('/').length )
-        {
-            //Log.d("debug@" , str.substringBefore('/').length.toString())
-            return str.substringBefore('/').length
-        }
-        else
-        {
-            //Log.d("debug@" , str.substringAfter('/').length.toString())
-            return str.substringAfter('/').length
-        }*/
     }
 
     fun isInt() = (lower == 1)
@@ -195,6 +188,16 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
     fun Copy() : Fraction
     {
         return Fraction( _upper = upper , _lower = lower)
+    }
+
+    fun isDecimal() : Boolean
+    {
+        var test = lower
+        while (test % 10 == 0)
+        {
+            test /= 10
+        }
+        return test == 1
     }
 }
 

@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.util.Log
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
+import com.dev.smurf.highmathcalculator.PaintExtension.getFractionLineVerticalOffset
 import com.dev.smurf.highmathcalculator.PaintExtension.getFractionWidth
 import kotlin.math.absoluteValue
 
@@ -29,15 +30,26 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, y: Float, mPaint:
         complexNumber.isImagination() ->
         {
             //if imegination number render imeginary part and count i pos
-            val iVerticalPos = y + this.drawFraction(complexNumber.im, x, y, mPaint) - high / 2 - CanvasRenderSpecification.letterVerticalSpacing
+            val iVerticalPos = y + this.drawFraction(
+                complexNumber.im,
+                x,
+                y,
+                mPaint
+            ) - high / 2 - CanvasRenderSpecification.letterVerticalSpacing
 
             val iHorizontalPos = x + mPaint.getFractionWidth(complexNumber.im)
 
-            this.drawText("i",  iHorizontalPos, iVerticalPos, mPaint)
+            this.drawText("i", iHorizontalPos, iVerticalPos, mPaint)
 
             return //iVerticalPos - high/2
         }
     }
+
+    /*
+     * first of all we must draw re and im fractions part to get positions of separation line
+     * then in logic of re and im part we must get biggest offset
+    */
+
 
     //counting length of left bracket
     val arr = FloatArray(1)
@@ -48,14 +60,32 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, y: Float, mPaint:
     var horizontalPosition = x + lengthOfLeftBracket
 
     //draw real part of number and get offset of middle of drawed number
-    val middlePositionOfRealPart = this.drawFraction(complexNumber.re, horizontalPosition, y, mPaint)
+    val middlePositionOfRealPart =
+        this.drawFraction(
+            complexNumber.re,
+            horizontalPosition,
+            y + if (complexNumber.re.isInt() && !complexNumber.im.isInt()) mPaint.getFractionLineVerticalOffset(
+                complexNumber.im
+            ) - high/2
+            else 0.0f,
+            mPaint
+        )
 
     //move horizontal position to the left of real part
     horizontalPosition += mPaint.getFractionWidth(complexNumber.re)
 
     //calculate vertical position of left bracket and sign
-    val verticalPositionOfSign = y + middlePositionOfRealPart - high / 2 - CanvasRenderSpecification.letterVerticalSpacing
-
+    val verticalPositionOfSign = when
+    {
+        complexNumber.re.isInt() && complexNumber.im.isInt() ->
+            y + middlePositionOfRealPart - high / 2 - CanvasRenderSpecification.letterVerticalSpacing
+        else ->
+            y + if (mPaint.getFractionLineVerticalOffset(complexNumber.re) >= mPaint.getFractionLineVerticalOffset(
+                    complexNumber.im
+                )
+            ) middlePositionOfRealPart
+            else mPaint.getFractionLineVerticalOffset(complexNumber.im)
+    }
     //draw left bracket
     this.drawText("(", x, verticalPositionOfSign, mPaint)
 
@@ -85,16 +115,39 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, y: Float, mPaint:
 
     //init absolute version of imaginary part of complex number, because minus is already drawn
     val absoluteFraction =
-        Fraction(_upper = complexNumber.im.upper.absoluteValue, _lower = complexNumber.im.lower.absoluteValue)
+        Fraction(
+            _upper = complexNumber.im.upper.absoluteValue,
+            _lower = complexNumber.im.lower.absoluteValue
+        )
 
     //draw imaginary part of number and get offset of middle of imaginary part
-    val middlePositionOfImaginaryPart = this.drawFraction(absoluteFraction, horizontalPosition, y, mPaint)
+    val middlePositionOfImaginaryPart =
+        this.drawFraction(
+            absoluteFraction,
+            horizontalPosition,
+            y + if (!complexNumber.re.isInt() && complexNumber.im.isInt()) mPaint.getFractionLineVerticalOffset(
+                complexNumber.re
+            )- high/2
+            else 0.0f,
+            mPaint
+        )
 
     //move horizontal position of drawing to the left of imaginary part
     horizontalPosition += mPaint.getFractionWidth(absoluteFraction)
 
     //calculate vertical position of right bracket and imaginary unit
-    val imVerticalPosition = y + middlePositionOfImaginaryPart - high / 2 - CanvasRenderSpecification.letterVerticalSpacing
+    val imVerticalPosition = when
+    {
+        complexNumber.re.isInt() && complexNumber.im.isInt() ->
+            y + middlePositionOfImaginaryPart - high / 2 - CanvasRenderSpecification.letterVerticalSpacing
+        else ->
+            y + +if (mPaint.getFractionLineVerticalOffset(complexNumber.im) >= mPaint.getFractionLineVerticalOffset(
+                    complexNumber.re
+                )
+            ) middlePositionOfImaginaryPart
+            else mPaint.getFractionLineVerticalOffset(complexNumber.re)
+    }
+
 
     //draw right bracket and imaginary un it
     this.drawText("i)", horizontalPosition, imVerticalPosition, mPaint)
