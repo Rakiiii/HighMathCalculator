@@ -1,5 +1,7 @@
 package com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
@@ -13,6 +15,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawFractions
+import com.dev.smurf.highmathcalculator.Numbers.Fraction
+import com.dev.smurf.highmathcalculator.PaintExtension.getFractionSize
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
@@ -106,6 +112,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         loadData()
 
     }
+
 
     override fun onResume()
     {
@@ -449,5 +456,6 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         mMatrixPresenter.btnSwitchClicked(0)
     }
+
 }
 

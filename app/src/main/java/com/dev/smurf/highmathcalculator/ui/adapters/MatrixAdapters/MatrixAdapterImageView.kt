@@ -2,6 +2,10 @@ package com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters
 
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +14,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawFractions
 import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRender
+import com.dev.smurf.highmathcalculator.Numbers.Fraction
+import com.dev.smurf.highmathcalculator.PaintExtension.getFractionSize
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.Utils.*
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
@@ -171,6 +178,7 @@ class MatrixAdapterImageView(
             resMatrix.imageBitmap = bitmapSet.resultMatrixBitmap
             equalSign.imageBitmap = bitmapSet.equalsSignBitmap
 
+            renderTest()
 
             group.time.let {
                 val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
@@ -188,5 +196,59 @@ class MatrixAdapterImageView(
         }
 
 
+        fun renderTest()
+        {
+            val mPaint = CanvasRenderSpecification.createBlackPainter()
+            val f1 = Fraction(1565, 1)
+            val f1Size = mPaint.getFractionSize(f1)
+            Log.d("size@",f1Size.first.toString()+ " "+f1Size.second.toString())
+            val f1Bitmap = Bitmap.createBitmap(
+                f1Size.first.toInt(),
+                f1Size.second.toInt(),
+                Bitmap.Config.ARGB_8888
+            )
+            Canvas(f1Bitmap).drawFractions(f1,0.0f,0.0f,mPaint)
+            leftMatrix.imageBitmap = f1Bitmap
+
+
+            val f2 = Fraction(-2, 536)
+            val f2Size = mPaint.getFractionSize(f2)
+            Log.d("sizef2@",f2Size.first.toString()+ " "+f2Size.second.toString())
+            val f2t = Fraction(2, 536)
+            val f2tSize = mPaint.getFractionSize(f2t)
+            Log.d("sizef2@",f2tSize.first.toString()+ " "+f2tSize.second.toString())
+            val f2Bitmap = Bitmap.createBitmap(
+                f2Size.first.toInt(),
+                f2Size.second.toInt(),
+                Bitmap.Config.ARGB_8888
+            )
+            Canvas(f2Bitmap).drawFractions(f2,0.0f,0.0f,mPaint)
+            //f2Bitmap.eraseColor(Color.BLACK)
+            rightMatrix.imageBitmap =f2Bitmap
+
+            val f3 = Fraction(1654, 536)
+            val f3Size = mPaint.getFractionSize(f3)
+            Log.d("size@",f3Size.first.toString()+ " "+f3Size.second.toString())
+            val f3Bitmap = Bitmap.createBitmap(
+                f3Size.first.toInt(),
+                f3Size.second.toInt(),
+                Bitmap.Config.ARGB_8888
+            )
+            Canvas(f3Bitmap).drawFractions(f3,0.0f,0.0f,mPaint)
+            sign.imageBitmap =f3Bitmap
+
+            val f4 = Fraction(1654, 897536)
+            val f4Size = mPaint.getFractionSize(f4)
+            Log.d("size@",f4Size.first.toString()+ " "+f4Size.second.toString())
+            val f4Bitmap = Bitmap.createBitmap(
+                f4Size.first.toInt(),
+                f4Size.second.toInt(),
+                Bitmap.Config.ARGB_8888
+            )
+            Canvas(f4Bitmap).drawFractions(f4,0.0f,0.0f,mPaint)
+            resMatrix.imageBitmap = f4Bitmap
+        }
     }
+
+
 }

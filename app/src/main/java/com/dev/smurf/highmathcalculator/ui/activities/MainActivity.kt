@@ -1,10 +1,17 @@
 package com.dev.smurf.highmathcalculator
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Point
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
+import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawFractions
+import com.dev.smurf.highmathcalculator.Numbers.Fraction
+import com.dev.smurf.highmathcalculator.PaintExtension.getFractionSize
 import com.dev.smurf.highmathcalculator.mvp.presenters.MainPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MainViewInterface
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.ViewPagerFragmentStateAdapter
@@ -14,13 +21,16 @@ import com.dev.smurf.highmathcalculator.ui.fragments.settingsFragment.SettingBot
 import kotlinx.android.synthetic.main.activity_main.*
 import moxy.MvpAppCompatActivity
 import moxy.presenter.InjectPresenter
+import org.jetbrains.anko.imageBitmap
 
 
-class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSheetDialogFragment.onFragmentInteractionListener{
+class MainActivity : MvpAppCompatActivity(), MainViewInterface,
+    SettingBottomSheetDialogFragment.onFragmentInteractionListener
+{
 
     //добовляем mainPresenter
     @InjectPresenter
-    lateinit var mMainPresenter : MainPresenter
+    lateinit var mMainPresenter: MainPresenter
 
 
     //private lateinit var mNavigationController : NavController
@@ -38,7 +48,7 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSh
         super.onCreate(savedInstanceState)
 
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        window.statusBarColor = ContextCompat.getColor(this,R.color.white)
+        window.statusBarColor = ContextCompat.getColor(this, R.color.white)
 
         setContentView(R.layout.activity_main)
 
@@ -52,12 +62,15 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSh
 
         supportActionBar?.hide()
 
-        bottomNavView.setNavigationChangeListener{ _, position ->
-            when( position){
-                0->{
+        bottomNavView.setNavigationChangeListener { _, position ->
+            when (position)
+            {
+                0 ->
+                {
                     mMainPresenter.setMatrixFragment()
                 }
-                1->{
+                1 ->
+                {
                     mMainPresenter.setPolinonFragment()
                 }
             }
@@ -72,20 +85,20 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSh
             return@setOnTouchListener true
         }
 
-        mainViewPager.registerOnPageChangeCallback( object : ViewPager2.OnPageChangeCallback(){
+        mainViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback()
+        {
             override fun onPageSelected(position: Int)
             {
                 super.onPageSelected(position)
-                when(position){
-                    0-> bottomNavView.setCurrentActiveItem(0)
+                when (position)
+                {
+                    0 -> bottomNavView.setCurrentActiveItem(0)
                     1 -> bottomNavView.setCurrentActiveItem(1)
                 }
             }
-    })
+        })
 
     }
-
-
 
 
     //Установка фрагмента с матрицами
@@ -94,7 +107,7 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSh
         mainViewPager.beginFakeDrag()
         val point = Point()
         windowManager.defaultDisplay.getSize(point)
-        mainViewPager.fakeDragBy((point.x.toFloat()+10.0f))
+        mainViewPager.fakeDragBy((point.x.toFloat() + 10.0f))
         mainViewPager.endFakeDrag()
 
         //mainViewPager.setCurrentItem(0,false)
@@ -106,7 +119,7 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSh
         mainViewPager.beginFakeDrag()
         val point = Point()
         windowManager.defaultDisplay.getSize(point)
-        mainViewPager.fakeDragBy(-(point.x.toFloat()+10.0f))
+        mainViewPager.fakeDragBy(-(point.x.toFloat() + 10.0f))
         mainViewPager.endFakeDrag()
         //mainViewPager.setCurrentItem(1,false)
 
@@ -116,11 +129,15 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface , SettingBottomSh
     //утсановка фрагмента с настройками
     override fun setSettingsFragment()
     {
-        mSettingBottomSheetDialogFragment.show(supportFragmentManager,mSettingBottomSheetDialogFragment.tag)
+        mSettingBottomSheetDialogFragment.show(
+            supportFragmentManager,
+            mSettingBottomSheetDialogFragment.tag
+        )
     }
 
     override fun updateSettings()
     {
         mViewPagerFragmentStateAdapter.callUpdateSettings()
     }
+
 }

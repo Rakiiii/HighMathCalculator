@@ -2,8 +2,12 @@ package com.dev.smurf.highmathcalculator.CanvasExtension
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
+import android.util.Log
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
+import com.dev.smurf.highmathcalculator.PaintExtension.*
 import kotlin.math.absoluteValue
+
 
 //Extension for canvas to draw custom fraction returns offset of middle of fraction
 fun Canvas.drawFraction(fraction: Fraction, x: Float, y: Float, mPaint: Paint): Float
@@ -28,17 +32,24 @@ fun Canvas.drawFraction(fraction: Fraction, x: Float, y: Float, mPaint: Paint): 
         {
 
             //counting vertical offsetn to draw number in the middle of possible fraction
-            val verticalOffset = (2 * high + lineThickness + 2 * CanvasRenderSpecification.letterVerticalSpacing) / 4
+            val verticalOffset =
+                (2 * high + lineThickness + 2 * CanvasRenderSpecification.letterVerticalSpacing) / 4
 
             //drawing number
-            this.drawText(fraction.upper.toString(), x + horizontalOffset, y + verticalOffset, mPaint)
+            this.drawText(
+                fraction.upper.toString(),
+                x + horizontalOffset,
+                y + verticalOffset,
+                mPaint
+            )
             return verticalOffset * 2
         }
         //Drawing fraction with minus
         fraction.isBeloweZero() ->
         {
             //Drawing minus
-            val minusVerticalPozition = y + high + CanvasRenderSpecification.letterVerticalSpacing *3
+            val minusVerticalPozition =
+                y + high + CanvasRenderSpecification.letterVerticalSpacing * 3
             this.drawText("-", x + horizontalOffset, minusVerticalPozition, mPaint)
 
             //getting width of minus in setted offset
@@ -46,7 +57,7 @@ fun Canvas.drawFraction(fraction: Fraction, x: Float, y: Float, mPaint: Paint): 
             mPaint.getTextWidths("-", arr)
 
             //increment horizontal offset on minus size
-            horizontalOffset += arr[0]+ CanvasRenderSpecification.defspaceSize
+            horizontalOffset += arr[0] + CanvasRenderSpecification.defspaceSize
         }
     }
 
@@ -114,4 +125,94 @@ fun Canvas.drawFraction(fraction: Fraction, x: Float, y: Float, mPaint: Paint): 
     )
 
     return lineVerticalPosition
+}
+
+
+fun Canvas.drawFractions(fraction: Fraction, x: Float, y: Float, mPaint: Paint)
+{
+    //save align state
+    val align = mPaint.textAlign
+
+    val size = mPaint.getFractionSize(fraction)
+
+    //set left align state for render
+    mPaint.textAlign = Paint.Align.LEFT
+    if (fraction.isInt())
+    {
+        this.drawText(fraction.upper.toString(), x, size.second, mPaint)
+    }
+    else
+    {
+        val overallHorizontalOffset =
+            if (fraction.isBeloweZero()) mPaint.getMinusWidth() + mPaint.getHorizontalSpacing() else 0.0f
+
+        val upperRect = Rect()
+        mPaint.getTextBounds(
+            fraction.upper.toString(),
+            0,
+            fraction.upper.toString().length,
+            upperRect
+        )
+
+        val upperHorizontalOffset = overallHorizontalOffset +
+                ((size.first - overallHorizontalOffset) - mPaint.getFractionUpperWidth(fraction)) / 2
+        val lowerHorizontalOffset = overallHorizontalOffset +
+                ((size.first - overallHorizontalOffset) - mPaint.getFractionLowerWidth(fraction)) / 2
+
+
+        val lineVerticalOffset = upperRect.height() + mPaint.getVerticalSpacing()
+
+        if (fraction.isBeloweZero())
+        {
+            drawMinus(x, y + lineVerticalOffset, mPaint)
+        }
+
+        drawLine(
+            x + overallHorizontalOffset,
+            lineVerticalOffset,
+            x + overallHorizontalOffset + size.first,
+            lineVerticalOffset,
+            mPaint
+        )
+
+        drawText(
+            fraction.upper.absoluteValue.toString(),
+            x + upperHorizontalOffset,
+            y + upperRect.height().toFloat(),
+            mPaint
+        )
+
+        drawText(
+            fraction.lower.absoluteValue.toString(),
+            x + lowerHorizontalOffset,
+            size.second,
+            mPaint
+        )
+
+    }
+    //restore align state
+    mPaint.textAlign = align
+}
+
+fun Canvas.drawMinus(x: Float, y: Float, mPaint: Paint)
+{
+    val rect = Rect()
+    mPaint.getTextBounds("-", 0, 1, rect)
+
+    drawLine(x, y, x + rect.width(), y, mPaint)
+}
+
+fun Canvas.drawPlus(x: Float, y: Float, mPaint: Paint)
+{
+    val rect = Rect()
+    mPaint.getTextBounds("+", 0, 1, rect)
+
+    drawLine(x, y, x + rect.width(), y, mPaint)
+    drawLine(
+        x + (rect.width().toFloat() / 2),
+        y - (rect.height().toFloat() / 2),
+        x + (rect.width().toFloat() / 2),
+        y + (rect.height().toFloat() / 2),
+        mPaint
+    )
 }
