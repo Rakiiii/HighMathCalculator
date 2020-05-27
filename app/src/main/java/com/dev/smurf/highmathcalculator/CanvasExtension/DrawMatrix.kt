@@ -238,6 +238,24 @@ fun Canvas.drawMatrix(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
     }
 }
 
+fun Canvas.drawBracket(
+    x: Float,
+    y: Float,
+    width: Float,
+    height: Float,
+    mPaint: Paint,
+    isLeft: Boolean
+)
+{
+
+    val bracketRect = RectF(x, y, x + width, y + height)
+
+    val rotatoryParam = if (isLeft) 1.0f else -1.0f
+
+    drawArc(bracketRect, 90.0f, rotatoryParam * 180.0f, false, mPaint)
+
+}
+
 //Extension for canvas to draw matrix in brackets
 fun Canvas.drawMatrixInBrackets(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 {
@@ -246,14 +264,10 @@ fun Canvas.drawMatrixInBrackets(matrix: Matrix, x: Float, y: Float, mPaint: Pain
 
     val matrixSize = mPaint.getMatrixSize(matrix)
 
-    //high of the letter of the setted font
-    val high = CanvasRenderSpecification.getLetterHigh(mPaint)
-
-    //count bracket width
-    val bracketWidth = CanvasRenderSpecification.getBracketWidth(mPaint, matrix.height)
+    val bracketWidth = mPaint.getMatrixHorizontalOffset()
 
     //draw matrix
-    this.drawMatrix(matrix, x + 2 * bracketWidth / 3, y + high / 4, mPaint)
+    this.drawMatrix(matrix, x + bracketWidth, y + mPaint.getMatrixUpperOffset(), mPaint)
 
     //save old style
     val style = mPaint.style
@@ -261,25 +275,11 @@ fun Canvas.drawMatrixInBrackets(matrix: Matrix, x: Float, y: Float, mPaint: Pain
     //set new style
     mPaint.style = Paint.Style.STROKE
 
-    //set rectangle for left bracket draw
-    val leftBracketRectangle = RectF(
-        x,
-        y,
-        x + bracketWidth, y + matrixSize.second
-    )
+    val overallMatrixHeight = matrixSize.second + mPaint.getMatrixUpperOffset() + mPaint.getMatrixLowerOffset()
 
-    //set rectangle for right bracket draw
-    val rightBracketRectangle = RectF(
-        x + matrixSize.first + bracketWidth / 2,
-        y,
-        x + 3 * bracketWidth / 2 + matrixSize.first, y + matrixSize.second
-    )
+    drawBracket(x,y,bracketWidth,overallMatrixHeight,mPaint,true)
 
-    //draw left bracket
-    this.drawArc(leftBracketRectangle, 250.0f, -140.0f, false, mPaint)
-
-    //draw right bracket
-    this.drawArc(rightBracketRectangle, 290.0f, 140.0f, false, mPaint)
+    drawBracket(x+bracketWidth+matrixSize.first,y,bracketWidth,overallMatrixHeight,mPaint,false)
 
     //restore old style
     mPaint.style = style
@@ -293,25 +293,28 @@ fun Canvas.drawMatrixInLines(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 
     val matrixSize = mPaint.getMatrixSize(matrix)
 
-    //high of the letter of the setted font
-    val high = CanvasRenderSpecification.getLetterHigh(mPaint)
-
     //count line width
     val lineWidth = mPaint.strokeWidth
 
     //draw matrix
-    this.drawMatrix(matrix, x+lineWidth*2 , y, mPaint)
+    this.drawMatrix(matrix, x + lineWidth * 2, y + mPaint.getMatrixUpperOffset(), mPaint)
 
     //save old style
     val style = mPaint.style
 
-    this.drawLine(x, y, x, y + matrixSize.second, mPaint)
+    this.drawLine(
+        x,
+        y,
+        x,
+        y + matrixSize.second + mPaint.getMatrixUpperOffset() + mPaint.getMatrixLowerOffset(),
+        mPaint
+    )
 
     this.drawLine(
-        x + matrixSize.first +  4 * lineWidth,
-        y+mPaint.getMatrixVerticalOffset(),
-        x + matrixSize.first  +  4 * lineWidth,
-        y + matrixSize.second+mPaint.getMatrixVerticalOffset(),
+        x + matrixSize.first + 4 * lineWidth,
+        y,
+        x + matrixSize.first + 4 * lineWidth,
+        y + matrixSize.second + mPaint.getMatrixUpperOffset() + mPaint.getMatrixLowerOffset(),
         mPaint
     )
 }

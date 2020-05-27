@@ -122,6 +122,12 @@ fun Paint.getMatrixSize(matrix: Matrix): Pair<Float, Float>
 
 fun Paint.getMatrixVerticalOffset() = getMatrixVerticalSpaceSize()
 
+fun Paint.getMatrixUpperOffset() = getMatrixVerticalOffset()
+fun Paint.getMatrixLowerOffset() = 2*getMatrixVerticalOffset()
+
+fun Paint.getMatrixHorizontalOffset() = getMatrixHorizontalSpaceSize()
+
+
 
 fun Paint.getMatrixInBracketsSize(matrix: Matrix): Pair<Float, Float>
 {
@@ -129,13 +135,14 @@ fun Paint.getMatrixInBracketsSize(matrix: Matrix): Pair<Float, Float>
     if (matrix.isNumber()) return getComplexNumberSize(matrix.matrices[0][0])
 
     //count bracket width
-    val bracketWidth = CanvasRenderSpecification.getBracketWidth(this, matrix.height)
+    val bracketWidth = getMatrixHorizontalOffset()
+        //CanvasRenderSpecification.getBracketWidth(this, matrix.height)
 
     val matrixSise = this.getMatrixSize(matrix)
 
     return Pair(
         matrixSise.first + 2 * bracketWidth,
-        matrixSise.second + (getMatrixVerticalOffset() * 2)
+        matrixSise.second + getMatrixUpperOffset()+getMatrixLowerOffset()
     )
 }
 
@@ -152,7 +159,7 @@ fun Paint.getMatrixInLinesSize(matrix: Matrix): Pair<Float, Float>
 
     return Pair(
         matrixSize.first + 4 * lineWidth,
-        matrixSize.second + (getMatrixVerticalOffset() * 2)
+        matrixSize.second + getMatrixUpperOffset() + getMatrixLowerOffset()
     )
 }
 
