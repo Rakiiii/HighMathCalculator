@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,9 +15,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawComplex
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawComplexx
 import com.dev.smurf.highmathcalculator.CanvasExtension.drawFractions
 import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRender
+import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
+import com.dev.smurf.highmathcalculator.PaintExtension.getComplexNumberSize
 import com.dev.smurf.highmathcalculator.PaintExtension.getFractionSize
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.Utils.*
@@ -178,7 +183,7 @@ class MatrixAdapterImageView(
             resMatrix.imageBitmap = bitmapSet.resultMatrixBitmap
             equalSign.imageBitmap = bitmapSet.equalsSignBitmap
 
-            renderTest()
+            //renderTestComplex()
 
             group.time.let {
                 val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
@@ -194,9 +199,63 @@ class MatrixAdapterImageView(
                 if (matrixGroup.rightMatrix.isEmpty()) matrixGroup.resMatrix.toString() else matrixGroup.rightMatrix.toString()
             resMatrixValue = matrixGroup.resMatrix.toString()
         }
+    }
+}
+
+/*
+        fun renderTestComplex()
+        {
+            val mPaint = CanvasRenderSpecification.createBlackPainter()
+            val f1 = ComplexNumber(Fraction(-15,4))
+            val f1Size = mPaint.getComplexNumberSize(f1)
+            //Log.d("size@",f1Size.first.toString()+ " "+f1Size.second.toString())
+            val f1Bitmap = Bitmap.createBitmap(
+                f1Size.first.toInt(),
+                f1Size.second.toInt(),
+                Bitmap.Config.ARGB_8888
+            )
+            Canvas(f1Bitmap).drawComplex(f1,0.0f,0.0f,mPaint)
+            leftMatrix.imageBitmap = f1Bitmap
 
 
-        fun renderTest()
+            val f2 = ComplexNumber(Fraction(),Fraction(345,7))
+            val f2Size = mPaint.getComplexNumberSize(f2)
+            //Log.d("sizef2@",f2Size.first.toString()+ " "+f2Size.second.toString())
+            val f2Bitmap = Bitmap.createBitmap(
+                f2Size.first.toInt(),
+                f2Size.second.toInt(),
+                Bitmap.Config.ARGB_8888
+            )
+            Canvas(f2Bitmap).drawComplex(f2,0.0f,0.0f,mPaint)
+            //f2Bitmap.eraseColor(Color.BLACK)
+            rightMatrix.imageBitmap =f2Bitmap
+
+            val f3 = ComplexNumber(Fraction(12/8), Fraction(1,2))
+            val f3Size = mPaint.getComplexNumberSize(f3)
+            //Log.d("size@",f3Size.first.toString()+ " "+f3Size.second.toString())
+            val f3Bitmap = Bitmap.createBitmap(
+                f3Size.first.toInt(),
+                f3Size.second.toInt(),
+                Bitmap.Config.ARGB_8888
+            )
+            Canvas(f3Bitmap).drawComplex(f3,0.0f,0.0f,mPaint)
+            sign.imageBitmap =f3Bitmap
+
+            val f4 = ComplexNumber(Fraction(199,2), Fraction(57,2))
+            //mPaint.style = Paint.Style.STROKE
+            val f4Size = mPaint.getComplexNumberSize(f4)
+            //Log.d("size@",f4Size.first.toString()+ " "+f4Size.second.toString())
+            val f4Bitmap = Bitmap.createBitmap(
+                f4Size.first.toInt()+20,
+                f4Size.second.toInt()+20,
+                Bitmap.Config.ARGB_8888
+            )
+            Canvas(f4Bitmap).drawComplex(f4,0.0f,0.0f,mPaint)
+            //Canvas(f4Bitmap).drawRect(0.0f,0.0f,f4Size.first,f4Size.second,mPaint)
+            resMatrix.imageBitmap = f4Bitmap
+        }
+
+        fun renderTestFractions()
         {
             val mPaint = CanvasRenderSpecification.createBlackPainter()
             val f1 = Fraction(1565, 1)
@@ -247,8 +306,4 @@ class MatrixAdapterImageView(
             )
             Canvas(f4Bitmap).drawFractions(f4,0.0f,0.0f,mPaint)
             resMatrix.imageBitmap = f4Bitmap
-        }
-    }
-
-
-}
+        }*/

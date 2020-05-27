@@ -1,10 +1,14 @@
 package com.dev.smurf.highmathcalculator.PaintExtension
 
 import android.graphics.Paint
+import android.graphics.Rect
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
+import kotlin.math.sign
+
 
 //return width of complex number
+@Deprecated("Use getComplexNumberSize(@complexNumber).first instead due to long term support")
 fun Paint.getComplexNumberWidth(complexNumber: ComplexNumber): Float
 {
     var overallLength = 0.0f
@@ -63,6 +67,7 @@ fun Paint.getComplexNumberWidth(complexNumber: ComplexNumber): Float
 }
 
 //return complex number height
+@Deprecated("Use getComplexNumberSize(@complexNumber).second instead due to long term support")
 fun Paint.getComplexNumberHeight(complexNumber: ComplexNumber): Float
 {
     //if complex number isn't contains fraction, then it's height is height of symbols
@@ -81,6 +86,46 @@ fun Paint.getComplexNumberHeight(complexNumber: ComplexNumber): Float
     }
 }
 
-//wrapper for hole size
-fun Paint.getComplexNumberSize(complexNumber: ComplexNumber) =
-    Pair(getComplexNumberWidth(complexNumber), getComplexNumberHeight(complexNumber))
+fun Paint.getComplexNumberSize(complexNumber: ComplexNumber): Pair<Float, Float>
+{
+    when
+    {
+        complexNumber.isReal() ->
+        {
+            return getFractionSize(complexNumber.re)
+        }
+        complexNumber.isImagination() ->
+        {
+            val numberSize = getFractionSize(complexNumber.im)
+
+            val maxHeight = if (numberSize.second > getBaseHeight()) numberSize.second
+            else getBaseHeight()
+
+            val maxWidth = numberSize.first + measureText("i")
+
+            return Pair(maxWidth, maxHeight)
+        }
+        else ->
+        {
+            val setSize = mutableListOf<Pair<Float, Float>>()
+            setSize.add(getFractionSize(complexNumber.re))
+            setSize.add(getFractionSize(complexNumber.im))
+
+            setSize.add(Pair(measureText("("), getBaseHeight()))
+            setSize.add(Pair(measureText(")"), getBaseHeight()))
+
+            setSize.add(Pair(measureText("i"), getBaseHeight()))
+
+            val signWidth = if (!complexNumber.im.isBeloweZero()) getPlusWidth() else 0.0f
+
+            setSize.add(Pair(signWidth, 0.0f))
+
+            val maxHeight = (setSize.maxBy { it.second } ?: Pair(0.0f, 0.0f)).second
+
+            val maxWidth =
+                setSize.sumByDouble { it.first.toDouble() }.toFloat() + getHorizontalSpacing() * 4
+
+            return Pair(maxWidth, maxHeight)
+        }
+    }
+}

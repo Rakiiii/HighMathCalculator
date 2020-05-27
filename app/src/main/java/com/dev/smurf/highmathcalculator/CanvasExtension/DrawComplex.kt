@@ -2,15 +2,16 @@ package com.dev.smurf.highmathcalculator.CanvasExtension
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
 import android.util.Log
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
-import com.dev.smurf.highmathcalculator.PaintExtension.getFractionLineVerticalOffset
-import com.dev.smurf.highmathcalculator.PaintExtension.getFractionWidth
+import com.dev.smurf.highmathcalculator.PaintExtension.*
 import kotlin.math.absoluteValue
 
 //Extension for canvas to draw complex number
-fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, y: Float, mPaint: Paint) //: Float
+@Deprecated("Use drawComplex instead")
+fun Canvas.drawComplexx(complexNumber: ComplexNumber, x: Float, y: Float, mPaint: Paint) //: Float
 {
 
     //high of the letter of the setted font
@@ -66,7 +67,7 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, y: Float, mPaint:
             horizontalPosition,
             y + if (complexNumber.re.isInt() && !complexNumber.im.isInt()) mPaint.getFractionLineVerticalOffset(
                 complexNumber.im
-            ) - high/2
+            ) - high / 2
             else 0.0f,
             mPaint
         )
@@ -127,7 +128,7 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, y: Float, mPaint:
             horizontalPosition,
             y + if (!complexNumber.re.isInt() && complexNumber.im.isInt()) mPaint.getFractionLineVerticalOffset(
                 complexNumber.re
-            )- high/2
+            ) - high / 2
             else 0.0f,
             mPaint
         )
@@ -152,4 +153,137 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, y: Float, mPaint:
     //draw right bracket and imaginary un it
     this.drawText("i)", horizontalPosition, imVerticalPosition, mPaint)
 
+}
+
+
+fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint: Paint)
+{
+    //error compansation for measuring letter height
+    val y = Y - 5.0f
+    val align = mPaint.textAlign
+    mPaint.textAlign = Paint.Align.LEFT
+    when
+    {
+        complexNumber.isReal() ->
+        {
+            drawFractions(complexNumber.re, x, y, mPaint)
+        }
+        complexNumber.isImagination() ->
+        {
+            val imSize = mPaint.getFractionSize(complexNumber.im)
+
+            val iVerticalOffset = (imSize.second - mPaint.getBaseHeight()) / 2
+            drawFractions(complexNumber.im, x, y, mPaint)
+
+            drawText(
+                "i",
+                x + imSize.first,
+                y + iVerticalOffset + mPaint.getBaseHeight() - if (complexNumber.im.isInt()) 0.0f else mPaint.getVerticalSpacing(),
+                mPaint
+            )
+        }
+        else ->
+        {
+            /*
+             * todo:: move from mutable list to mutable map, for prevention mistakes
+             */
+
+            val complexNumberSize = mPaint.getComplexNumberSize(complexNumber)
+            val setSize = mutableListOf<Pair<Float, Float>>()
+
+            setSize.add(Pair(mPaint.measureText("("), mPaint.getBaseHeight()))
+
+            setSize.add(mPaint.getFractionSize(complexNumber.re))
+
+            setSize.add(
+                if (!complexNumber.im.isBeloweZero()) mPaint.getPlusSize()
+                else Pair(
+                    0.0f,
+                    0.0f
+                )
+            )
+
+            setSize.add(mPaint.getFractionSize(complexNumber.im))
+
+            setSize.add(Pair(mPaint.measureText("i"), mPaint.getBaseHeight()))
+
+            setSize.add(
+                Pair(
+                    mPaint.measureText(")"),
+                    mPaint.getBaseHeight()
+                )
+            )
+
+            val verticalOffsetSet = Array<Float>(setSize.size) { 0.0f }
+            for (element in setSize.indices)
+            {
+                verticalOffsetSet[element] =
+                    (complexNumberSize.second - setSize[element].second) / 2
+                when
+                {
+                    (element != 1 && element != 3) ->
+                    {
+                        if (!complexNumber.im.isInt() || !complexNumber.re.isInt())
+                            verticalOffsetSet[element] -= mPaint.getVerticalSpacing()
+                    }
+                    (element == 1) ->
+                    {
+                        if (!complexNumber.im.isInt() && complexNumber.re.isInt())
+                            verticalOffsetSet[element] -= mPaint.getVerticalSpacing()
+                    }
+                    (element == 3) ->
+                    {
+                        if (complexNumber.im.isInt() && !complexNumber.re.isInt())
+                            verticalOffsetSet[element] -= mPaint.getVerticalSpacing()
+                    }
+                }
+            }
+
+
+            var horizontalOffset = 0.0f
+
+            drawText(
+                "(",
+                x + horizontalOffset,
+                y + setSize[0].second + verticalOffsetSet[0],
+                mPaint
+            )
+
+            horizontalOffset += setSize[0].first
+
+            drawFractions(complexNumber.re, x + horizontalOffset, y + verticalOffsetSet[1], mPaint)
+
+            horizontalOffset += setSize[1].first + mPaint.getVerticalSpacing()
+
+            if (!complexNumber.im.isBeloweZero())
+            {
+                drawPlus(x + horizontalOffset, y + verticalOffsetSet[2] + setSize[2].second, mPaint)
+
+            }
+            horizontalOffset += mPaint.getHorizontalSpacing()
+
+            horizontalOffset += setSize[2].first
+
+            drawFractions(complexNumber.im, x + horizontalOffset, y + verticalOffsetSet[3], mPaint)
+
+            horizontalOffset += setSize[3].first
+
+            drawText(
+                "i",
+                x + horizontalOffset,
+                y + verticalOffsetSet[4] + setSize[4].second,
+                mPaint
+            )
+
+            horizontalOffset += setSize[4].first
+
+            drawText(
+                ")",
+                x + horizontalOffset,
+                y + verticalOffsetSet[5] + setSize[5].second,
+                mPaint
+            )
+        }
+    }
+    mPaint.textAlign = align
 }

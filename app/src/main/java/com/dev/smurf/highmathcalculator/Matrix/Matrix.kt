@@ -191,6 +191,14 @@ open class Matrix private constructor(
         }
     }
 
+
+    operator fun get(i:Int,j:Int) = matrices[i][j]
+
+    fun columnIndices() = (0 until width)
+    fun rowIndices() = (0 until height)
+
+    fun Number() = this[0,0]
+
     //функция подсчета определителя
     fun determinant(): ComplexNumber
     {

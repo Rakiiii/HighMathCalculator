@@ -8,6 +8,7 @@ import kotlin.math.absoluteValue
 
 
 //returns length of @fraction in paint param
+@Deprecated("Use getFractionSize(@fraction).first instead due to better realization")
 fun Paint.getFractionWidth(fraction: Fraction): Float
 {
     //overall length of fraction
@@ -60,6 +61,7 @@ fun Paint.getFractionWidth(fraction: Fraction): Float
     return overallLength
 }
 
+@Deprecated("Dont use it, work work with fraction like you work with rectangle")
 fun Paint.getFractionLineVerticalOffset(fraction: Fraction): Float
 {
     if (fraction.isInt()) return (2 * CanvasRenderSpecification.getLetterHigh(this) + CanvasRenderSpecification.getLineWidth(
@@ -81,30 +83,36 @@ fun Paint.getFractionLowerWidth(fraction: Fraction) =
 
 fun Paint.getMinusWidth() : Float
 {
-    val rect = Rect()
-    getTextBounds("-", 0, 1, rect)
-    return rect.width().toFloat()
+    return measureText("-")
 }
 
 fun Paint.getPlusWidth() : Float
 {
+
+    return measureText("+")
+}
+
+fun Paint.getBaseHeight() : Float
+{
+    return fontMetrics.descent - fontMetrics.ascent + fontMetrics.leading
+}
+
+fun Paint.getPlusSize():Pair<Float,Float>
+{
     val rect = Rect()
     getTextBounds("+", 0, 1, rect)
-    return rect.width().toFloat()
+    return Pair(measureText("+"),rect.height().toFloat())
 }
 
 fun Paint.getFractionSize(fraction: Fraction): Pair<Float, Float>
 {
     if (fraction.isInt())
     {
-        val rect = Rect()
-        getTextBounds(fraction.upper.toString(), 0, fraction.upper.toString().length, rect)
+        val height = getBaseHeight()
 
-        val height = rect.height()
+        val width = measureText(fraction.upper.toString())
 
-        val width = getFractionUpperWidth(fraction)
-
-        return Pair(width, height.toFloat())
+        return Pair(width, height)
     }
 
     var maxWidth =
@@ -116,12 +124,7 @@ fun Paint.getFractionSize(fraction: Fraction): Pair<Float, Float>
 
     var maxHeight = 0.0f
 
-    val upperRect = Rect()
-    getTextBounds(fraction.upper.toString(), 0, fraction.upper.toString().length, upperRect)
-    val lowerRect = Rect()
-    getTextBounds(fraction.upper.toString(), 0, fraction.upper.toString().length, lowerRect)
-
-    maxHeight += this.strokeWidth + (this.getVerticalSpacing() * 2) + upperRect.height() + lowerRect.height()
+    maxHeight += this.strokeWidth + (this.getVerticalSpacing() * 2) + getBaseHeight()*2
 
     return Pair(maxWidth, maxHeight)
 }

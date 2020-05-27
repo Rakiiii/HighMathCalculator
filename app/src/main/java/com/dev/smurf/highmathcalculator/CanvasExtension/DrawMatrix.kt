@@ -4,20 +4,19 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
-import com.dev.smurf.highmathcalculator.PaintExtension.getComplexNumberWidth
-import com.dev.smurf.highmathcalculator.PaintExtension.getProportionalDotsRadius
+import com.dev.smurf.highmathcalculator.PaintExtension.*
 
-
+/*
 //Extension for canvas to draw matrix
 fun Canvas.drawMatrix(matrix: Matrix, x: Float, y: Float, mPaint: Paint): Pair<Float, Float>
 {
     //high of the letter of the setted font
-    val high = CanvasRenderSpecification.getLetterHigh(mPaint)
+    val high = mPaint.getBaseHeight()//CanvasRenderSpecification.getLetterHigh(mPaint)
 
     //spaces size between columns
-    val horizontalSpaceSize = CanvasRenderSpecification.getHorizontalSpaceSize(mPaint)
+    val horizontalSpaceSize = mPaint.getMatrixHorizontalSpaceSize()//CanvasRenderSpecification.getHorizontalSpaceSize(mPaint)
 
-    val verticalSpaceSize = CanvasRenderSpecification.getVerticalSpaceSize(mPaint)
+    val verticalSpaceSize = mPaint.getMatrixVerticalSpaceSize()//CanvasRenderSpecification.getVerticalSpaceSize(mPaint)
 
     //matrix of render positions
     //val renderMatrix: Array<Array<Float>> = Array(matrix.width, { Array(matrix.height, { 0.0f }) })
@@ -138,23 +137,123 @@ fun Canvas.drawMatrix(matrix: Matrix, x: Float, y: Float, mPaint: Paint): Pair<F
             verticalRowsOffset[matrix.height - 1].first + high
     )
 
+}*/
+
+fun Canvas.drawMatrix(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
+{
+    if (matrix.isEmpty()) return
+    if (matrix.isNumber()) return drawComplex(matrix.Number(), x, y, mPaint)
+
+    val horizontalSpaceSize = mPaint.getMatrixHorizontalSpaceSize()
+    val verticalSpaceSize = mPaint.getMatrixVerticalSpaceSize()
+
+    //matrix size is size of longest elements in each row with spaces and height of highest elements in each column
+    val matrixElementsSizeSet = Array(matrix.height) { Array(matrix.width) { Pair(0.0f, 0.0f) } }
+
+    //array of heightens elements in each row
+    val maxHeightElements = Array(matrix.height) { 0.0f }
+
+    for (i in matrix.rowIndices())
+    {
+        var maxHeightInThisRow = 0.0f
+        for (j in matrix.columnIndices())
+        {
+            matrixElementsSizeSet[i][j] = mPaint.getComplexNumberSize(matrix[i, j])
+            maxHeightInThisRow =
+                if (matrixElementsSizeSet[i][j].second > maxHeightInThisRow)
+                    matrixElementsSizeSet[i][j].second
+                else maxHeightInThisRow
+        }
+
+        maxHeightElements[i] = maxHeightInThisRow
+    }
+
+
+    //get max width of elements in each column
+    //not the best way, but use origin matrix size instead of iteration over @matrixElementsSizeSet makes semantics easier
+    val maxWidthElements = Array(matrix.width) { 0.0f }
+
+    for (j in matrix.columnIndices())
+    {
+        var maxLength = 0.0f
+        for (i in matrix.rowIndices())
+        {
+            maxLength =
+                if (matrixElementsSizeSet[i][j].first > maxLength) matrixElementsSizeSet[i][j].first else maxLength
+        }
+
+        maxWidthElements[j] = maxLength
+    }
+
+    /*
+    cus of complex number contracts, render of matrix of complex numbers is render of matrix of rectangles, where we now sizes
+    so  renders come to calculating offsets of left angel of rectangle from origin (x,y)
+    matrix of elements of set, where first is horizontal offset and second is vertical offset
+    */
+    val offsetMatrix = Array(matrix.height) { Array(matrix.width) { Pair(0.0f, 0.0f) } }
+
+    /*
+    vertical offset is (differences between max height of element in row and self height) divided by 2 plus sum
+    of max height of elements in prev row plus spaces
+    horizontal offset is (differences between max width of element in column and self width) divided by 2 plus
+    sum of max width of element in previous columns plus vertical spaces
+    */
+
+    var prevVerticalOffset = 0.0f
+
+    for (i in matrixElementsSizeSet.indices)
+    {
+        var prevHorizontalOffset = 0.0f
+        for (j in matrixElementsSizeSet[i].indices)
+        {
+            val horizontalOffset =
+                ((maxWidthElements[j] - matrixElementsSizeSet[i][j].first) / 2) +
+                        prevHorizontalOffset +
+                        (j * horizontalSpaceSize)
+            //increase horizontal offset for prev element in row
+            prevHorizontalOffset += maxWidthElements[j]
+
+            val verticalOffset = ((maxHeightElements[i] - matrixElementsSizeSet[i][j].second) / 2) +
+                    prevVerticalOffset +
+                    (i * verticalSpaceSize)
+
+
+            offsetMatrix[i][j] = Pair(horizontalOffset, verticalOffset)
+        }
+        //increase vertical offset of prev elements in column
+        prevVerticalOffset += maxHeightElements[i]
+    }
+
+    for (i in matrix.rowIndices())
+    {
+        for (j in matrix.columnIndices())
+        {
+            drawComplex(
+                matrix[i, j],
+                x + offsetMatrix[i][j].first,
+                y + offsetMatrix[i][j].second,
+                mPaint
+            )
+        }
+    }
 }
 
 //Extension for canvas to draw matrix in brackets
 fun Canvas.drawMatrixInBrackets(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 {
-    if(matrix.isEmpty())return
-    if (matrix.isNumber())return drawComplex(matrix.matrices[0][0],x,y,mPaint)
+    if (matrix.isEmpty()) return
+    if (matrix.isNumber()) return drawComplex(matrix.matrices[0][0], x, y, mPaint)
 
+    val matrixSize = mPaint.getMatrixSize(matrix)
 
     //high of the letter of the setted font
     val high = CanvasRenderSpecification.getLetterHigh(mPaint)
 
-    //counte bracket width
+    //count bracket width
     val bracketWidth = CanvasRenderSpecification.getBracketWidth(mPaint, matrix.height)
 
-    //draw matrix and get matrix size
-    val matrixSize = this.drawMatrix(matrix, x + 2 * bracketWidth / 3, y + high / 4, mPaint)
+    //draw matrix
+    this.drawMatrix(matrix, x + 2 * bracketWidth / 3, y + high / 4, mPaint)
 
     //save old style
     val style = mPaint.style
@@ -189,49 +288,44 @@ fun Canvas.drawMatrixInBrackets(matrix: Matrix, x: Float, y: Float, mPaint: Pain
 //Extension for canvas to draw matrix in Lines
 fun Canvas.drawMatrixInLines(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 {
-    if(matrix.isEmpty() )return
-    if (matrix.isNumber())return drawComplex(matrix.matrices[0][0],x,y,mPaint)
+    if (matrix.isEmpty()) return
+    if (matrix.isNumber()) return drawComplex(matrix.matrices[0][0], x, y, mPaint)
 
+    val matrixSize = mPaint.getMatrixSize(matrix)
 
     //high of the letter of the setted font
     val high = CanvasRenderSpecification.getLetterHigh(mPaint)
 
-    //counte line width
-    val lineWidth = CanvasRenderSpecification.getLineWidth(mPaint)
+    //count line width
+    val lineWidth = mPaint.strokeWidth
 
-    //draw matrix and get matrix size
-    val matrixSize = this.drawMatrix(matrix, x + lineWidth, y + high / 4, mPaint)
+    //draw matrix
+    this.drawMatrix(matrix, x+lineWidth*2 , y, mPaint)
 
     //save old style
     val style = mPaint.style
 
-    //set new style
-    mPaint.style = Paint.Style.STROKE
-
     this.drawLine(x, y, x, y + matrixSize.second, mPaint)
 
     this.drawLine(
-        x + matrixSize.first + lineWidth + 2 * lineWidth / 3,
-        y,
-        x + matrixSize.first + lineWidth + 2 * lineWidth / 3,
-        y + matrixSize.second,
+        x + matrixSize.first +  4 * lineWidth,
+        y+mPaint.getMatrixVerticalOffset(),
+        x + matrixSize.first  +  4 * lineWidth,
+        y + matrixSize.second+mPaint.getMatrixVerticalOffset(),
         mPaint
     )
-
-    //restore old style
-    mPaint.style = style
 }
 
 
 fun Canvas.drawMatrixInBracketsAsDots(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 {
-    if (matrix.isEmpty())return
-    drawProporsionalDotsInBrackets(3,x,y,mPaint)
+    if (matrix.isEmpty()) return
+    drawProporsionalDotsInBrackets(3, x, y, mPaint)
 }
 
 fun Canvas.drawMatrixInLinesAsDots(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 {
-    if(matrix.isEmpty())return
+    if (matrix.isEmpty()) return
 
-    drawProporsionalDotsInLines(3,x,y,mPaint.getProportionalDotsRadius(),mPaint)
+    drawProporsionalDotsInLines(3, x, y, mPaint.getProportionalDotsRadius(), mPaint)
 }

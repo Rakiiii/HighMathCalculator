@@ -139,20 +139,13 @@ fun Canvas.drawFractions(fraction: Fraction, x: Float, y: Float, mPaint: Paint)
     mPaint.textAlign = Paint.Align.LEFT
     if (fraction.isInt())
     {
-        this.drawText(fraction.upper.toString(), x, size.second, mPaint)
+        this.drawText(fraction.upper.toString(), x, y + size.second, mPaint)
     }
     else
     {
         val overallHorizontalOffset =
             if (fraction.isBeloweZero()) mPaint.getMinusWidth() + mPaint.getHorizontalSpacing() else 0.0f
 
-        val upperRect = Rect()
-        mPaint.getTextBounds(
-            fraction.upper.toString(),
-            0,
-            fraction.upper.toString().length,
-            upperRect
-        )
 
         val upperHorizontalOffset = overallHorizontalOffset +
                 ((size.first - overallHorizontalOffset) - mPaint.getFractionUpperWidth(fraction)) / 2
@@ -160,7 +153,7 @@ fun Canvas.drawFractions(fraction: Fraction, x: Float, y: Float, mPaint: Paint)
                 ((size.first - overallHorizontalOffset) - mPaint.getFractionLowerWidth(fraction)) / 2
 
 
-        val lineVerticalOffset = upperRect.height() + mPaint.getVerticalSpacing()
+        val lineVerticalOffset = mPaint.getBaseHeight() + mPaint.getVerticalSpacing()*2
 
         if (fraction.isBeloweZero())
         {
@@ -169,23 +162,23 @@ fun Canvas.drawFractions(fraction: Fraction, x: Float, y: Float, mPaint: Paint)
 
         drawLine(
             x + overallHorizontalOffset,
-            lineVerticalOffset,
-            x + overallHorizontalOffset + size.first,
-            lineVerticalOffset,
+            y + lineVerticalOffset,
+            x + size.first,
+            y + lineVerticalOffset,
             mPaint
         )
 
         drawText(
             fraction.upper.absoluteValue.toString(),
             x + upperHorizontalOffset,
-            y + upperRect.height().toFloat(),
+            y + mPaint.getBaseHeight(),
             mPaint
         )
 
         drawText(
             fraction.lower.absoluteValue.toString(),
             x + lowerHorizontalOffset,
-            size.second,
+            y + mPaint.getBaseHeight() + mPaint.getBaseHeight(),
             mPaint
         )
 
@@ -204,15 +197,14 @@ fun Canvas.drawMinus(x: Float, y: Float, mPaint: Paint)
 
 fun Canvas.drawPlus(x: Float, y: Float, mPaint: Paint)
 {
-    val rect = Rect()
-    mPaint.getTextBounds("+", 0, 1, rect)
+    val size = mPaint.getPlusSize()
 
-    drawLine(x, y, x + rect.width(), y, mPaint)
+    drawLine(x, y, x + mPaint.measureText("+"), y, mPaint)
     drawLine(
-        x + (rect.width().toFloat() / 2),
-        y - (rect.height().toFloat() / 2),
-        x + (rect.width().toFloat() / 2),
-        y + (rect.height().toFloat() / 2),
+        x + (size.first / 2),
+        y - (size.second / 2),
+        x + (size.first / 2),
+        y + (size.second / 2),
         mPaint
     )
 }
