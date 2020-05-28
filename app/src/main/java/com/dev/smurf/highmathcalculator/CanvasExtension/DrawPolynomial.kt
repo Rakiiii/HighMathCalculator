@@ -124,23 +124,38 @@ fun Canvas.drawPolynomials(
     return Pair(horizontalOffset, verticalOffset)
 }
 
-fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint: Paint)
+fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint: Paint) =
+    drawPolynomialRange(polynomial, x, y, mPaint, 0 until polynomial.renderFormat().size)
+
+fun Canvas.drawPolynomialRange(
+    polynomial: PolynomialBase,
+    x: Float,
+    y: Float,
+    mPaint: Paint,
+    range: IntRange
+)
 {
     if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0) return
 
+    if (range.first < 0) return
+    if (range.last > polynomial.renderFormat().size) return drawPolynomial(polynomial, x, y, mPaint)
+
     val rendFormat = polynomial.renderFormat()
 
-    val subSize = mPaint.getPolynomialSize(polynomial)
-    val polynomialSize = Pair(subSize.first,subSize.second - mPaint.getPolynomialVerticalOffset())
+    val subSize = mPaint.getPolynomialRangeSize(polynomial, range)
+
+    val polynomialSize = Pair(subSize.first, subSize.second - mPaint.getPolynomialVerticalOffset())
 
     var horizontalOffset = 0.0f
 
     var fractionFlag = false
-    rendFormat.forEach { if (it.second.containsFractions()) fractionFlag = true }
+    //rendFormat.forEach { if (it.second.containsFractions()) fractionFlag = true }
+    range.forEach { if (rendFormat[it].second.containsFractions()) fractionFlag = true }
     var extraHeightFlag = false
-    rendFormat.forEach { if (it.first.contains('^')) extraHeightFlag = true }
+    range.forEach { if (rendFormat[it].first.contains('^')) extraHeightFlag = true }
+    //rendFormat.forEach { if (it.first.contains('^')) extraHeightFlag = true }
 
-    for (i in rendFormat.indices)
+    for (i in range)
     {
         val element = rendFormat[i].second
         val cofSize = mPaint.getComplexNumberSize(element)
@@ -164,8 +179,9 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
 
         if (fractionFlag)
         {
-            variableVerticalOffset -= if(element.isImagination()) mPaint.strokeWidth else  2*mPaint.getVerticalSpacing()
-        }else
+            variableVerticalOffset -= if (element.isImagination()) mPaint.strokeWidth else 2 * mPaint.getVerticalSpacing()
+        }
+        else
         {
             if (!extraHeightFlag) cofVerticalOffset -= mPaint.getVerticalSpacing()
         }
@@ -183,7 +199,7 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
 
         horizontalOffset += mPaint.getHorizontalSpacing()
 
-        if (rendFormat.size - 1 != i)
+        if (range.last != i)
         {
             if (!(rendFormat[i + 1].second.isImagination() && rendFormat[i + 1].second.im.isBeloweZero()) &&
                 //if cof contain real part then it will be drawn first and we consider it's sign
@@ -199,6 +215,7 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
         }
 
     }
+
 }
 
 //draw equation that setted by polynomial @polynomial on canvas
