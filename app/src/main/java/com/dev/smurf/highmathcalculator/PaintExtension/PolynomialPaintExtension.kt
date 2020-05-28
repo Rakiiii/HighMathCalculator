@@ -59,12 +59,15 @@ fun Paint.getPolynomialVerticalOffset() = getVerticalSpacing() * 3
 /* returns size of rectangle in which polynomial will be drawn */
 fun Paint.getPolynomialSize(polynomial: PolynomialBase): Pair<Float, Float>
 {
-    return getPolynomialRangeSize(polynomial,0 until polynomial.renderFormat().size)
+    return getPolynomialRangeSize(polynomial, 0 until polynomial.renderFormat().size)
 }
 
 fun Paint.getPolynomialRangeSize(polynomial: PolynomialBase, range: IntRange): Pair<Float, Float>
 {
-    if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0) return Pair(0.0f, 0.0f)
+    if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0) return Pair(
+        0.0f,
+        0.0f
+    )
     if (range.first < 0) return Pair(0.0f, 0.0f)
 
     /*
@@ -134,4 +137,44 @@ fun Paint.getPolynomialRangeSize(polynomial: PolynomialBase, range: IntRange): P
     }
 
     return Pair(overallWidth, maxHeight + getPolynomialVerticalOffset())
+}
+
+fun Paint.getMultiLinePolynomialSize(
+    polynomial: PolynomialBase,
+    ranges: Array<IntRange>
+): Pair<Float, Float>
+{
+    var maxWidth = 0.0f
+    var overallHeight = 0.0f
+
+    val rendFormat = polynomial.renderFormat()
+
+    for (rangeIndex in ranges.indices)
+    {
+        val range = ranges[rangeIndex]
+        val rangeSize = getPolynomialRangeSize(polynomial, range)
+
+        var finalWidth = rangeSize.first + getHorizontalSpacing()
+        if (rangeIndex != ranges.size - 1)
+        {
+            val nextCof = rendFormat[ranges[rangeIndex + 1].first].second
+            finalWidth += if (!(nextCof.isImagination() && nextCof.im.isBeloweZero()) ||
+                !(nextCof.isReal() && nextCof.re.isBeloweZero())
+            )
+            {
+                getPlusWidth() + getHorizontalSpacing()
+            }
+            else
+            {
+                getMinusWidth() + getHorizontalSpacing()
+            }
+        }
+
+        maxWidth =
+            if (rangeSize.first > maxWidth) rangeSize.first else maxWidth
+
+        overallHeight += rangeSize.second
+    }
+
+    return Pair(maxWidth,overallHeight)
 }

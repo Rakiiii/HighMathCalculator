@@ -218,6 +218,52 @@ fun Canvas.drawPolynomialRange(
 
 }
 
+fun Canvas.drawMultiLinePolynomial(
+    polynomial: PolynomialBase,
+    x: Float,
+    y: Float,
+    mPaint: Paint,
+    ranges: Array<IntRange>
+)
+{
+    var verticalOffset = 0.0f
+
+    val rendFormat = polynomial.renderFormat()
+    val overallSize = mPaint.getMultiLinePolynomialSize(polynomial, ranges)
+
+    for (rangeIndex in ranges.indices)
+    {
+        val range = ranges[rangeIndex]
+        val rangeSize = mPaint.getPolynomialRangeSize(polynomial, range)
+
+        val horizontalOffset = overallSize.first - rangeSize.first
+
+        drawPolynomialRange(polynomial, x + horizontalOffset, y + verticalOffset, mPaint, range)
+
+        if (rangeIndex != ranges.size - 1)
+        {
+            val nextCof = rendFormat[ranges[rangeIndex + 1].first].second
+            if (!(nextCof.isImagination() && nextCof.im.isBeloweZero()) ||
+                !(nextCof.isReal() && nextCof.re.isBeloweZero())
+            )
+            {
+                drawPlus(
+                    x + horizontalOffset + rangeSize.first + mPaint.getHorizontalSpacing(),
+                    y + verticalOffset + (rangeSize.second / 2), mPaint
+                )
+            }
+            else
+            {
+                drawMinus(x + horizontalOffset + rangeSize.first + mPaint.getHorizontalSpacing(),
+                    y + verticalOffset + (rangeSize.second / 2), mPaint)
+            }
+        }
+
+        verticalOffset += rangeSize.second
+    }
+
+}
+
 //draw equation that setted by polynomial @polynomial on canvas
 fun Canvas.drawEquation(polynomial: PolynomialBase, x: Float, y: Float, mPaint: Paint)
 {
@@ -236,6 +282,7 @@ fun Canvas.drawEquation(polynomial: PolynomialBase, x: Float, y: Float, mPaint: 
         mPaint
     )
 }
+
 
 fun Canvas.drawPolynomialRoots(roots: PolynomialRoots, x: Float, y: Float, mPaint: Paint)
 {
