@@ -449,6 +449,8 @@ class ExponentialPolynomial private constructor(
 
         val filteredPolynomial = polynomial.filter { s -> s.second != ComplexNumber() }
 
+        if(filteredPolynomial.isEmpty())return "0"
+
         for (i in filteredPolynomial)
         {
             if (i.second != ComplexNumber())
@@ -481,6 +483,7 @@ class ExponentialPolynomial private constructor(
             }
         }
 
+        if (renderFormat.isEmpty())return arrayListOf(Pair("",ComplexNumber()))
         return renderFormat
     }
 

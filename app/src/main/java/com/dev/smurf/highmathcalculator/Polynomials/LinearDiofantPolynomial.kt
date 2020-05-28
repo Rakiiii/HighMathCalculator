@@ -194,7 +194,11 @@ class LinearDiofantPolynomial private constructor(private val polynomial: Mutabl
     {
         var string = ""
 
-        for (i in polynomial)
+        val filteredPolynomial = polynomial.filter { s -> s.value != ComplexNumber() }
+
+        if(filteredPolynomial.isEmpty()) return "0"
+
+        for (i in filteredPolynomial)
         {
             string += i.value.toString() + i.key + "+"
         }
@@ -208,7 +212,11 @@ class LinearDiofantPolynomial private constructor(private val polynomial: Mutabl
     {
         val renderFormat: ArrayList<Pair<String, ComplexNumber>> = arrayListOf()
 
-        for (i in polynomial)
+        val filteredPolynomial = polynomial.filter { s -> s.value != ComplexNumber() }
+
+        if(filteredPolynomial.isEmpty()) return arrayListOf(Pair("",ComplexNumber()))
+
+        for (i in filteredPolynomial)
         {
             renderFormat.add(Pair(i.key, i.value))
         }
