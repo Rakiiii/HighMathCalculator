@@ -106,7 +106,10 @@ class LinearDiofantPolynomial private constructor(private val polynomial: Mutabl
                     str,
                     cof
                 )
-            }
+            }else throw WrongSymbolInPolynomialInputException(
+                str,
+                str.last().toString()
+            )
         }
 
         private fun isGoodSymbol(s: Char) =

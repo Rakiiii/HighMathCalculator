@@ -7,6 +7,7 @@ import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 //add 1 before i in string
 fun String.fulfilCofs(): String
 {
+    if(isEmpty())return this
     var filled = if (first() == 'i') "1$this" else this
     while (filled.indexOf("-i") != -1)
     {

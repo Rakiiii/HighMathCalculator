@@ -53,25 +53,35 @@ fun Paint.getPolynomialHigh(polynomial: PolynomialBase): Float
     //return CanvasRenderSpecification.getLetterHigh(this)
 }
 
-fun Paint.getPolynomialVerticalOffset() = getVerticalSpacing()*3
+fun Paint.getPolynomialVerticalOffset() = getVerticalSpacing() * 3
 
 
 /* returns size of rectangle in which polynomial will be drawn */
 fun Paint.getPolynomialSize(polynomial: PolynomialBase): Pair<Float, Float>
 {
+    return getPolynomialRangeSize(polynomial,0 until polynomial.renderFormat().size)
+}
+
+fun Paint.getPolynomialRangeSize(polynomial: PolynomialBase, range: IntRange): Pair<Float, Float>
+{
+    if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0) return Pair(0.0f, 0.0f)
+    if (range.first < 0) return Pair(0.0f, 0.0f)
+
     /*
     polynomial render is fully describe by render of pairs of cof and variable
     polynomial render format describe ArrayList of such pair
     where first is variable and second is cof
     */
+
     val rendFormat = polynomial.renderFormat()
+    if (range.last > rendFormat.size - 1) return getPolynomialSize(polynomial)
 
     //overall width of rendered polynomial
     var overallWidth = 0.0f
     //height of highest element in polynomial render format
     var maxHeight = 0.0f
 
-    for (i in rendFormat.indices)
+    for (i in range)
     {
         //get size of cofs
         val cofSize = getComplexNumberSize(rendFormat[i].second)
@@ -84,7 +94,7 @@ fun Paint.getPolynomialSize(polynomial: PolynomialBase): Pair<Float, Float>
         if cof is purly imaginary then only im part will be drawn, so if it's below zero then minus will be draw,
         else plus will be drawn, minus size is counted inside size of complex number, but plus will be rendered implicitly
         */
-        if (i != rendFormat.size - 1)
+        if (i != range.last)
         {
             if (!(rendFormat[i + 1].second.isImagination() && rendFormat[i + 1].second.im.isBeloweZero()) &&
                 //if cof contain real part then it will be drawn first and we consider it's sign

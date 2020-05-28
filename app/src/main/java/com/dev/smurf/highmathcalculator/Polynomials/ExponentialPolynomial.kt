@@ -6,7 +6,6 @@ import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationExceptio
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.StringsExtension.*
 import com.dev.smurf.highmathcalculator.Utils.*
-import java.lang.Exception
 
 class ExponentialPolynomial private constructor(
     //contains polynomial in form degree : cof where degree is int and cof is complex number
@@ -198,7 +197,10 @@ class ExponentialPolynomial private constructor(
                 val variable = polynomial.substringAfterSymbolIncluded('i')
 
                 checkExponentialPolynomialVariable(str, variable, variableChar)
-            }
+            }else throw WrongSymbolInPolynomialInputException(
+                str,
+                str.last().toString()
+            )
         }
 
         private fun checkExponentialPolynomialVariable(
@@ -445,14 +447,16 @@ class ExponentialPolynomial private constructor(
     {
         var string = ""
 
-        for (i in polynomial)
+        val filteredPolynomial = polynomial.filter { s -> s.second != ComplexNumber() }
+
+        for (i in filteredPolynomial)
         {
             if (i.second != ComplexNumber())
             {
                 string += i.second.toString() + (if (i.first != 0) variableSymbol + "^" + i.first.toString()
                     .toDegree()
                 else "")
-                if (i != polynomial.last()) string += "+"
+                if (i != filteredPolynomial.last()) string += "+"
             }
         }
 
