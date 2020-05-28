@@ -1,9 +1,11 @@
 package com.dev.smurf.highmathcalculator.ui.fragments.polynomialFragment
 
 import android.graphics.Color
+import android.graphics.Point
 import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableStringBuilder
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -138,11 +140,17 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         mPolinomRecyclerViewAdapter =
             PolynomialTxtAdapter(this.context!!, firstPolinom, secondPolinom)
 
+        val point = Point()
+        activity!!.windowManager.defaultDisplay.getSize(point)
+
+        val margin =    6*context!!.resources.displayMetrics.density
+
         mPolinomRecyclerImageViewAdapter =
             PolynomialAdapterImageView(
                 this.context!!,
                 firstPolinom,
-                secondPolinom
+                secondPolinom,
+                point.x.toFloat()-margin
             )
 
         mPolinomRecyclerView = view!!.findViewById(R.id.polinomRecycler)

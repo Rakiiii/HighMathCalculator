@@ -197,7 +197,8 @@ class ExponentialPolynomial private constructor(
                 val variable = polynomial.substringAfterSymbolIncluded('i')
 
                 checkExponentialPolynomialVariable(str, variable, variableChar)
-            }else throw WrongSymbolInPolynomialInputException(
+            }
+            else throw WrongSymbolInPolynomialInputException(
                 str,
                 str.last().toString()
             )
@@ -449,43 +450,47 @@ class ExponentialPolynomial private constructor(
 
         val filteredPolynomial = polynomial.filter { s -> s.second != ComplexNumber() }
 
-        if(filteredPolynomial.isEmpty())return "0"
+        if (filteredPolynomial.isEmpty()) return "0"
 
-        for (i in filteredPolynomial)
+        for (i in filteredPolynomial.indices)
         {
-            if (i.second != ComplexNumber())
-            {
-                string += i.second.toString() + (if (i.first != 0) variableSymbol + "^" + i.first.toString()
-                    .toDegree()
-                else "")
-                if (i != filteredPolynomial.last()) string += "+"
-            }
+            val element = filteredPolynomial[i]
+            string += element.second.toString() + (if (element.first != 0) variableSymbol + "^" + element.first.toString()
+                .toDegree()
+            else "")
+
+            if (element != filteredPolynomial.last())
+                if (!(filteredPolynomial[i+1].second.isImagination() && filteredPolynomial[i+1].second.im.isBeloweZero()) &&
+                    !(filteredPolynomial[i+1].second.isReal() && filteredPolynomial[i+1].second.re.isBeloweZero())   )
+                {
+                    string += "+"
+                }
         }
 
-        return string
-    }
+    return string
+}
 
-    //returns array of cofs and symbols to render polynomial on canvas
-    override fun renderFormat(): ArrayList<Pair<String, ComplexNumber>>
+//returns array of cofs and symbols to render polynomial on canvas
+override fun renderFormat(): ArrayList<Pair<String, ComplexNumber>>
+{
+    val renderFormat: ArrayList<Pair<String, ComplexNumber>> = arrayListOf()
+
+    for (i in polynomial)
     {
-        val renderFormat: ArrayList<Pair<String, ComplexNumber>> = arrayListOf()
-
-        for (i in polynomial)
+        if (i.second != ComplexNumber())
         {
-            if (i.second != ComplexNumber())
-            {
-                if (i.first != 0) renderFormat.add(
-                    Pair(
-                        variableSymbol + "^" + i.first.toString().toDegree(), i.second
-                    )
+            if (i.first != 0) renderFormat.add(
+                Pair(
+                    variableSymbol + "^" + i.first.toString().toDegree(), i.second
                 )
-                else renderFormat.add(Pair("", i.second))
-            }
+            )
+            else renderFormat.add(Pair("", i.second))
         }
-
-        if (renderFormat.isEmpty())return arrayListOf(Pair("",ComplexNumber()))
-        return renderFormat
     }
+
+    if (renderFormat.isEmpty()) return arrayListOf(Pair("", ComplexNumber()))
+    return renderFormat
+}
 
 }
 

@@ -11,10 +11,10 @@ import java.util.*
 @Entity
 @TypeConverters(POJOConverter::class)
 data class PolynomialGroup(var polLeftPolynomial : PolynomialBase,
-                           var polRightPolynomial : PolynomialBase?,
+                           var polRightPolynomial : PolynomialBase,
                            var polSignPolynomial : String,
-                           var polResPolynomial : PolynomialBase?,
-                           var polOstPolynomial : PolynomialBase? = null,
+                           var polResPolynomial : PolynomialBase,
+                           var polOstPolynomial : PolynomialBase = PolynomialBase.EmptyPolynomial,
                            var roots : PolynomialRoots? = null,
                            @PrimaryKey var time : java.util.GregorianCalendar = GregorianCalendar()
 )

@@ -55,21 +55,35 @@ class POJOConverter
             }
         }
 
+
         //конвертация полинома в строку
-        @TypeConverter
+        /*@TypeConverter
         @JvmStatic
         fun fromPolynomial(polynomial : PolynomialBase?) : String
         {
             return  if(polynomial != null)polynomial.toString() else ""
+        }*/
+        @TypeConverter
+        @JvmStatic
+        fun fromPolynomial(polynomial : PolynomialBase?) : String
+        {
+            return  polynomial.toString()
         }
 
 
+        /*
         //конвертация строки к полиному
         @TypeConverter
         @JvmStatic
         fun toPolynomial(polynomial : String) : PolynomialBase?
         {
                 return if(polynomial != "")PolynomialFactory().createPolynomial(polynomial) else null
+        }*/
+        @TypeConverter
+        @JvmStatic
+        fun toPolynomial(polynomial : String) : PolynomialBase
+        {
+            return PolynomialFactory().createPolynomial(polynomial)
         }
 
 

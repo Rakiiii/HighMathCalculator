@@ -6,7 +6,7 @@ import com.example.smurf.mtarixcalc.PolynomialGroup
 
 
 //получения интрфейса работы с бд
-@Database(entities = [PolynomialGroup::class] , version = 2)
+@Database(entities = [PolynomialGroup::class] , version = 3)
 abstract class PolynomialDataBase : RoomDatabase()
 {
     abstract fun getPolinomDao() : PolynomialDao

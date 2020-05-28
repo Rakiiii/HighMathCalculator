@@ -56,5 +56,12 @@ abstract class PolynomialBase : PolynomialCoppableInterface
         {
             return PolynomialBase.EmptyPolynomial
         }
+
+        override fun toString(): String
+        {
+            return ""
+        }
+
+        fun supString() = super.toString()
     }
 }

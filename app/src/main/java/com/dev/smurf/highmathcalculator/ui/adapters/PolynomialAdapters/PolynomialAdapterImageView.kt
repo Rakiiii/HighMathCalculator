@@ -16,6 +16,7 @@ import com.dev.smurf.highmathcalculator.PaintExtension.getPolynomialHigh
 import com.dev.smurf.highmathcalculator.PaintExtension.getPolynomialSize
 import com.dev.smurf.highmathcalculator.PaintExtension.getPolynomialWidth
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
+import com.dev.smurf.highmathcalculator.Polynomials.Render.PolynomialRenderInHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import org.jetbrains.anko.imageBitmap
@@ -25,7 +26,8 @@ import java.text.SimpleDateFormat
 class PolynomialAdapterImageView(
     val context: Context,
     val polFirstPolynomial: EditText,
-    val polSecPolynomial: EditText
+    val polSecPolynomial: EditText,
+    val maxWidth: Float
 ) :
     RecyclerView.Adapter<PolynomialAdapterImageView.PolynomialViewHolder>()
 {
@@ -93,7 +95,7 @@ class PolynomialAdapterImageView(
                 R.layout.polynomial_expressions_imageview,
                 parent,
                 false
-            )
+            ), maxWidth
         )
 
 
@@ -101,13 +103,8 @@ class PolynomialAdapterImageView(
 
     override fun onBindViewHolder(holder: PolynomialViewHolder, position: Int)
     {
-        try
-        {
+
             holder.bind(listOfPolynomials[position])
-        } catch (e: Exception)
-        {
-            context.toast(e.toString())
-        }
         //контекстное  меню для левого полинома
         holder.leftPolynomialImageView.setOnCreateContextMenuListener(
             ContextMenuListener(
@@ -153,7 +150,8 @@ class PolynomialAdapterImageView(
 
     }
 
-    class PolynomialViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class PolynomialViewHolder(itemView: View, val maxWidth: Float) :
+        RecyclerView.ViewHolder(itemView)
     {
 
         lateinit var leftPolynomialValue: String
@@ -194,7 +192,20 @@ class PolynomialAdapterImageView(
 
             val blackPainter = CanvasRenderSpecification.createBlackPainter()
 
-            val leftBitmapSize = blackPainter.getPolynomialSize(polynomialGroup.polLeftPolynomial)
+            val bitmapSet = PolynomialRenderInHolder.renderWithStrategy(
+                polynomialGroup,
+                maxWidth,
+                maxWidth*2,
+                blackPainter
+            )
+
+            leftPolynomialImageView.imageBitmap = bitmapSet.leftPolynomialBitmap
+            rightPolynomialImageView.imageBitmap = bitmapSet.rightPolynomialBitmap
+            resultPolynomialImageView.imageBitmap = bitmapSet.resultPolynomialBitmap
+            remainderPolynomialImageView.imageBitmap = bitmapSet.remainderPolynomialBitmap
+            signumImageView.imageBitmap = bitmapSet.signBitmap
+
+            /*val leftBitmapSize = blackPainter.getPolynomialSize(polynomialGroup.polLeftPolynomial)
 
             polynomialGroup.polLeftPolynomial.let {
                 val leftBitmap = Bitmap.createBitmap(
@@ -334,7 +345,7 @@ class PolynomialAdapterImageView(
                 )
 
                 signumImageView.imageBitmap = signumBitmap
-            }
+            }*/
 
             polynomialGroup.time.let {
                 val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")

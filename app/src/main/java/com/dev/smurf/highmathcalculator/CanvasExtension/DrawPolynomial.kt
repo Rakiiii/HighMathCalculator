@@ -3,6 +3,7 @@ package com.dev.smurf.highmathcalculator.CanvasExtension
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.util.Log
 import com.dev.smurf.highmathcalculator.PaintExtension.*
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialRoots
@@ -226,6 +227,8 @@ fun Canvas.drawMultiLinePolynomial(
     ranges: Array<IntRange>
 )
 {
+    if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0) return
+
     var verticalOffset = 0.0f
 
     val rendFormat = polynomial.renderFormat()
@@ -235,32 +238,59 @@ fun Canvas.drawMultiLinePolynomial(
     {
         val range = ranges[rangeIndex]
         val rangeSize = mPaint.getPolynomialRangeSize(polynomial, range)
+        val extraOffset = (overallSize.first-rangeSize.first-2*mPaint.getPlusWidth()-2*mPaint.getHorizontalSpacing())
 
-        val horizontalOffset = overallSize.first - rangeSize.first
+        var horizontalOffset = if(extraOffset > 0)extraOffset else 0.0f
+            if (rangeIndex != 0)
+            {
+                val nextCof = rendFormat[ranges[rangeIndex].first].second
+                if (!(nextCof.isImagination() && nextCof.im.isBeloweZero()) &&
+                    !(nextCof.isReal() && nextCof.re.isBeloweZero())
+                )
+                {
+                    drawPlus(
+                        x + horizontalOffset + mPaint.getHorizontalSpacing(),
+                        y + verticalOffset + (rangeSize.second / 2), mPaint
+                    )
+                    horizontalOffset += mPaint.getPlusWidth() + mPaint.getHorizontalSpacing()
+                }
+            }
 
         drawPolynomialRange(polynomial, x + horizontalOffset, y + verticalOffset, mPaint, range)
 
         if (rangeIndex != ranges.size - 1)
         {
             val nextCof = rendFormat[ranges[rangeIndex + 1].first].second
-            if (!(nextCof.isImagination() && nextCof.im.isBeloweZero()) ||
+            if (!(nextCof.isImagination() && nextCof.im.isBeloweZero()) &&
                 !(nextCof.isReal() && nextCof.re.isBeloweZero())
             )
             {
                 drawPlus(
-                    x + horizontalOffset + rangeSize.first + mPaint.getHorizontalSpacing(),
-                    y + verticalOffset + (rangeSize.second / 2), mPaint
+                    x + horizontalOffset + (rangeSize.first),
+                    y + verticalOffset + ((rangeSize.second - mPaint.getBaseHeight() / 2) / 2),
+                    mPaint
                 )
             }
             else
             {
-                drawMinus(x + horizontalOffset + rangeSize.first + mPaint.getHorizontalSpacing(),
-                    y + verticalOffset + (rangeSize.second / 2), mPaint)
+                drawMinus(
+                    x + horizontalOffset + (rangeSize.first),
+                    y + verticalOffset + ((rangeSize.second - mPaint.getBaseHeight() / 2) / 2),
+                    mPaint
+                )
             }
         }
 
         verticalOffset += rangeSize.second
     }
+
+}
+
+fun Canvas.drawPolynomialAsDots(polynomial: PolynomialBase, x: Float, y: Float, mPaint: Paint)
+{
+    if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0) return
+
+    drawProporsionalDotsInBrackets(5, x, y, mPaint)
 
 }
 

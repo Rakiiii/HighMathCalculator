@@ -78,7 +78,7 @@ open class MatrixRender
             var amountOfDots = 0
             val isLines = matrixSet.sign == MatrixGroup.DET
             while (!checkStrategyGroup(
-                    constractStrategy(amountOfDots, isLines),
+                    constructStrategy(amountOfDots, isLines),
                     matrixSet,
                     maxWidth,
                     mPaint
@@ -88,7 +88,7 @@ open class MatrixRender
             {
                 amountOfDots++
             }
-            return constractStrategy(amountOfDots, isLines)
+            return constructStrategy(amountOfDots, isLines)
         }
 
         //checks is sum of rendered matrix size is ok for veiw holder
@@ -104,7 +104,7 @@ open class MatrixRender
 
         //constracting strategy for render matrix group, @amountOdDots is amount of matrix that will be rendered as dots
         //@isLines is flag for render left matrix as determinant in lines
-        private fun constractStrategy(
+        private fun constructStrategy(
             amountOfDots: Int,
             isLines: Boolean
         ): MatrixRenderStrategyGroup

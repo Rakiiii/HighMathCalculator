@@ -144,6 +144,11 @@ fun Paint.getMultiLinePolynomialSize(
     ranges: Array<IntRange>
 ): Pair<Float, Float>
 {
+    if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0 || ranges.isEmpty()) return Pair(
+        0.0f,
+        0.0f
+    )
+
     var maxWidth = 0.0f
     var overallHeight = 0.0f
 
@@ -151,30 +156,52 @@ fun Paint.getMultiLinePolynomialSize(
 
     for (rangeIndex in ranges.indices)
     {
+
+
         val range = ranges[rangeIndex]
         val rangeSize = getPolynomialRangeSize(polynomial, range)
 
         var finalWidth = rangeSize.first + getHorizontalSpacing()
         if (rangeIndex != ranges.size - 1)
         {
+
             val nextCof = rendFormat[ranges[rangeIndex + 1].first].second
-            finalWidth += if (!(nextCof.isImagination() && nextCof.im.isBeloweZero()) ||
+            finalWidth += if (!(nextCof.isImagination() && nextCof.im.isBeloweZero()) &&
                 !(nextCof.isReal() && nextCof.re.isBeloweZero())
             )
             {
-                getPlusWidth() + getHorizontalSpacing()
+
+                3*getPlusWidth() + 2*getHorizontalSpacing()+30
             }
             else
             {
-                getMinusWidth() + getHorizontalSpacing()
+
+                3*getMinusWidth() + 2*getHorizontalSpacing()+30
             }
         }
 
+        if (rangeIndex != 0)
+        {
+            val nextCof = rendFormat[ranges[rangeIndex].first].second
+            finalWidth += if (!(nextCof.isImagination() && nextCof.im.isBeloweZero()) &&
+                !(nextCof.isReal() && nextCof.re.isBeloweZero())
+            ) getPlusWidth() + getHorizontalSpacing()
+            else getMinusWidth() + getHorizontalSpacing()
+
+        }
+
         maxWidth =
-            if (rangeSize.first > maxWidth) rangeSize.first else maxWidth
+            if (finalWidth> maxWidth) finalWidth else maxWidth
 
         overallHeight += rangeSize.second
     }
 
-    return Pair(maxWidth,overallHeight)
+    return Pair(maxWidth, overallHeight)
 }
+
+fun Paint.getPolynomialSizeAsDots(polynomial: PolynomialBase) =
+    if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0) Pair(
+        0.0f,
+        0.0f
+    )
+    else getProportionalDotsInBracketSize(5)
