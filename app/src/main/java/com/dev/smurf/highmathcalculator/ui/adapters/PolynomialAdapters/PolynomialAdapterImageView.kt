@@ -10,13 +10,12 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawEquation
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawPolynomial
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawPolynomialRoots
+import com.dev.smurf.highmathcalculator.CanvasExtension.*
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.PaintExtension.getPolynomialHigh
+import com.dev.smurf.highmathcalculator.PaintExtension.getPolynomialSize
 import com.dev.smurf.highmathcalculator.PaintExtension.getPolynomialWidth
+import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import org.jetbrains.anko.imageBitmap
@@ -105,7 +104,7 @@ class PolynomialAdapterImageView(
         try
         {
             holder.bind(listOfPolynomials[position])
-        }catch (e : Exception)
+        } catch (e: Exception)
         {
             context.toast(e.toString())
         }
@@ -179,7 +178,8 @@ class PolynomialAdapterImageView(
         var resultPolynomialImageView: ImageView = itemView.findViewById(R.id.resultPolynomialIM)
             private set
 
-        var remainderPolynomialImageView: ImageView = itemView.findViewById(R.id.remainderPolynomialIM)
+        var remainderPolynomialImageView: ImageView =
+            itemView.findViewById(R.id.remainderPolynomialIM)
             private set
 
         var signumImageView: ImageView = itemView.findViewById(R.id.operationSignPolynomialIM)
@@ -194,10 +194,12 @@ class PolynomialAdapterImageView(
 
             val blackPainter = CanvasRenderSpecification.createBlackPainter()
 
+            val leftBitmapSize = blackPainter.getPolynomialSize(polynomialGroup.polLeftPolynomial)
+
             polynomialGroup.polLeftPolynomial.let {
                 val leftBitmap = Bitmap.createBitmap(
-                    blackPainter.getPolynomialWidth(it).toInt(),
-                    blackPainter.getPolynomialHigh(it).toInt(),
+                    leftBitmapSize.first.toInt(),
+                    leftBitmapSize.second.toInt(),
                     Bitmap.Config.ARGB_8888
                 )
 
@@ -206,16 +208,16 @@ class PolynomialAdapterImageView(
                 if (polynomialGroup.roots == null)
                 {
                     canvas.drawPolynomial(
-                        polynomialGroup.polLeftPolynomial, CanvasRenderSpecification.x,
-                        CanvasRenderSpecification.y,
+                        it, 0.0f,
+                        0.0f,
                         blackPainter
                     )
                 }
                 else
                 {
                     canvas.drawEquation(
-                        it, CanvasRenderSpecification.x,
-                        CanvasRenderSpecification.y,
+                        it, 0.0f,
+                        0.0f,
                         blackPainter
                     )
                 }
@@ -230,9 +232,11 @@ class PolynomialAdapterImageView(
             polynomialGroup.polRightPolynomial.let {
                 if (it != null)
                 {
+
+                    val rightBitmapSize = blackPainter.getPolynomialSize(it)
                     val rightBitmap = Bitmap.createBitmap(
-                        blackPainter.getPolynomialWidth(it).toInt(),
-                        blackPainter.getPolynomialHigh(it).toInt(),
+                        rightBitmapSize.first.toInt(),
+                        rightBitmapSize.second.toInt(),
                         Bitmap.Config.ARGB_8888
                     )
 
@@ -240,13 +244,13 @@ class PolynomialAdapterImageView(
 
                     if (polynomialGroup.roots == null)
                         canvas.drawPolynomial(
-                            it, CanvasRenderSpecification.x,
-                            CanvasRenderSpecification.y,
+                            it, 0.0f,
+                            0.0f,
                             blackPainter
                         )
                     else canvas.drawEquation(
-                        it, CanvasRenderSpecification.x,
-                        CanvasRenderSpecification.y,
+                        it, 0.0f,
+                        0.0f,
                         blackPainter
                     )
 
@@ -258,9 +262,10 @@ class PolynomialAdapterImageView(
             polynomialGroup.polResPolynomial.let {
                 if (it != null)
                 {
+                    val resBitmapSize = blackPainter.getPolynomialSize(it)
                     val resultBitmap = Bitmap.createBitmap(
-                        blackPainter.getPolynomialWidth(it).toInt(),
-                        blackPainter.getPolynomialHigh(it).toInt(),
+                        resBitmapSize.first.toInt(),
+                        resBitmapSize.second.toInt(),
                         Bitmap.Config.ARGB_8888
                     )
 
@@ -268,14 +273,14 @@ class PolynomialAdapterImageView(
 
                     if (polynomialGroup.roots == null)
                         canvas.drawPolynomial(
-                            it, CanvasRenderSpecification.x,
-                            CanvasRenderSpecification.y,
+                            it, 0.0f,
+                            0.0f,
                             blackPainter
                         )
                     else
                         canvas.drawPolynomialRoots(
-                            polynomialGroup.roots!!, CanvasRenderSpecification.x,
-                            CanvasRenderSpecification.y,
+                            polynomialGroup.roots!!, 0.0f,
+                            0.0f,
                             blackPainter
                         )
 
@@ -288,9 +293,10 @@ class PolynomialAdapterImageView(
             polynomialGroup.polOstPolynomial.let {
                 if (it != null)
                 {
+                    val reminderBitmapSize = blackPainter.getPolynomialSize(it)
                     val remainderBitmap = Bitmap.createBitmap(
-                        blackPainter.getPolynomialWidth(it).toInt(),
-                        blackPainter.getPolynomialHigh(it).toInt(),
+                        reminderBitmapSize.first.toInt(),
+                        reminderBitmapSize.second.toInt(),
                         Bitmap.Config.ARGB_8888
                     )
 
@@ -298,8 +304,8 @@ class PolynomialAdapterImageView(
 
                     if (polynomialGroup.roots == null)
                         canvas.drawPolynomial(
-                            it, CanvasRenderSpecification.x,
-                            CanvasRenderSpecification.y,
+                            it, 0.0f,
+                            0.0f,
                             blackPainter
                         )
 
@@ -312,14 +318,20 @@ class PolynomialAdapterImageView(
                 blackPainter.getTextWidths(it, arr)
                 val width = arr.sum()
                 val signumBitmap = Bitmap.createBitmap(
-                    width.toInt() + blackPainter.getPolynomialWidth(polynomialGroup.polResPolynomial!!).toInt(),
+                    width.toInt() + blackPainter.getPolynomialWidth(polynomialGroup.polResPolynomial!!)
+                        .toInt(),
                     CanvasRenderSpecification.getLetterHigh(blackPainter).toInt(),
                     Bitmap.Config.ARGB_8888
                 )
 
                 val canvas = Canvas(signumBitmap)
 
-                canvas.drawText(it, CanvasRenderSpecification.x, CanvasRenderSpecification.getLetterHigh(blackPainter)/2, blackPainter)
+                canvas.drawText(
+                    it,
+                    CanvasRenderSpecification.x,
+                    CanvasRenderSpecification.getLetterHigh(blackPainter) / 2,
+                    blackPainter
+                )
 
                 signumImageView.imageBitmap = signumBitmap
             }

@@ -215,6 +215,7 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint:
             )
 
             val verticalOffsetSet = Array<Float>(setSize.size) { 0.0f }
+
             for (element in setSize.indices)
             {
                 verticalOffsetSet[element] =
@@ -223,18 +224,21 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint:
                 {
                     (element != 1 && element != 3) ->
                     {
+
                         if (!complexNumber.im.isInt() || !complexNumber.re.isInt())
-                            verticalOffsetSet[element] -= mPaint.getVerticalSpacing()
+                            verticalOffsetSet[element] -= 2 * mPaint.getVerticalSpacing() +
+                                    if (element == 2 && !complexNumber.im.isBeloweZero()) 0.0f else mPaint.strokeWidth
+
                     }
                     (element == 1) ->
                     {
                         if (!complexNumber.im.isInt() && complexNumber.re.isInt())
-                            verticalOffsetSet[element] -= mPaint.getVerticalSpacing()
+                            verticalOffsetSet[element] -= 2 * mPaint.getVerticalSpacing() + mPaint.strokeWidth
                     }
                     (element == 3) ->
                     {
                         if (complexNumber.im.isInt() && !complexNumber.re.isInt())
-                            verticalOffsetSet[element] -= mPaint.getVerticalSpacing()
+                            verticalOffsetSet[element] -= 2 * mPaint.getVerticalSpacing() + mPaint.strokeWidth
                     }
                 }
             }

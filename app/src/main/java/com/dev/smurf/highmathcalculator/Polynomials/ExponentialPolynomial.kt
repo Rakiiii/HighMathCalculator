@@ -310,7 +310,7 @@ class ExponentialPolynomial private constructor(
                 result.polynomial.plusToCof(0, obj)
             }
 
-            //if right operand is exponesial polynomial
+            //if right operand is exponential polynomial
             is ExponentialPolynomial ->
             {
                 Log.d("plus@", "start plussing")
@@ -424,10 +424,10 @@ class ExponentialPolynomial private constructor(
             }
             is ExponentialPolynomial ->
             {
-                //divison function
+                //division function
                 val subRes = exponensialRecursiveDivison(this.Copy().polynomial, obj.polynomial)
 
-                //set polinoms with resuklt arrays
+                //set polynomial's with result arrays
                 result.polynomial = subRes.first
                 remainder.polynomial = subRes.second
 

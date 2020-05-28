@@ -2,7 +2,6 @@ package com.dev.smurf.highmathcalculator.RoomConverters
 
 import androidx.room.TypeConverter
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
-import com.dev.smurf.highmathcalculator.Polynomials.DiofantPolynomial
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialFactory
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialRoots

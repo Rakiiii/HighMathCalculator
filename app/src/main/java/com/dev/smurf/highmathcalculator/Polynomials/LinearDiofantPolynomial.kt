@@ -8,7 +8,7 @@ import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.StringsExtension.*
 
-class DiofantPolynomial private constructor(private val polynomial: MutableMap<String, ComplexNumber>) :
+class LinearDiofantPolynomial private constructor(private val polynomial: MutableMap<String, ComplexNumber>) :
     PolynomialBase()
 {
 
@@ -17,9 +17,9 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
     companion object
     {
 
-        fun createDiofantPolynomial(str: String): DiofantPolynomial
+        fun createLinearDiofantPolynomial(str: String): LinearDiofantPolynomial
         {
-            isDiofantPolynomial(str)
+            isLinearDiofantPolynomial(str)
             val polynomial: MutableMap<String, ComplexNumber> = mutableMapOf()
 
             var polynomialString =
@@ -50,13 +50,13 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
             val cof = polynomialString.substringBeforeSymbol('i')
             polynomial[variable] = polynomial[variable] ?: ComplexNumber() + cof.toComplexNumber()
 
-            return DiofantPolynomial(polynomial)
+            return LinearDiofantPolynomial(polynomial)
         }
 
-        fun createEmptyPolynomial() = DiofantPolynomial()
+        fun createEmptyPolynomial() = LinearDiofantPolynomial()
 
 
-        fun isDiofantPolynomial(str: String)
+        fun isLinearDiofantPolynomial(str: String)
         {
             val amountOfLeftBrackets = str.count { s -> s == '(' }
             val amountOfRightBrackets = str.count { s -> s == ')' }
@@ -119,7 +119,7 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
         val res = this.Copy()
         when (obj)
         {
-            is DiofantPolynomial ->
+            is LinearDiofantPolynomial ->
             {
                 for (i in obj.polynomial)
                 {
@@ -141,7 +141,7 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
         val res = this.Copy()
         when (obj)
         {
-            is DiofantPolynomial ->
+            is LinearDiofantPolynomial ->
             {
                 for (i in obj.polynomial)
                 {
@@ -169,9 +169,9 @@ class DiofantPolynomial private constructor(private val polynomial: MutableMap<S
     }
 
 
-    override fun Copy(): DiofantPolynomial
+    override fun Copy(): LinearDiofantPolynomial
     {
-        val copy = DiofantPolynomial()
+        val copy = LinearDiofantPolynomial()
 
         for (i in this.polynomial)
         {

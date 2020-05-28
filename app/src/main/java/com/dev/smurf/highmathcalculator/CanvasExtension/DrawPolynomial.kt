@@ -2,12 +2,19 @@ package com.dev.smurf.highmathcalculator.CanvasExtension
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
+import com.dev.smurf.highmathcalculator.PaintExtension.*
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialRoots
-import com.dev.smurf.highmathcalculator.PaintExtension.getComplexNumberWidth
+
 
 //draw polinom on canvas returns last point of polynomial render and vertical offset for render signs
-fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint: Paint): Pair<Float, Float>
+fun Canvas.drawPolynomials(
+    polynomial: PolynomialBase,
+    x: Float,
+    y: Float,
+    mPaint: Paint
+): Pair<Float, Float>
 {
     val polynomialForRender = polynomial.renderFormat()
 
@@ -35,10 +42,10 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
 
     //vertical offset for non fraction numbers
     val verticalOffset: Float = y +
-            if (fractionFlag) CanvasRenderSpecification.getLetterHigh(mPaint)-
+            if (fractionFlag) CanvasRenderSpecification.getLetterHigh(mPaint) -
                     CanvasRenderSpecification.letterVerticalSpacing -
-                    CanvasRenderSpecification.getLineWidth(mPaint)/2
-            else CanvasRenderSpecification.getLetterHigh(mPaint)/2
+                    CanvasRenderSpecification.getLineWidth(mPaint) / 2
+            else CanvasRenderSpecification.getLetterHigh(mPaint) / 2
 
     //horizontal offset for render those element
     var horizontalOffset = x
@@ -78,7 +85,8 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
 
             //init text for render after cof
 
-            val text = i.first + if (i == polynomialForRender.last() || (i.second.isBelowZero())) "" else "+"
+            val text =
+                i.first + if (i == polynomialForRender.last() || (i.second.isBelowZero())) "" else "+"
 
             //draw text it self
             this.drawText(text, horizontalOffset, textVerticalOffset, mPaint)
@@ -116,14 +124,100 @@ fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint
     return Pair(horizontalOffset, verticalOffset)
 }
 
+fun Canvas.drawPolynomial(polynomial: PolynomialBase, x: Float, y: Float, mPaint: Paint)
+{
+    if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0) return
+
+    val rendFormat = polynomial.renderFormat()
+
+    val subSize = mPaint.getPolynomialSize(polynomial)
+    val polynomialSize = Pair(subSize.first,subSize.second - mPaint.getPolynomialVerticalOffset())
+
+    var horizontalOffset = 0.0f
+
+    var fractionFlag = false
+    rendFormat.forEach { if (it.second.containsFractions()) fractionFlag = true }
+    var extraHeightFlag = false
+    rendFormat.forEach { if (it.first.contains('^')) extraHeightFlag = true }
+
+    for (i in rendFormat.indices)
+    {
+        val element = rendFormat[i].second
+        val cofSize = mPaint.getComplexNumberSize(element)
+
+        val variableWidth = mPaint.measureText(rendFormat[i].first)
+
+        var cofVerticalOffset =
+            ((polynomialSize.second - cofSize.second) / 2) -
+                    if (fractionFlag && !element.containsFractions()) mPaint.getVerticalSpacing() else 0.0f
+
+        val variableRect = Rect()
+        mPaint.getTextBounds(rendFormat[i].first, 0, rendFormat[i].first.length, variableRect)
+
+        val maxOfVariablesHeight = variableRect.height()
+
+
+        var variableVerticalOffset =
+            (maxOfVariablesHeight + (polynomialSize.second - maxOfVariablesHeight) / 2) + mPaint.getVerticalSpacing()
+
+        val plusVerticalOffset = polynomialSize.second / 2
+
+        if (fractionFlag)
+        {
+            variableVerticalOffset -= if(element.isImagination()) mPaint.strokeWidth else  2*mPaint.getVerticalSpacing()
+        }else
+        {
+            if (!extraHeightFlag) cofVerticalOffset -= mPaint.getVerticalSpacing()
+        }
+
+
+        drawComplex(element, x + horizontalOffset, y + cofVerticalOffset, mPaint)
+
+        horizontalOffset += cofSize.first
+
+        if (rendFormat[i].first != "")
+        {
+            drawText(rendFormat[i].first, x + horizontalOffset, y + variableVerticalOffset, mPaint)
+            horizontalOffset += variableWidth
+        }
+
+        horizontalOffset += mPaint.getHorizontalSpacing()
+
+        if (rendFormat.size - 1 != i)
+        {
+            if (!(rendFormat[i + 1].second.isImagination() && rendFormat[i + 1].second.im.isBeloweZero()) &&
+                //if cof contain real part then it will be drawn first and we consider it's sign
+                !(rendFormat[i + 1].second.isReal() && rendFormat[i + 1].second.re.isBeloweZero())
+            )
+            {
+
+
+                drawPlus(x + horizontalOffset, y + plusVerticalOffset, mPaint)
+
+                horizontalOffset += mPaint.getPlusWidth() + mPaint.getHorizontalSpacing()
+            }
+        }
+
+    }
+}
+
 //draw equation that setted by polynomial @polynomial on canvas
 fun Canvas.drawEquation(polynomial: PolynomialBase, x: Float, y: Float, mPaint: Paint)
 {
     //draw polynomial
-    val offsets = this.drawPolynomial(polynomial, x, y, mPaint)
+    val polynomialSize = mPaint.getPolynomialSize(polynomial)
+    this.drawPolynomial(polynomial, x, y, mPaint)
 
     //draw equals zero after polynomial to get equation
-    this.drawText("=0", offsets.first, offsets.second, mPaint)
+    val verticalOffset =
+        mPaint.getBaseHeight() + (polynomialSize.second - mPaint.getBaseHeight()) / 2
+
+    this.drawText(
+        "=0",
+        x + polynomialSize.first + mPaint.getHorizontalSpacing(),
+        y + verticalOffset,
+        mPaint
+    )
 }
 
 fun Canvas.drawPolynomialRoots(roots: PolynomialRoots, x: Float, y: Float, mPaint: Paint)
