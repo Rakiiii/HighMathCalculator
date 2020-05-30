@@ -2,6 +2,9 @@ package com.dev.smurf.highmathcalculator.mvp.models
 
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 //класс работы с матрицами
@@ -68,5 +71,40 @@ class MatrixModel
         return obj
     }
 
+
+    suspend fun MatrixPlus(scope : CoroutineScope, leftMatrix : String, rightMatrix : String) : MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
+            plus(createMatrix(leftMatrix), createMatrix(rightMatrix))
+        }
+    }
+
+    suspend fun MatrixMinus(scope : CoroutineScope, leftMatrix : String, rightMatrix : String) : MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
+            minus(createMatrix(leftMatrix), createMatrix(rightMatrix))
+        }
+    }
+
+    suspend fun MatrixTimes(scope : CoroutineScope, leftMatrix : String, rightMatrix : String) : MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
+            times(createMatrix(leftMatrix), createMatrix(rightMatrix))
+        }
+    }
+
+    suspend fun MatrixDeterminant(scope : CoroutineScope, leftMatrix : String) : MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
+            determinant(createMatrix(leftMatrix))
+        }
+    }
+
+    suspend fun MatrixInverse(scope : CoroutineScope, leftMatrix : String) : MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
+            inverse(createMatrix(leftMatrix))
+        }
+    }
 
 }

@@ -55,8 +55,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     //корутин скоп для ui
     private val uiScope = CoroutineScope(Dispatchers.Main + supJob)
 
-    //список работ
-    lateinit var MainJob: Job
 
 
     private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
@@ -106,20 +104,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
 
 
-            async(Dispatchers.IO)
-            {
-                if (mSettingsModel.getMatrixConsistens())
-                {
-                    //записываем в бд
-                    mMatrixDataBaseModel.insert(mMatrixGroup)
-                }
-                else
-                {
-
-                    //иначе записываем в кэщ бд
-                    mMatrixDataBaseModel.addToCache(mMatrixGroup)
-                }
-            }
+            addToDb(mMatrixGroup)
 
             uiScope.launch {
                 viewState.addToRecyclerView(mMatrixGroup)
@@ -158,20 +143,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
 
 
-            async(Dispatchers.IO)
-            {
-                if (mSettingsModel.getMatrixConsistens())
-                {
-                    //записываем в бд
-                    mMatrixDataBaseModel.insert(mMatrixGroup)
-                }
-                else
-                {
-
-                    //иначе записываем в кэщ бд
-                    mMatrixDataBaseModel.addToCache(mMatrixGroup)
-                }
-            }
+            addToDb(mMatrixGroup)
 
             uiScope.launch {
                 viewState.addToRecyclerView(mMatrixGroup)
@@ -207,20 +179,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
 
 
-            async(Dispatchers.IO)
-            {
-                if (mSettingsModel.getMatrixConsistens())
-                {
-                    //записываем в бд
-                    mMatrixDataBaseModel.insert(mMatrixGroup)
-                }
-                else
-                {
-
-                    //иначе записываем в кэщ бд
-                    mMatrixDataBaseModel.addToCache(mMatrixGroup)
-                }
-            }
+            addToDb(mMatrixGroup)
 
             uiScope.launch {
                 viewState.addToRecyclerView(mMatrixGroup)
@@ -251,20 +210,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                 result
             }
 
-            async(Dispatchers.IO)
-            {
-                if (mSettingsModel.getMatrixConsistens())
-                {
-                    //записываем в бд
-                    mMatrixDataBaseModel.insert(mMatrixGroup)
-                }
-                else
-                {
-
-                    //иначе записываем в кэщ бд
-                    mMatrixDataBaseModel.addToCache(mMatrixGroup)
-                }
-            }
+            addToDb(mMatrixGroup)
 
             uiScope.launch {
                 viewState.addToRecyclerView(mMatrixGroup)
@@ -296,20 +242,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
                 result
             }
 
-            async(Dispatchers.IO)
-            {
-                if (mSettingsModel.getMatrixConsistens())
-                {
-                    //записываем в бд
-                    mMatrixDataBaseModel.insert(mMatrixGroup)
-                }
-                else
-                {
-
-                    //иначе записываем в кэщ бд
-                    mMatrixDataBaseModel.addToCache(mMatrixGroup)
-                }
-            }
+            addToDb(mMatrixGroup)
 
             uiScope.launch {
                 viewState.addToRecyclerView(mMatrixGroup)
@@ -366,7 +299,29 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
         }
     }
 
+    suspend fun addToDb(group: MatrixGroup)
+    {
+        withContext(presenterScope.coroutineContext + Dispatchers.IO)
+        {
+            if (mSettingsModel.getMatrixConsistens())
+            {
+                //записываем в бд
+                mMatrixDataBaseModel.insert(group)
+            }
+            else
+            {
 
+                //иначе записываем в кэщ бд
+                mMatrixDataBaseModel.addToCache(group)
+            }
+        }
+    }
+
+
+
+    /*
+    todo:: move to coroutines
+     */
     //загрузка из базы данных сохраненных результатов
     @SuppressLint("StaticFieldLeak")
     fun onLoadSavedInstance()
@@ -380,7 +335,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
             override fun onPostExecute(result: List<MatrixGroup>?)
             {
-                viewState.setRecyclerViewArrayList(ArrayList(result))
+                viewState.setRecyclerViewArrayList(ArrayList(c = result))
             }
         }.execute()
 
