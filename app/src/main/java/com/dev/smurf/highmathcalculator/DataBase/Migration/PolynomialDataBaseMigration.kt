@@ -24,6 +24,7 @@ object PolynomialDataBaseMigration_2_3 : Migration(2,3)
     }
 }
 
+//change some fields from nullable to not nullable
 object PolynomialDataBaseMigration_3_4 : Migration(3,4)
 {
     override fun migrate(database: SupportSQLiteDatabase)
@@ -43,6 +44,7 @@ object PolynomialDataBaseMigration_3_4 : Migration(3,4)
     }
 }
 
+//remove my fuck up with empty polynomial string serialization from db
 object PolynomialDataBaseMigration_4_5 : Migration(4,5)
 {
     override fun migrate(database: SupportSQLiteDatabase)
