@@ -10,22 +10,17 @@ class CanvasRenderSpecification
     {
 
         //Space vertical thickness between separating line and number in fraction
-        val letterVerticalSpacing = 5.0f
+        const val letterVerticalSpacing = 5.0f
 
-        val x = 2.0f
+        const val textSize = 40.0f
 
-        val y = 2.0f
+        const val strokeWidth = 2.0f
 
-        val textSize = 40.0f
+        const val defspaceSize = 5.0f
 
-        val strokeWidth = 2.0f
+        const val PolynomialTopMargin = 6.0f
+        const val PolynomialBottomMargin = 6.0f
 
-        val defspaceSize = 5.0f
-
-        val PolynomialTopMargin = 6.0f
-        val PolynomialBottomMargin = 6.0f
-
-        val deffRadious = 5.0f
 
         fun createBlackPainter() : Paint
         {
@@ -41,11 +36,6 @@ class CanvasRenderSpecification
                 strokeWidth
 
             return blackPainter
-        }
-
-        fun getHorizontalSpacing(mPaint: Paint) : Float
-        {
-            return mPaint.letterSpacing*5
         }
 
         fun getVerticalSpaceSize(mPaint : Paint) : Float
@@ -76,10 +66,6 @@ class CanvasRenderSpecification
             return high
         }
 
-        fun getBracketWidth(mPaint: Paint, h : Int) : Float
-        {
-            return mPaint.strokeWidth * 10 * (h - 1)
-        }
 
         fun getLineWidth(mPaint: Paint) : Float
         {
