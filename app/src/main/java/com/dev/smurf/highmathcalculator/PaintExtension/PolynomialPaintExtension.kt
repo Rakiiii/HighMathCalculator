@@ -139,33 +139,49 @@ fun Paint.getPolynomialRangeSize(polynomial: PolynomialBase, range: IntRange): P
     return Pair(overallWidth, maxHeight + getPolynomialVerticalOffset())
 }
 
+//returns size of polynomial @polynomial rendered with partition in @ranges
+//every range in @ranges represent single line of polynomial
 fun Paint.getMultiLinePolynomialSize(
     polynomial: PolynomialBase,
     ranges: Array<IntRange>
 ): Pair<Float, Float>
 {
+    //check for empty polynomial or empty partition
     if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0 || ranges.isEmpty()) return Pair(
         0.0f,
         0.0f
     )
 
+    //width of max line
     var maxWidth = 0.0f
+
+    //sum of height of all lines on render
     var overallHeight = 0.0f
 
+    //get render format
     val rendFormat = polynomial.renderFormat()
 
+    //iterate over all lines
     for (rangeIndex in ranges.indices)
     {
-
-
+        //get range for iteration
         val range = ranges[rangeIndex]
+
+        //get size of polynomial represented by range @range
         val rangeSize = getPolynomialRangeSize(polynomial, range)
 
+        //line width
         var finalWidth = rangeSize.first + getHorizontalSpacing()
+
+        //if it isn't last line, then some sign must be rendered
         if (rangeIndex != ranges.size - 1)
         {
 
+            //type of sign is depends on sign of first cof in next line
             val nextCof = rendFormat[ranges[rangeIndex + 1].first].second
+
+            //if we haven't minus before cof on next line then we must render plus
+            //we have minus only if we have purely imaginary or real cof with minus
             finalWidth += if (!(nextCof.isImagination() && nextCof.im.isBeloweZero()) &&
                 !(nextCof.isReal() && nextCof.re.isBeloweZero())
             )
@@ -180,8 +196,11 @@ fun Paint.getMultiLinePolynomialSize(
             }
         }
 
+        //if it's not first line then we must render some sign before line, so we must increase
+        // width with size of sign
         if (rangeIndex != 0)
         {
+            //if we do not have sign before cof, then must increase it
             val nextCof = rendFormat[ranges[rangeIndex].first].second
             finalWidth += if (!(nextCof.isImagination() && nextCof.im.isBeloweZero()) &&
                 !(nextCof.isReal() && nextCof.re.isBeloweZero())
@@ -190,6 +209,7 @@ fun Paint.getMultiLinePolynomialSize(
 
         }
 
+        //if width of this line is bigger than max width of prev lines then this line is longest
         maxWidth =
             if (finalWidth> maxWidth) finalWidth else maxWidth
 
@@ -199,6 +219,7 @@ fun Paint.getMultiLinePolynomialSize(
     return Pair(maxWidth, overallHeight)
 }
 
+//wrapper for dots drawing for polynomial
 fun Paint.getPolynomialSizeAsDots(polynomial: PolynomialBase) =
     if (polynomial == PolynomialBase.EmptyPolynomial || polynomial.degree() == 0) Pair(
         0.0f,
