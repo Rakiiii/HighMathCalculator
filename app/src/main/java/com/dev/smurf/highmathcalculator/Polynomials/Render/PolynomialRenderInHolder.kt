@@ -4,13 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import android.util.Log
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawMultiLinePolynomial
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawPolynomial
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawPolynomialAsDots
-import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRender
 import com.dev.smurf.highmathcalculator.PaintExtension.*
-import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.example.smurf.mtarixcalc.PolynomialGroup
 
 class PolynomialRenderInHolder

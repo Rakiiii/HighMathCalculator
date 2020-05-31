@@ -2,11 +2,6 @@ package com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters
 
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,14 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawComplex
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawComplexx
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawFractions
-import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRender
-import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
-import com.dev.smurf.highmathcalculator.Numbers.Fraction
-import com.dev.smurf.highmathcalculator.PaintExtension.getComplexNumberSize
-import com.dev.smurf.highmathcalculator.PaintExtension.getFractionSize
+import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRenderInHolderStrategyConstracter
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.Utils.*
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
@@ -174,7 +162,11 @@ class MatrixAdapterImageView(
 
             val blackPainter = CanvasRenderSpecification.createBlackPainter()
 
-            val bitmapSet = MatrixRender.renderWithStrategy(group,width,blackPainter)
+            val bitmapSet = MatrixRenderInHolderStrategyConstracter.getWorkStrategyGroup(
+                group,
+                width,
+                blackPainter
+            ).renderMatrix(group, blackPainter)
             // = MatrixRender.renderMatrixSet(group, width, blackPainter)
             leftMatrix.imageBitmap = bitmapSet.leftMatrixBitmap
             if (!bitmapSet.rightMatrixBitmap.IsEmpty()) rightMatrix.imageBitmap =
