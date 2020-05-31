@@ -104,7 +104,7 @@ class PolynomialAdapterImageView(
     override fun onBindViewHolder(holder: PolynomialViewHolder, position: Int)
     {
 
-            holder.bind(listOfPolynomials[position])
+        holder.bind(listOfPolynomials[position])
         //контекстное  меню для левого полинома
         holder.leftPolynomialImageView.setOnCreateContextMenuListener(
             ContextMenuListener(
@@ -195,7 +195,7 @@ class PolynomialAdapterImageView(
             val bitmapSet = PolynomialRenderInHolder.renderWithStrategy(
                 polynomialGroup,
                 maxWidth,
-                maxWidth*2,
+                maxWidth * 2,
                 blackPainter
             )
 
@@ -206,7 +206,7 @@ class PolynomialAdapterImageView(
             signumImageView.imageBitmap = bitmapSet.signBitmap
 
             polynomialGroup.time.let {
-                val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
+                val fmt = SimpleDateFormat.getDateInstance()
                 fmt.calendar = it
                 timePolynomial.text = fmt.format(it.time)
             }
@@ -214,18 +214,18 @@ class PolynomialAdapterImageView(
 
         }
 
-        fun save(polynomialGroup: PolynomialGroup)
+        private fun save(polynomialGroup: PolynomialGroup)
         {
             leftPolynomialValue = polynomialGroup.polLeftPolynomial.toString()
 
             rightPolynomialValue =
-                if (polynomialGroup.polRightPolynomial != null) polynomialGroup.polRightPolynomial.toString() else ""
+                polynomialGroup.polRightPolynomial.toString()
 
             resultPolynomialValue =
-                if (polynomialGroup.polResPolynomial != null) polynomialGroup.polResPolynomial.toString() else ""
+                polynomialGroup.polResPolynomial.toString()
 
             remainderPolynomialValue =
-                if (polynomialGroup.polOstPolynomial != null) polynomialGroup.polOstPolynomial.toString() else ""
+                polynomialGroup.polOstPolynomial.toString()
         }
 
     }
