@@ -115,6 +115,9 @@ dependencies {
     // For Kotlin use lifecycle-viewmodel-ktx
     // alternatively - just LiveData
     //implementation 'androidx.lifecycle:lifecycle-livedata:2.0.0'
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
+    implementation "androidx.fragment:fragment-ktx:1.2.4"
+    //noinspection LifecycleAnnotationProcessorWithJava8
     kapt 'androidx.lifecycle:lifecycle-compiler:2.2.0'
 
     implementation 'android.arch.navigation:navigation-fragment:1.0.0'

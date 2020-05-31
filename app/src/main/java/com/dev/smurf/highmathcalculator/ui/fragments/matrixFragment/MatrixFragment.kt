@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,7 +40,7 @@ import org.jetbrains.anko.toast
 
 class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     MatrixButtonGridFragment.onFragmentInteractionListener,
-        MatrixButtonGridFragmentSecondPage.onFragmentInteractionListener
+    MatrixButtonGridFragmentSecondPage.onFragmentInteractionListener
 {
 
     private var loaded: Boolean = false
@@ -54,9 +55,9 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     private lateinit var mMatrixRecyclerImageAdapter: MatrixAdapterImageView
     private lateinit var mBtnMatrixViewPagerAdapter: BtnViewPagerFragmentStateAdapter
 
-    private lateinit var mMatrixRecyclerViewModel: MatrixRecyclerViewModel
+    private val mMatrixRecyclerViewModel by viewModels<MatrixRecyclerViewModel>()
 
-    private lateinit var mMatrixEdittextViewModel: EditTextViewModel
+    private val mMatrixEdittextViewModel by viewModels<EditTextViewModel>()
 
     private var isImageAdapter = false
     private var isPaused = false
@@ -78,8 +79,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         super.onStart()
 
         //view model для сохранения содержимого recycler view
-        mMatrixRecyclerViewModel =
-            ViewModelProviders.of(this.activity!!).get(MatrixRecyclerViewModel::class.java)
+        mMatrixRecyclerViewModel
+        //ViewModelProviders.of(this.requireActivity()).get(MatrixRecyclerViewModel::class.java)
 
 
         //инициализация view model для содержимого edittext
@@ -96,7 +97,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         enableSwipeToDeleteAndUndo()
 
         //off view pager swap page by gesture
-        buttonViewPager.isUserInputEnabled=false
+        buttonViewPager.isUserInputEnabled = false
 
         //swap matrix btn listener
         btnSwap.setOnClickListener {
@@ -152,26 +153,26 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     //инициализация recyclerView
     private fun initRecyclerView()
     {
-        if(isRecycleViewInitted())return
+        if (isRecycleViewInitted()) return
         mMatrixRecyclerLayoutManager = LinearLayoutManager(context)
 
         mMatrixRecyclerTextAdapter =
             MatrixAdapter(
-                context!!,
+                requireContext(),
                 firstMatrix,
                 secondMatrix
             )
         val point = Point()
-        activity!!.windowManager.defaultDisplay.getSize(point)
+        requireActivity().windowManager.defaultDisplay.getSize(point)
         mMatrixRecyclerImageAdapter =
             MatrixAdapterImageView(
-                context!!,
+                requireContext(),
                 firstMatrix,
                 secondMatrix,
                 point.x.toFloat()
             )
 
-        mMatrixRecyclerView = view!!.findViewById(R.id.matrixRecycler)
+        mMatrixRecyclerView = requireView().findViewById(R.id.matrixRecycler)
 
         mMatrixRecyclerView.layoutManager = mMatrixRecyclerLayoutManager
 
@@ -181,12 +182,12 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     private fun initViewPager()
     {
-        if (isViewPagerInited())return
+        if (isViewPagerInited()) return
         if (activity != null)
         {
             mBtnMatrixViewPagerAdapter =
                 BtnViewPagerFragmentStateAdapter(
-                    activity!!
+                    requireActivity()
                 )
             btnFragmentSet.add(MatrixButtonGridFragment().addEventListener(this))
             btnFragmentSet.add(MatrixButtonGridFragmentSecondPage().setListener(this))
@@ -196,7 +197,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     }
 
-    private fun isViewPagerInited():Boolean
+    private fun isViewPagerInited(): Boolean
     {
         return ::mBtnMatrixViewPagerAdapter.isInitialized
     }
@@ -215,7 +216,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun showToast(obj: String)
     {
-        context!!.toast(obj)
+        requireContext().toast(obj)
     }
 
     private fun setImageAdapter()
@@ -249,7 +250,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     //add swipe deletting behaviour
     private fun enableSwipeToDeleteAndUndo()
     {
-        val swipeToDeleteCallback = object : SwipeToDeleteCallback(context!!)
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback(requireContext())
         {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int)
@@ -417,7 +418,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         mMatrixPresenter.btnSwitchClicked(1)
     }
 
-    override fun setBtnFragment(position : Int)
+    override fun setBtnFragment(position: Int)
     {
         buttonViewPager.setCurrentItem(position, true)
     }
