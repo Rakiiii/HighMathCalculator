@@ -59,14 +59,16 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
 
     //обработчик ошибок
     private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
-        when(error)
+        when (error)
         {
-            is WrongDataException ->{
+            is WrongDataException ->
+            {
                 viewState.showToast(error.toString().substringAfter(':'))
             }
-            else ->{
+            else ->
+            {
                 Log.d("ExceptionHandler@", error.toString())
-                Log.d("ExceptionHandler@","StackTrace@", error)
+                Log.d("ExceptionHandler@", "StackTrace@", error)
             }
         }
     })
@@ -83,23 +85,12 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
-            val result = withContext(Dispatchers.IO) {
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
+            val result =
+                mPolynomialModel.PolynomialPlus(presenterScope, left, right)
 
-                //сохранение время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
-
-
-                //складываем полиномы
-                val result = mPolynomialModel.plus(left = left, right = right)
-
-                //устанавливаем время страта операции
-                result.time = time
-
-
-                result
-            }
-
+            result.time = time
 
             addToDb(result)
 
@@ -117,21 +108,13 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     {
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
-            val result = withContext(Dispatchers.IO) {
 
-                //сохранение время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
 
-                //складываем полиномы
-                val result = mPolynomialModel.minus(left = left, right = right)
+            val result = mPolynomialModel.PolynomialMinus(presenterScope,left, right)
 
-                //устанавливаем время страта операции
-                result.time = time
-
-                result
-            }
-
+            result.time = time
 
             addToDb(result)
 
@@ -150,20 +133,11 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
-            val result = withContext(Dispatchers.IO) {
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
+            val result = mPolynomialModel.PolynomialTimes(presenterScope,left,right)
 
-                //сохранение время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
-
-                //складываем полиномы
-                val result = mPolynomialModel.times(left = left, right = right)
-
-                //устанавливаем время страта операции
-                result.time = time
-
-                result
-            }
+            result.time = time
 
             addToDb(result)
 
@@ -180,20 +154,13 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     {
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
-            val result = withContext(Dispatchers.IO) {
 
-                //сохранение время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
+            val result = mPolynomialModel.PolynomialDivision(presenterScope,left, right)
 
-                //складываем полиномы
-                val result = mPolynomialModel.division(left = left, right = right)
-
-                //устанавливаем время страта операции
-                result.time = time
-
-                result
-            }
+            //устанавливаем время страта операции
+            result.time = time
 
             addToDb(result)
 
@@ -204,7 +171,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
         }
     }
 
-    fun onSwitchBtnFragmentClick(position : Int)
+    fun onSwitchBtnFragmentClick(position: Int)
     {
         viewState.showToast("WIP")
     }
@@ -271,30 +238,23 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     }
 
     //загрузка созраненного в бд состояния
-    @SuppressLint(value = ["StaticFieldLeak"])
     fun onLoadSavedInstance()
     {
-        object : AsyncTask<Void, Void, List<PolynomialGroup>>()
-        {
+        presenterScope.launch(Dispatchers.IO+errorHandler) {
+            val result = mPolynomialDataBaseModel.selectAll().reversed()
 
-            override fun doInBackground(vararg params: Void?): List<PolynomialGroup>
-            {
-                return mPolynomialDataBaseModel.selectAll().reversed()
-            }
-
-            override fun onPostExecute(result: List<PolynomialGroup>?)
-            {
+            uiScope.launch {
                 viewState.setRecyclerViewList(ArrayList(result))
             }
-        }.execute()
+        }
     }
 
 
     fun checkImageMode() = mSettingsModel.getPolynomialHolderConsistens()
 
-    private fun addToDb(result : PolynomialGroup)
+    private fun addToDb(result: PolynomialGroup)
     {
-        ioScope.launch(Dispatchers.IO + errorHandler){
+        ioScope.launch(Dispatchers.IO + errorHandler) {
 
             //если включена запись в бд
             if (mSettingsModel.getPolinomConsistens())

@@ -76,7 +76,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
      * Реализация операций
      */
 
-    @SuppressLint("StaticFieldLeak")
     fun onPlusClick(firstMatrix: String, secondMatrix: String)
     {
 
@@ -100,7 +99,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     }
 
 
-    @SuppressLint("StaticFieldLeak")
     fun onMinusClick(firstMatrix: String, secondMatrix: String)
     {
 
@@ -124,7 +122,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     }
 
 
-    @SuppressLint("StaticFieldLeak")
     fun onTimesClick(firstMatrix: String, secondMatrix: String)
     {
         presenterScope.launch(Dispatchers.Main + errorHandler)
@@ -147,7 +144,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     }
 
 
-    @SuppressLint("StaticFieldLeak")
     fun onInversClick(firstMatrix: String)
     {
         //CoroutineScope(Dispatchers.Main)
@@ -169,7 +165,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     }
 
 
-    @SuppressLint("StaticFieldLeak")
     fun onDeterminantClick(firstMatrix: String)
     {
 
@@ -241,7 +236,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
 
     suspend fun addToDb(group: MatrixGroup)
     {
-        withContext(presenterScope.coroutineContext + Dispatchers.IO)
+        withContext(presenterScope.coroutineContext + Dispatchers.IO + errorHandler)
         {
             if (mSettingsModel.getMatrixConsistens())
             {
@@ -258,10 +253,9 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     }
 
     //загрузка из базы данных сохраненных результатов
-    @SuppressLint("StaticFieldLeak")
     fun onLoadSavedInstance()
     {
-        presenterScope.launch(Dispatchers.IO + supJob)
+        presenterScope.launch(Dispatchers.IO + supJob+errorHandler)
         {
             val result = mMatrixDataBaseModel.selectAll().reversed()
             uiScope.launch {
