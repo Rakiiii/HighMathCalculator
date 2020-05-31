@@ -56,7 +56,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     private val uiScope = CoroutineScope(Dispatchers.Main + supJob)
 
 
-
     private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
         when (error)
         {
@@ -84,26 +83,13 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
-            val mMatrixGroup = withContext(Dispatchers.IO) {
+            //сохраняем время начала операции
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
 
-                //сохраняем время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
+            val mMatrixGroup = mMatrixModel.MatrixPlus(presenterScope, firstMatrix, secondMatrix)
 
-                //складываем матрицы
-                val result = mMatrixModel.plus(
-                    mMatrixModel.createMatrix(firstMatrix),
-                    mMatrixModel.createMatrix(secondMatrix)
-                )
-
-                //устанавливаем время начала операции
-                result.time = time
-
-                result
-            }
-
-
-
+            mMatrixGroup.time = time
             addToDb(mMatrixGroup)
 
             uiScope.launch {
@@ -121,27 +107,13 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
+            //сохраняем время начала операции
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
 
-            val mMatrixGroup = withContext(Dispatchers.IO) {
+            val mMatrixGroup = mMatrixModel.MatrixMinus(presenterScope, firstMatrix, secondMatrix)
 
-                //сохраняем время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
-
-                //вычитаем матрицы
-                val result = mMatrixModel.minus(
-                    mMatrixModel.createMatrix(firstMatrix),
-                    mMatrixModel.createMatrix(secondMatrix)
-                )
-
-
-                //устанавливаем время начала операции
-                result.time = time
-
-                result
-            }
-
-
+            mMatrixGroup.time = time
 
             addToDb(mMatrixGroup)
 
@@ -158,26 +130,13 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
+            //сохраняем время начала операции
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
 
-            val mMatrixGroup = withContext(Dispatchers.IO) {
+            val mMatrixGroup = mMatrixModel.MatrixTimes(presenterScope, firstMatrix, secondMatrix)
 
-                //сохраняем время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
-
-                //умнажаем матрицы
-                val result = mMatrixModel.times(
-                    mMatrixModel.createMatrix(firstMatrix),
-                    mMatrixModel.createMatrix(secondMatrix)
-                )
-
-                //устанавливаем время начала операции
-                result.time = time
-
-                result
-            }
-
-
+            mMatrixGroup.time = time
 
             addToDb(mMatrixGroup)
 
@@ -194,22 +153,13 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
         //CoroutineScope(Dispatchers.Main)
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
-            val mMatrixGroup = withContext(Dispatchers.IO) {
 
-                //сохраняем время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
+            //сохраняем время начала операции
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
+            val mMatrixGroup = mMatrixModel.MatrixInverse(presenterScope, firstMatrix)
 
-                //инвертируем матрицу
-                val result = mMatrixModel.inverse(mMatrixModel.createMatrix(firstMatrix))
-
-
-                //устанавливаем время начала операции
-                result.time = time
-
-                result
-            }
-
+            mMatrixGroup.time = time
             addToDb(mMatrixGroup)
 
             uiScope.launch {
@@ -226,21 +176,11 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
-            val mMatrixGroup = withContext(Dispatchers.IO) {
-                //сохраняем время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
+            val mMatrixGroup = mMatrixModel.MatrixDeterminant(presenterScope, firstMatrix)
 
-                //считаем определитель
-                val result = mMatrixModel.determinant(mMatrixModel.createMatrix(firstMatrix))
-
-
-                //устанавливаем время начала операции
-                result.time = time
-
-
-                result
-            }
+            mMatrixGroup.time = time
 
             addToDb(mMatrixGroup)
 
@@ -317,28 +257,17 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
         }
     }
 
-
-
-    /*
-    todo:: move to coroutines
-     */
     //загрузка из базы данных сохраненных результатов
     @SuppressLint("StaticFieldLeak")
     fun onLoadSavedInstance()
     {
-        object : AsyncTask<Void, Void, List<MatrixGroup>>()
+        presenterScope.launch(Dispatchers.IO + supJob)
         {
-            override fun doInBackground(vararg params: Void?): List<MatrixGroup>
-            {
-                return mMatrixDataBaseModel.selectAll().reversed()
+            val result = mMatrixDataBaseModel.selectAll().reversed()
+            uiScope.launch {
+                viewState.setRecyclerViewArrayList(ArrayList(result))
             }
-
-            override fun onPostExecute(result: List<MatrixGroup>?)
-            {
-                viewState.setRecyclerViewArrayList(ArrayList(c = result))
-            }
-        }.execute()
-
+        }
     }
 
     fun checkImageMode() = mSettingsModel.getMatrixHolderConsistens()

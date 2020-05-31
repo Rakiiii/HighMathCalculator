@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 class MatrixModel
 {
     //инициализация матрицы
-    fun createMatrix(obj: String): Matrix
+    private fun createMatrix(obj: String): Matrix
     {
         val ret = Matrix.createMatrix(obj)
         return ret
@@ -19,7 +19,7 @@ class MatrixModel
 
 
     //сложение двух матриц
-    fun plus(left: Matrix, right: Matrix): MatrixGroup
+    private fun plus(left: Matrix, right: Matrix): MatrixGroup
     {
         val res = left + right
         val obj = MatrixGroup(leftMatrix = left, rightMatrix = right, resMatrix = res, sign = "+")
@@ -27,7 +27,7 @@ class MatrixModel
     }
 
     //разница двух матриц
-    fun minus(left: Matrix, right: Matrix): MatrixGroup
+    private fun minus(left: Matrix, right: Matrix): MatrixGroup
     {
         val res = left - right
         val obj = MatrixGroup(leftMatrix = left, rightMatrix = right, resMatrix = res, sign = "-")
@@ -36,7 +36,7 @@ class MatrixModel
 
 
     //определитель матрицы
-    fun determinant(left: Matrix): MatrixGroup
+    private fun determinant(left: Matrix): MatrixGroup
     {
         val res = left.determinant()
         val obj = MatrixGroup(
@@ -50,7 +50,7 @@ class MatrixModel
 
 
     //умножение матриц
-    fun times(left: Matrix, right: Matrix): MatrixGroup
+    private fun times(left: Matrix, right: Matrix): MatrixGroup
     {
         val res = left * right
         val obj = MatrixGroup(leftMatrix = left, rightMatrix = right, resMatrix = res, sign = "*")
@@ -59,7 +59,7 @@ class MatrixModel
 
 
     //инвертированний матриц
-    fun inverse(left: Matrix): MatrixGroup
+    private fun inverse(left: Matrix): MatrixGroup
     {
         val res = left.invers()
         val obj = MatrixGroup(
