@@ -78,15 +78,6 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         super.onStart()
 
-        //view model для сохранения содержимого recycler view
-        mMatrixRecyclerViewModel
-        //ViewModelProviders.of(this.requireActivity()).get(MatrixRecyclerViewModel::class.java)
-
-
-        //инициализация view model для содержимого edittext
-        mMatrixEdittextViewModel =
-            ViewModelProviders.of(activity as FragmentActivity).get(EditTextViewModel::class.java)
-
         //инициализация recycler view
         initRecyclerView()
 
