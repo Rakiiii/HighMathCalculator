@@ -3,9 +3,7 @@ package com.dev.smurf.highmathcalculator.ui.fragments.polynomialFragment
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
-import android.os.Handler
 import android.text.SpannableStringBuilder
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,14 +20,11 @@ import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialAdapterImageView
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
-import com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment.MatrixButtonGridFragment
-import com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment.MatrixButtonGridFragmentSecondPage
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import com.example.smurf.mtarixcalc.PolynomialRecyclerViewModel
 import com.example.smurf.mtarixcalc.PolynomialTxtAdapter
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_matrix.*
 import kotlinx.android.synthetic.main.fragment_polinom.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter

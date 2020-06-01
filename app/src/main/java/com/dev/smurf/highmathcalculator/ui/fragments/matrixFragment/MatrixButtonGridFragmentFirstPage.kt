@@ -1,17 +1,22 @@
 package com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 
 import com.dev.smurf.highmathcalculator.R
+import com.dev.smurf.highmathcalculator.ui.ViewModels.ListenerViewModel
+import com.dev.smurf.highmathcalculator.ui.fragments.polynomialFragment.PolynomialButtonsGridFirstPageFragment
 import kotlinx.android.synthetic.main.fragment_matrix_button_grid_first_page.*
 
-class MatrixButtonGridFragment : Fragment()
+class MatrixButtonGridFragmentFirstPage : Fragment()
 {
+    private val mListenerViewModel by viewModels<ListenerViewModel<onFragmentInteractionListener>>()
+
+    private lateinit var listener : onFragmentInteractionListener
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,7 +60,6 @@ class MatrixButtonGridFragment : Fragment()
         }
     }
 
-    private lateinit var listener: onFragmentInteractionListener
     interface onFragmentInteractionListener
     {
         fun btnDeterminantClicked()
@@ -67,7 +71,19 @@ class MatrixButtonGridFragment : Fragment()
         fun btnSwitchFPClicked()
     }
 
-    fun addEventListener(l : onFragmentInteractionListener) : MatrixButtonGridFragment
+    override fun onPause()
+    {
+        mListenerViewModel.listener = listener
+        super.onPause()
+    }
+
+    override fun onResume()
+    {
+        if (!::listener.isInitialized)listener = mListenerViewModel.listener
+        super.onResume()
+    }
+
+    fun setListener(l : onFragmentInteractionListener) : MatrixButtonGridFragmentFirstPage
     {
         listener = l
         return this

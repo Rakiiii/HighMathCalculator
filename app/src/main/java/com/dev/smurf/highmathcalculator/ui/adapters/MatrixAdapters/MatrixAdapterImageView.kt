@@ -29,7 +29,7 @@ class MatrixAdapterImageView(
 {
 
     //списое элементов
-    private var listOfMatrices: ArrayList<MatrixGroup> = ArrayList()
+    private var listOfMatrices: MutableList<MatrixGroup> = ArrayList()
 
     //добавление нового элеменат
     fun addNewElem(group: MatrixGroup)
@@ -68,7 +68,7 @@ class MatrixAdapterImageView(
     }
 
     //установить новый список элементов
-    fun setList(newArray: ArrayList<MatrixGroup>)
+    fun setList(newArray: MutableList<MatrixGroup>)
     {
         listOfMatrices = newArray
         notifyDataSetChanged()
@@ -91,7 +91,7 @@ class MatrixAdapterImageView(
                 R.layout.matrix_expressions_imageview,
                 parent,
                 false
-            ), width - 140.0f
+            ), width
         )
     }
 

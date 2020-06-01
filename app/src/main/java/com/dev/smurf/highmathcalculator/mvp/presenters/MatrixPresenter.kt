@@ -1,8 +1,13 @@
 package com.dev.smurf.highmathcalculator.mvp.presenters
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.AsyncTask
 import android.util.Log
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
@@ -10,6 +15,9 @@ import com.dev.smurf.highmathcalculator.mvp.models.MatrixModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
+import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_matrix.*
 import kotlinx.coroutines.*
 import moxy.InjectViewState
 import moxy.MvpPresenter
@@ -18,7 +26,7 @@ import org.jetbrains.anko.doAsync
 import javax.inject.Inject
 
 @InjectViewState
-class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
+class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 {
 
     /*
@@ -48,6 +56,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     {
         CalculatorApplication.graph.inject(this)
     }
+
+    private var isImageViewHolder = false
 
 
     private val supJob = SupervisorJob()
@@ -253,9 +263,47 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
     }
 
     //загрузка из базы данных сохраненных результатов
-    fun onLoadSavedInstance()
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onStart()
     {
-        presenterScope.launch(Dispatchers.IO + supJob+errorHandler)
+        onLoadSavedInstance()
+
+        updateSettings()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume()
+    {
+        updateSettings()
+        viewState.restoreFromViewModel()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun onPause()
+    {
+        viewState.saveListRecyclerViewViewModel()
+    }
+
+    fun updateSettings()
+    {
+        checkMatrixRecyclerViewMode()
+    }
+
+    private fun checkMatrixRecyclerViewMode()
+    {
+        if (mSettingsModel.getMatrixHolderConsistens())
+        {
+            viewState.setImageAdapter()
+        }
+        else
+        {
+                viewState.setTextAdapter()
+        }
+    }
+
+    private fun onLoadSavedInstance()
+    {
+        presenterScope.launch(Dispatchers.IO + supJob + errorHandler)
         {
             val result = mMatrixDataBaseModel.selectAll().reversed()
             uiScope.launch {
@@ -263,7 +311,5 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>()
             }
         }
     }
-
-    fun checkImageMode() = mSettingsModel.getMatrixHolderConsistens()
 
 }

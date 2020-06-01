@@ -17,7 +17,7 @@ class MatrixAdapter(val context: Context, val firstMatrix : EditText, val second
 {
 
         //списое элементов
-        private var listOfMatrices : ArrayList<MatrixGroup> = ArrayList()
+        private var listOfMatrices : MutableList<MatrixGroup> = ArrayList()
 
         //добавление нового элеменат
         fun addNewElem(group : MatrixGroup)
@@ -60,7 +60,7 @@ class MatrixAdapter(val context: Context, val firstMatrix : EditText, val second
         }
 
         //установить новый список элементов
-        fun setList( newArray : ArrayList<MatrixGroup>)
+        fun setList( newArray : MutableList<MatrixGroup>)
         {
             listOfMatrices = newArray
             //Log.d("RV@" , "set list")

@@ -26,4 +26,15 @@ data class MatrixGroup(
         val PLUS = "+"
         val TIMES = "*"
     }
+
+    fun Copy() : MatrixGroup
+    {
+        return MatrixGroup(
+            leftMatrix = leftMatrix,
+            rightMatrix = rightMatrix,
+            sign = sign,
+            resMatrix = resMatrix,
+            time = time
+        )
+    }
 }

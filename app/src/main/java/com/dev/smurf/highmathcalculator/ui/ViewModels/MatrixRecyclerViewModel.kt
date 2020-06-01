@@ -7,7 +7,7 @@ import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 //View model для Recycler view.list
 class MatrixRecyclerViewModel : ViewModel()
 {
-    private var valueArrayList : ArrayList<MatrixGroup> = ArrayList()
+    private var valueArrayList : MutableList<MatrixGroup> = ArrayList()
 
     fun getList() = valueArrayList
 
@@ -18,7 +18,7 @@ class MatrixRecyclerViewModel : ViewModel()
         return value
     }
 
-    fun updateList( newArrayList : ArrayList<MatrixGroup>)
+    fun updateList( newArrayList : MutableList<MatrixGroup>)
     {
         valueArrayList = newArrayList
     }

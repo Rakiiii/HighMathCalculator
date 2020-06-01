@@ -1,5 +1,6 @@
 package com.dev.smurf.highmathcalculator.mvp.views
 
+import android.graphics.Matrix
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndStrategy
@@ -24,12 +25,20 @@ interface MatrixViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun setBtnFragment(position : Int)
 
-   /* //установить Image адаптер
+   /* @StateStrategyType(SkipStrategy::class)
+    fun updateSettings()*/
+
+   //установить Image адаптер
     @StateStrategyType(SkipStrategy::class)
     fun setImageAdapter()
 
     //установить Text адаптер
     @StateStrategyType(SkipStrategy::class)
-    fun setTextAdapter()*/
+    fun setTextAdapter()
 
+    @StateStrategyType(SkipStrategy::class)
+    fun saveListRecyclerViewViewModel()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun restoreFromViewModel()
 }
