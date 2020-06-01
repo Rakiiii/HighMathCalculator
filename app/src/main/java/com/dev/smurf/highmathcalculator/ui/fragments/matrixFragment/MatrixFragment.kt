@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +19,7 @@ import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
+import com.dev.smurf.highmathcalculator.ui.ViewModels.MatrixListenerViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapterImageView
@@ -54,6 +56,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     private var btnFragmentSet = mutableListOf<Fragment>()
 
+    private val matrixListenerViewModel : MatrixListenerViewModel<MatrixFragment> by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -77,6 +81,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     override fun onStart()
     {
         super.onStart()
+
+        matrixListenerViewModel.updateListener(this)
 
         Log.d("lifecycle@", "onStart")
 
@@ -169,17 +175,18 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     private fun initViewPager()
     {
-        if (isViewPagerInited()) return
+        //if (isViewPagerInited()) return
         if (activity != null)
         {
             mBtnMatrixViewPagerAdapter =
                 BtnViewPagerFragmentStateAdapter(
-                    requireActivity()
-                )
-            btnFragmentSet.add(MatrixButtonGridFragmentFirstPage().setListener(this))
-            btnFragmentSet.add(MatrixButtonGridFragmentSecondPage().setListener(this))
+                    requireActivity(),this
+                                )
+            btnFragmentSet.add(MatrixButtonGridFragmentFirstPage())
+            btnFragmentSet.add(MatrixButtonGridFragmentSecondPage())
             mBtnMatrixViewPagerAdapter.setNewFragmentSet(btnFragmentSet)
             buttonViewPager.adapter = mBtnMatrixViewPagerAdapter
+
         }
 
     }
@@ -329,6 +336,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
             )
         }
 
+        Log.d("edit@","restore called:"+(firstMatrix == null).toString())
+
         firstMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.firstValue)
         secondMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.secondValue)
 
@@ -350,6 +359,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun btnInverseClicked()
     {
+        Log.d("edit@","inv call:"+(firstMatrix == null).toString())
         mMatrixPresenter.onInversClick(firstMatrix.text.toString())
     }
 
@@ -434,5 +444,9 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     }
 
 
+    override fun setObservable()
+    {
+        matrixListenerViewModel.updateListener(this)
+    }
 }
 

@@ -261,12 +261,14 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart()
     {
+        viewState.setObservable()
         if (!isLoaded)
         {
             isLoaded = true
             onLoadSavedInstance()
         }
     }
+
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume()

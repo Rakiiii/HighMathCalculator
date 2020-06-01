@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +18,8 @@ import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.PolynomialPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
+import com.dev.smurf.highmathcalculator.ui.ViewModels.MatrixListenerViewModel
+import com.dev.smurf.highmathcalculator.ui.ViewModels.PolynomialListenerViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialAdapterImageView
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
@@ -58,6 +61,8 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     private val mPolynomialRecyclerViewModel by viewModels<PolynomialRecyclerViewModel>()
 
     private val mPolynomialEditTextViewModel by viewModels<EditTextViewModel>()
+
+    private val listenerViewModel : PolynomialListenerViewModel<PolynomialFragment> by activityViewModels()
 
     private var isPaused = false
 
@@ -309,9 +314,9 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         {
             mBtnMatrixViewPagerAdapter =
                 BtnViewPagerFragmentStateAdapter(
-                    requireActivity()
+                    requireActivity(),this
                 )
-            benFragmentSet.add(PolynomialButtonsGridFirstPageFragment().setListener(this))
+            benFragmentSet.add(PolynomialButtonsGridFirstPageFragment())
             mBtnMatrixViewPagerAdapter.setNewFragmentSet(benFragmentSet)
             buttonViewPagerPolynomail.adapter = mBtnMatrixViewPagerAdapter
         }
@@ -380,6 +385,11 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     override fun setBtnFragment(position: Int)
     {
         buttonViewPagerPolynomail.setCurrentItem(position, true)
+    }
+
+    override fun setObserver()
+    {
+        listenerViewModel.updateListener(this)
     }
 }
 

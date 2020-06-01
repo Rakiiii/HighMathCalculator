@@ -3,13 +3,17 @@ package com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment.MatrixButtonGridFragmentFirstPage
+import com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment.MatrixButtonGridFragmentSecondPage
 
-class BtnViewPagerFragmentStateAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity)
+class BtnViewPagerFragmentStateAdapter(activity: FragmentActivity,val f : Fragment) : FragmentStateAdapter(activity)
 {
     private var fragmentSet = mutableListOf<Fragment>()
 
     fun addNewFragment(f: Fragment) = fragmentSet.add(f)
     fun setNewFragmentSet(fs: MutableList<Fragment>) = apply { fragmentSet = fs }
+    fun getFragments() = fragmentSet
+
 
     override fun createFragment(position: Int): Fragment
     {

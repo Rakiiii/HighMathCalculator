@@ -191,6 +191,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart()
     {
+        viewState.setObserver()
         if (!isLoaded)
         {
             isLoaded = true

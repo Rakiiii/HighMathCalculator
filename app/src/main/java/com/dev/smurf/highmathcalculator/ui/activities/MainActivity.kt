@@ -85,6 +85,8 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface,
             return@setOnTouchListener true
         }
 
+        //mainViewPager.isUserInputEnabled = false
+
         mainViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback()
         {
             override fun onPageSelected(position: Int)

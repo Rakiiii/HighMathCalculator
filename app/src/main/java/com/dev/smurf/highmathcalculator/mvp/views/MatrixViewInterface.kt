@@ -41,4 +41,7 @@ interface MatrixViewInterface : MvpView
 
     @StateStrategyType(SkipStrategy::class)
     fun restoreFromViewModel()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun setObservable()
 }

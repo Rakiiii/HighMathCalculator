@@ -1,23 +1,25 @@
 package com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 
 import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.ui.ViewModels.ListenerViewModel
+import com.dev.smurf.highmathcalculator.ui.ViewModels.MatrixListenerViewModel
+import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Observable
 import kotlinx.android.synthetic.main.fragment_matrix_button_grid_first_page.btnSwitchBtnFragment
 import kotlinx.android.synthetic.main.fragment_matrix_button_grid_second_page.*
 
-class MatrixButtonGridFragmentSecondPage: Fragment()
+class MatrixButtonGridFragmentSecondPage(): Fragment(),Observable
 {
 
-    private val mListenerViewModel by viewModels<ListenerViewModel<onFragmentInteractionListener>>()
-
     private lateinit var listener : onFragmentInteractionListener
+    private val matrixListenerViewModel : MatrixListenerViewModel<MatrixFragment> by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,6 +28,12 @@ class MatrixButtonGridFragmentSecondPage: Fragment()
     {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_matrix_button_grid_second_page, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+        matrixListenerViewModel.listener.observe(viewLifecycleOwner, Observer { f -> listener = f  })
     }
 
     override fun onStart()
@@ -61,22 +69,14 @@ class MatrixButtonGridFragmentSecondPage: Fragment()
         }
     }
 
-    override fun onResume()
-    {
-        if(!::listener.isInitialized)listener = mListenerViewModel.listener
-        super.onResume()
-    }
 
-    override fun onPause()
+    override fun setListener(l : Fragment)
     {
-        mListenerViewModel.listener = listener
-        super.onPause()
-    }
-
-    fun setListener(l : onFragmentInteractionListener) : MatrixButtonGridFragmentSecondPage
-    {
-        listener = l
-        return this
+        if(l is onFragmentInteractionListener)
+        {
+            listener = l
+            Log.d("lifecycle@","listener setted")
+        }
     }
 
     interface onFragmentInteractionListener

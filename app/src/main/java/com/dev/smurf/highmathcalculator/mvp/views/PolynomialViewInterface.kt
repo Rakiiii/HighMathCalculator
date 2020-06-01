@@ -34,4 +34,7 @@ interface PolynomialViewInterface : MvpView
 
     @StateStrategyType(SkipStrategy::class)
     fun saveRecyclerViewToViewModel()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun setObserver()
 }
