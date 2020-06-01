@@ -33,7 +33,7 @@ class PolynomialAdapterImageView(
 {
 
     //список элементов
-    private var listOfPolynomials: ArrayList<PolynomialGroup> = ArrayList()
+    private var listOfPolynomials: MutableList<PolynomialGroup> = ArrayList()
 
 
     //получить количество элементов в списке
@@ -78,10 +78,10 @@ class PolynomialAdapterImageView(
 
 
     //получить список элементов
-    fun getList(): ArrayList<PolynomialGroup> = listOfPolynomials
+    fun getList(): MutableList<PolynomialGroup> = listOfPolynomials
 
     //заменить список элементов
-    fun setList(newArrayList: ArrayList<PolynomialGroup>)
+    fun setList(newArrayList: MutableList<PolynomialGroup>)
     {
         listOfPolynomials = newArrayList
         notifyDataSetChanged()

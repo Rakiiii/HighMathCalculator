@@ -3,6 +3,9 @@ package com.dev.smurf.highmathcalculator.mvp.presenters
 import android.annotation.SuppressLint
 import android.os.AsyncTask
 import android.util.Log
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialDataBaseModel
@@ -19,7 +22,7 @@ import javax.inject.Inject
 
 
 @InjectViewState
-class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
+class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleObserver
 {
     /*
      * вставка зависимостей
@@ -48,6 +51,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     {
         CalculatorApplication.graph.inject(this)
     }
+
+    private var isLoaded = false
 
     val supJob = SupervisorJob()
 
@@ -112,7 +117,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
             val time = java.util.GregorianCalendar()
             time.timeInMillis = System.currentTimeMillis()
 
-            val result = mPolynomialModel.PolynomialMinus(presenterScope,left, right)
+            val result = mPolynomialModel.PolynomialMinus(presenterScope, left, right)
 
             result.time = time
 
@@ -135,7 +140,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
 
             val time = java.util.GregorianCalendar()
             time.timeInMillis = System.currentTimeMillis()
-            val result = mPolynomialModel.PolynomialTimes(presenterScope,left,right)
+            val result = mPolynomialModel.PolynomialTimes(presenterScope, left, right)
 
             result.time = time
 
@@ -157,7 +162,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
 
             val time = java.util.GregorianCalendar()
             time.timeInMillis = System.currentTimeMillis()
-            val result = mPolynomialModel.PolynomialDivision(presenterScope,left, right)
+            val result = mPolynomialModel.PolynomialDivision(presenterScope, left, right)
 
             //устанавливаем время страта операции
             result.time = time
@@ -181,47 +186,47 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     fun onRootsOfClick(left: String)
     {
         viewState.showToast("Work in progress")
-        /*uiScope.launch(Dispatchers.Main + errorHandler)
-                {
-                    val task: Deferred<PolynomialGroup> = async(Dispatchers.IO) {
+    }
 
-                        //сохранение время начала операции
-                        val time = java.util.GregorianCalendar()
-                        time.timeInMillis = System.currentTimeMillis()
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onStart()
+    {
+        if (!isLoaded)
+        {
+            isLoaded = true
+            onLoadSavedInstance()
+        }
+    }
 
-                        //складываем полиномы
-                        val result = mPolynomialModel.times(left = left, right = right)
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume()
+    {
+        updateSettings()
+        viewState.restoreFromViewModel()
+    }
 
-                        //устанавливаем время страта операции
-                        result.time = time
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun onPause()
+    {
+        viewState.saveRecyclerViewToViewModel()
+    }
 
-                        result
-                    }
 
-                    val result = task.await()
+    fun updateSettings()
+    {
+        checkRecyclerViewMode()
+    }
 
-                    doAsync {
-
-                        //если включена запись в бд
-                        if (mSettingsModel.getPolinomConsistens())
-                        {
-
-                            //записываем в бд
-                            mPolynomialDataBaseModel.insert(result)
-
-                        }
-                        else
-                        {
-                            //пишем в сache бд
-                            mPolynomialDataBaseModel.addToCache(result)
-
-                        }
-                    }
-
-                    viewState.addToPolynomialRecyclerView(result)
-
-                }*/
-
+    private fun checkRecyclerViewMode()
+    {
+        if (mSettingsModel.getPolynomialHolderConsistens())
+        {
+            viewState.setImageAdapter()
+        }
+        else
+        {
+            viewState.setTxtAdapter()
+        }
     }
 
 /*
@@ -240,17 +245,14 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     //загрузка созраненного в бд состояния
     fun onLoadSavedInstance()
     {
-        presenterScope.launch(Dispatchers.IO+errorHandler) {
+        presenterScope.launch(Dispatchers.IO + errorHandler) {
             val result = mPolynomialDataBaseModel.selectAll().reversed()
 
             uiScope.launch {
-                viewState.setRecyclerViewList(ArrayList(result))
+                viewState.setRecyclerViewList(result.toMutableList())
             }
         }
     }
-
-
-    fun checkImageMode() = mSettingsModel.getPolynomialHolderConsistens()
 
     private fun addToDb(result: PolynomialGroup)
     {

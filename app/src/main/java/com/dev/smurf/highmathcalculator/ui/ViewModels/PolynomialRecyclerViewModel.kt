@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 //View model для recyclerView.list
 class PolynomialRecyclerViewModel : ViewModel()
 {
-    private var valueArrayList : ArrayList<PolynomialGroup> = ArrayList()
+    private var valueArrayList : MutableList<PolynomialGroup> = ArrayList()
 
     fun getList() = valueArrayList
 
@@ -16,7 +16,7 @@ class PolynomialRecyclerViewModel : ViewModel()
         return value
     }
 
-    fun updateList( newArrayList : ArrayList<PolynomialGroup>)
+    fun updateList( newArrayList : MutableList<PolynomialGroup>)
     {
         valueArrayList = newArrayList
     }

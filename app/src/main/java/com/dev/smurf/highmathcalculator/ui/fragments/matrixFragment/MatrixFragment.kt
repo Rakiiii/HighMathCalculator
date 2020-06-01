@@ -50,7 +50,6 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     private val mMatrixEdittextViewModel by viewModels<EditTextViewModel>()
 
-    private var isImageAdapter = false
     private var isPaused = false
 
     private var btnFragmentSet = mutableListOf<Fragment>()
@@ -122,18 +121,16 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
 
     //утсановка нового списка элементов для recycler view
-    override fun setRecyclerViewArrayList(ar: ArrayList<MatrixGroup>)
+    override fun setRecyclerViewList(ar: MutableList<MatrixGroup>)
     {
-        if (!isImageAdapter)
+        if (matrixRecycler.adapter !is MatrixAdapterImageView)
         {
-            mMatrixRecyclerTextAdapter.setList(ar.clone() as ArrayList<MatrixGroup>)
+            mMatrixRecyclerTextAdapter.setList(ar)
         }
         else
         {
-            mMatrixRecyclerImageAdapter.setList(ar.clone() as ArrayList<MatrixGroup>)
+            mMatrixRecyclerImageAdapter.setList(ar)
         }
-
-        mMatrixRecyclerViewModel.updateList(ar.clone() as ArrayList<MatrixGroup>)
     }
 
 
@@ -151,7 +148,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
             )
         val point = Point()
         requireActivity().windowManager.defaultDisplay.getSize(point)
-        val margin =    46*requireContext().resources.displayMetrics.density
+        val margin = 47 * requireContext().resources.displayMetrics.density
 
 
         mMatrixRecyclerImageAdapter =
@@ -194,7 +191,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun addToRecyclerView(obj: MatrixGroup)
     {
-        if (!isImageAdapter)
+        if (matrixRecycler.adapter !is MatrixAdapterImageView)
             mMatrixRecyclerTextAdapter.addNewElem(obj)
         else mMatrixRecyclerImageAdapter.addNewElem(obj)
 
@@ -209,9 +206,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         if (!isPaused && isRecycleViewInitted())
         {
-            isImageAdapter = true
             mMatrixRecyclerImageAdapter.setList(
-                mMatrixRecyclerTextAdapter.getList().map { it.Copy() }.toMutableList()
+                mMatrixRecyclerTextAdapter.getList()
             )
             mMatrixRecyclerView.adapter = mMatrixRecyclerImageAdapter
             mMatrixRecyclerImageAdapter.notifyDataSetChanged()
@@ -223,9 +219,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         if (!isPaused && isRecycleViewInitted())
         {
-            isImageAdapter = false
             mMatrixRecyclerTextAdapter.setList(
-                mMatrixRecyclerImageAdapter.getList().map { it.Copy() }.toMutableList()
+                mMatrixRecyclerImageAdapter.getList()
             )
             mMatrixRecyclerView.adapter = mMatrixRecyclerTextAdapter
             mMatrixRecyclerTextAdapter.notifyDataSetChanged()
@@ -241,7 +236,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int)
             {
-                if (isImageAdapter)
+                if (matrixRecycler.adapter is MatrixAdapterImageView)
                 {
                     var isUnded = false
 
@@ -321,15 +316,22 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         //востонавливаемся из view model
         if (!mMatrixRecyclerViewModel.isEmpty())
         {
-            if (isImageAdapter) mMatrixRecyclerImageAdapter.setList(
-                mMatrixRecyclerViewModel.getList()
-            )
+            Log.d("lifecycle@", "restored")
+            if (mMatrixRecyclerView.adapter is MatrixAdapterImageView)
+            {
+                mMatrixRecyclerImageAdapter.setList(
+                    mMatrixRecyclerViewModel.getList()
+                )
+                Log.d("lifecycle@", "restored in image view")
+            }
             else mMatrixRecyclerTextAdapter.setList(
                 mMatrixRecyclerViewModel.getList()
             )
         }
+
         firstMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.firstValue)
         secondMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.secondValue)
+
     }
 
     //checks is recycler view inited
@@ -425,34 +427,10 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun saveListRecyclerViewViewModel()
     {
-        if (isImageAdapter)
-        {
-            val result = mMatrixRecyclerImageAdapter.getList()
-                .map {
-                    it.copy(
-                        leftMatrix = it.leftMatrix,
-                        rightMatrix = it.rightMatrix,
-                        sign = it.sign,
-                        resMatrix = it.resMatrix,
-                        time = it.time
-                    )
-                }
-            mMatrixRecyclerViewModel.updateList(result.toMutableList())
-        }
-        else
-        {
-            val result = mMatrixRecyclerTextAdapter.getList()
-                .map {
-                    it.copy(
-                        leftMatrix = it.leftMatrix,
-                        rightMatrix = it.rightMatrix,
-                        sign = it.sign,
-                        resMatrix = it.resMatrix,
-                        time = it.time
-                    )
-                }
-            mMatrixRecyclerViewModel.updateList(result.toMutableList())
-        }
+        mMatrixRecyclerViewModel.updateList(
+            (if (matrixRecycler.adapter is MatrixAdapterImageView) mMatrixRecyclerImageAdapter.getList()
+            else mMatrixRecyclerTextAdapter.getList())
+        )
     }
 
 

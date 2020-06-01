@@ -4,12 +4,12 @@ import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,6 +38,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     @InjectPresenter
     lateinit var mPolynomialPresenter: PolynomialPresenter
 
+    //some crutch for moxy and setting updates
     init
     {
         mvpDelegate.onCreate()
@@ -46,20 +47,18 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
 
     //recycler view для полиномов
-    private lateinit var mPolinomRecyclerView: RecyclerView
-    private lateinit var mPolinomRecyclerViewAdapter: PolynomialTxtAdapter
-    private lateinit var mPolinomRecyclerImageViewAdapter: PolynomialAdapterImageView
-    private lateinit var mPolinomRecyclerViewLayoutManager: LinearLayoutManager
+    private lateinit var mPolynomialRecyclerView: RecyclerView
+    private lateinit var mPolynomialRecyclerViewAdapter: PolynomialTxtAdapter
+    private lateinit var mPolynomialRecyclerImageViewAdapter: PolynomialAdapterImageView
+    private lateinit var mPolynomialRecyclerViewLayoutManager: LinearLayoutManager
 
     private lateinit var mBtnMatrixViewPagerAdapter: BtnViewPagerFragmentStateAdapter
-    private var BtnFrgmentSet = mutableListOf<Fragment>()
+    private var benFragmentSet = mutableListOf<Fragment>()
 
-    private lateinit var mPolynomialRecyclerViewModel: PolynomialRecyclerViewModel
+    private val mPolynomialRecyclerViewModel by viewModels<PolynomialRecyclerViewModel>()
 
-    private lateinit var mPolinomEditTextViewModel: EditTextViewModel
+    private val mPolynomialEditTextViewModel by viewModels<EditTextViewModel>()
 
-    private var isLoaded: Boolean = false
-    private var isImageViewHolder = false
     private var isPaused = false
 
     override fun onCreateView(
@@ -73,18 +72,18 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         return inflater.inflate(R.layout.fragment_polinom, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        lifecycle.addObserver(mPolynomialPresenter)
+        Log.d("lifecycle@", "onCreate")
+    }
+
     override fun onStart()
     {
         super.onStart()
 
-        //инициализация viewModel для полиномов
-        mPolynomialRecyclerViewModel =
-            ViewModelProviders.of(activity as FragmentActivity)
-                .get(PolynomialRecyclerViewModel::class.java)
-
-        //инициализация view model для содержимого EditText
-        mPolinomEditTextViewModel =
-            ViewModelProviders.of(activity as FragmentActivity).get(EditTextViewModel::class.java)
+        Log.d("lifecycle@", "onStart")
 
         //инициализация recyclerView для полиномов
         initRecyclerView()
@@ -92,7 +91,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         //init view oager for button fragments
         initViewPager()
         //off view pager swap page by gesture
-        buttonViewPagerPolynomail.isUserInputEnabled=false
+        buttonViewPagerPolynomail.isUserInputEnabled = false
 
         //добавление удаления свайпом
         enableSwipeToDeleteAndUndo()
@@ -103,82 +102,77 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
             secondPolinom.text = tmp
         }
 
-        restoreFromViewModel()
-
-        loadDb()
-
     }
 
 
     override fun onResume()
     {
+        Log.d("lifecycle@", "onResume")
         isPaused = false
         super.onResume()
-        updateSettings()
-        restoreFromViewModel()
-
     }
 
     override fun onPause()
     {
+        Log.d("lifecycle@", "onPause")
         isPaused = true
-        mPolinomEditTextViewModel.firstValue = firstPolinom.text.toString()
-        mPolinomEditTextViewModel.secondValue = secondPolinom.text.toString()
+        mPolynomialEditTextViewModel.firstValue = firstPolinom.text.toString()
+        mPolynomialEditTextViewModel.secondValue = secondPolinom.text.toString()
         super.onPause()
     }
 
 
     private fun initRecyclerView()
     {
-        mPolinomRecyclerViewLayoutManager = LinearLayoutManager(this.context)
+        mPolynomialRecyclerViewLayoutManager = LinearLayoutManager(this.context)
 
-        mPolinomRecyclerViewAdapter =
-            PolynomialTxtAdapter(this.context!!, firstPolinom, secondPolinom)
+        mPolynomialRecyclerViewAdapter =
+            PolynomialTxtAdapter(this.requireContext(), firstPolinom, secondPolinom)
 
         val point = Point()
-        activity!!.windowManager.defaultDisplay.getSize(point)
+        requireActivity().windowManager.defaultDisplay.getSize(point)
 
-        val margin =    6*context!!.resources.displayMetrics.density
+        val margin = 6 * requireContext().resources.displayMetrics.density
 
-        mPolinomRecyclerImageViewAdapter =
+        mPolynomialRecyclerImageViewAdapter =
             PolynomialAdapterImageView(
-                this.context!!,
+                this.requireContext(),
                 firstPolinom,
                 secondPolinom,
-                point.x.toFloat()-margin
+                point.x.toFloat() - margin
             )
 
-        mPolinomRecyclerView = view!!.findViewById(R.id.polinomRecycler)
+        mPolynomialRecyclerView = requireView().findViewById(R.id.polinomRecycler)
 
-        mPolinomRecyclerView.adapter = mPolinomRecyclerViewAdapter
+        mPolynomialRecyclerView.adapter = mPolynomialRecyclerViewAdapter
 
-        mPolinomRecyclerView.layoutManager = mPolinomRecyclerViewLayoutManager
+        mPolynomialRecyclerView.layoutManager = mPolynomialRecyclerViewLayoutManager
     }
 
     private fun enableSwipeToDeleteAndUndo()
     {
-        val swipeToDeleteCallback = object : SwipeToDeleteCallback(this.context!!)
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback(this.requireContext())
         {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int)
             {
 
-                if (!isImageViewHolder)
+                if (mPolynomialRecyclerView.adapter !is PolynomialAdapterImageView)
                 {
                     var isUnded = false
 
                     val position = viewHolder.absoluteAdapterPosition
-                    val item = mPolinomRecyclerViewAdapter.getData(position)
+                    val item = mPolynomialRecyclerViewAdapter.getData(position)
 
-                    mPolinomRecyclerViewAdapter.removeElement(position)
+                    mPolynomialRecyclerViewAdapter.removeElement(position)
 
 
                     val snackbar = Snackbar
                         .make(polinomFrame, "Item was removed from the list.", Snackbar.LENGTH_LONG)
                     snackbar.setAction("UNDO")
                     {
-                        mPolinomRecyclerViewAdapter.restoreItem(item, position)
+                        mPolynomialRecyclerViewAdapter.restoreItem(item, position)
                         isUnded = true
-                        mPolinomRecyclerView.scrollToPosition(position)
+                        mPolynomialRecyclerView.scrollToPosition(position)
                     }
 
                     snackbar.setActionTextColor(Color.YELLOW)
@@ -196,18 +190,18 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
                     var isUnded = false
 
                     val position = viewHolder.absoluteAdapterPosition
-                    val item = mPolinomRecyclerImageViewAdapter.getData(position)
+                    val item = mPolynomialRecyclerImageViewAdapter.getData(position)
 
-                    mPolinomRecyclerImageViewAdapter.removeElement(position)
+                    mPolynomialRecyclerImageViewAdapter.removeElement(position)
 
 
                     val snackbar = Snackbar
                         .make(polinomFrame, "Item was removed from the list.", Snackbar.LENGTH_LONG)
                     snackbar.setAction("UNDO")
                     {
-                        mPolinomRecyclerImageViewAdapter.restoreItem(item, position)
+                        mPolynomialRecyclerImageViewAdapter.restoreItem(item, position)
                         isUnded = true
-                        mPolinomRecyclerView.scrollToPosition(position)
+                        mPolynomialRecyclerView.scrollToPosition(position)
                     }
 
                     snackbar.setActionTextColor(Color.YELLOW)
@@ -225,92 +219,87 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         }
 
         val itemTouchhelper = ItemTouchHelper(swipeToDeleteCallback)
-        itemTouchhelper.attachToRecyclerView(mPolinomRecyclerView)
+        itemTouchhelper.attachToRecyclerView(mPolynomialRecyclerView)
     }
 
 
     override fun addToPolynomialRecyclerView(obj: PolynomialGroup)
     {
-        if (!isImageViewHolder)
-            mPolinomRecyclerViewAdapter.addElement(mPolynomialRecyclerViewModel.add(obj))
-        else mPolinomRecyclerImageViewAdapter.addElement(mPolynomialRecyclerViewModel.add(obj))
+        if (mPolynomialRecyclerView.adapter !is PolynomialAdapterImageView)
+            mPolynomialRecyclerViewAdapter.addElement(obj)
+        else mPolynomialRecyclerImageViewAdapter.addElement(obj)
     }
 
     override fun showToast(obj: String)
     {
-        this.context!!.toast(obj)
+        this.requireContext().toast(obj)
     }
 
-    override fun setRecyclerViewList(ar: ArrayList<PolynomialGroup>)
+    override fun setRecyclerViewList(ar: MutableList<PolynomialGroup>)
     {
-        if (!isImageViewHolder)
+        if (mPolynomialRecyclerView.adapter !is PolynomialAdapterImageView)
         {
-            mPolinomRecyclerViewAdapter.setList(ar.clone() as ArrayList<PolynomialGroup>)
+            mPolynomialRecyclerViewAdapter.setList(ar)
         }
         else
         {
-            mPolinomRecyclerImageViewAdapter.setList(ar.clone() as ArrayList<PolynomialGroup>)
-        }
-        mPolynomialRecyclerViewModel.updateList(ar.clone() as ArrayList<PolynomialGroup>)
-    }
-
-
-    fun setImageAdapter()
-    {
-        if (!isPaused && isRecycleViewInited())
-        {
-            isImageViewHolder = true
-            mPolinomRecyclerImageViewAdapter.setList(
-                mPolinomRecyclerViewAdapter.getList().clone() as ArrayList<PolynomialGroup>
-            )
-            mPolinomRecyclerView.adapter = mPolinomRecyclerImageViewAdapter
-            mPolinomRecyclerImageViewAdapter.notifyDataSetChanged()
+            mPolynomialRecyclerImageViewAdapter.setList(ar)
         }
     }
 
-    private fun setTxtAdapter()
+
+    override fun setImageAdapter()
     {
         if (!isPaused && isRecycleViewInited())
         {
-            isImageViewHolder = false
-            mPolinomRecyclerViewAdapter.setList(
-                mPolinomRecyclerImageViewAdapter.getList().clone() as ArrayList<PolynomialGroup>
+            mPolynomialRecyclerImageViewAdapter.setList(
+                mPolynomialRecyclerViewAdapter.getList()
             )
-            mPolinomRecyclerView.adapter = mPolinomRecyclerViewAdapter
-            mPolinomRecyclerViewAdapter.notifyDataSetChanged()
+            mPolynomialRecyclerView.adapter = mPolynomialRecyclerImageViewAdapter
+            mPolynomialRecyclerImageViewAdapter.notifyDataSetChanged()
+        }
+    }
+
+    override fun setTxtAdapter()
+    {
+        if (!isPaused && isRecycleViewInited())
+        {
+            mPolynomialRecyclerViewAdapter.setList(
+                mPolynomialRecyclerImageViewAdapter.getList()
+            )
+            mPolynomialRecyclerView.adapter = mPolynomialRecyclerViewAdapter
+            mPolynomialRecyclerViewAdapter.notifyDataSetChanged()
         }
     }
 
     override fun updateSettings()
     {
-        if (mPolynomialPresenter.checkImageMode())
-        {
-            setImageAdapter()
-        }
-        else
-        {
-            if (isImageViewHolder)
-            {
-                setTxtAdapter()
-            }
-        }
+        mPolynomialPresenter.updateSettings()
     }
 
-    private fun restoreFromViewModel()
+    override fun restoreFromViewModel()
     {
         //востанавливаемя из view model
         if (!mPolynomialRecyclerViewModel.isEmpty())
         {
-            if (!isImageViewHolder) mPolinomRecyclerViewAdapter.setList(
-                mPolynomialRecyclerViewModel.getList().clone() as ArrayList<PolynomialGroup>
+            if (mPolynomialRecyclerView.adapter !is PolynomialAdapterImageView) mPolynomialRecyclerViewAdapter.setList(
+                mPolynomialRecyclerViewModel.getList()
             )
-            else mPolinomRecyclerImageViewAdapter.setList(
-                mPolynomialRecyclerViewModel.getList().clone() as ArrayList<PolynomialGroup>
+            else mPolynomialRecyclerImageViewAdapter.setList(
+                mPolynomialRecyclerViewModel.getList()
             )
         }
 
-        firstPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.firstValue)
-        secondPolinom.text = SpannableStringBuilder(mPolinomEditTextViewModel.secondValue)
+        firstPolinom.text = SpannableStringBuilder(mPolynomialEditTextViewModel.firstValue)
+        secondPolinom.text = SpannableStringBuilder(mPolynomialEditTextViewModel.secondValue)
+    }
+
+    override fun saveRecyclerViewToViewModel()
+    {
+        mPolynomialRecyclerViewModel.updateList(
+            (if (mPolynomialRecyclerView.adapter is PolynomialAdapterImageView) mPolynomialRecyclerImageViewAdapter.getList()
+            else mPolynomialRecyclerViewAdapter.getList())
+        )
     }
 
     private fun initViewPager()
@@ -320,29 +309,20 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         {
             mBtnMatrixViewPagerAdapter =
                 BtnViewPagerFragmentStateAdapter(
-                    activity!!
+                    requireActivity()
                 )
-            BtnFrgmentSet.add(PolynomialButtonsGridFirstPageFragment().setListener(this))
-            mBtnMatrixViewPagerAdapter.setNewFragmentSet(BtnFrgmentSet)
+            benFragmentSet.add(PolynomialButtonsGridFirstPageFragment().setListener(this))
+            mBtnMatrixViewPagerAdapter.setNewFragmentSet(benFragmentSet)
             buttonViewPagerPolynomail.adapter = mBtnMatrixViewPagerAdapter
         }
 
     }
 
-    private fun loadDb()
-    {
-        if (!isLoaded)
-        {
-            mPolynomialPresenter.onLoadSavedInstance()
-            isLoaded = true
-        }
-    }
-
     private fun isRecycleViewInited() =
-        (::mPolinomRecyclerView.isInitialized &&
-                ::mPolinomRecyclerViewAdapter.isInitialized &&
-                ::mPolinomRecyclerImageViewAdapter.isInitialized &&
-                ::mPolinomRecyclerViewLayoutManager.isInitialized
+        (::mPolynomialRecyclerView.isInitialized &&
+                ::mPolynomialRecyclerViewAdapter.isInitialized &&
+                ::mPolynomialRecyclerImageViewAdapter.isInitialized &&
+                ::mPolynomialRecyclerViewLayoutManager.isInitialized
                 )
 
     private fun isViewPagerInited(): Boolean

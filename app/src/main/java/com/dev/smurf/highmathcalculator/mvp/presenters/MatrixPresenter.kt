@@ -1,13 +1,9 @@
 package com.dev.smurf.highmathcalculator.mvp.presenters
 
-import android.annotation.SuppressLint
-import android.graphics.Color
-import android.os.AsyncTask
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
@@ -15,9 +11,6 @@ import com.dev.smurf.highmathcalculator.mvp.models.MatrixModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
-import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_matrix.*
 import kotlinx.coroutines.*
 import moxy.InjectViewState
 import moxy.MvpPresenter
@@ -56,6 +49,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         CalculatorApplication.graph.inject(this)
     }
+
+    private var isLoaded = false
 
     private var isImageViewHolder = false
 
@@ -266,9 +261,11 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart()
     {
-        onLoadSavedInstance()
-
-        updateSettings()
+        if (!isLoaded)
+        {
+            isLoaded = true
+            onLoadSavedInstance()
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -297,7 +294,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         }
         else
         {
-                viewState.setTextAdapter()
+            viewState.setTextAdapter()
         }
     }
 
@@ -305,9 +302,9 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         presenterScope.launch(Dispatchers.IO + supJob + errorHandler)
         {
-            val result = mMatrixDataBaseModel.selectAll().reversed()
+            val result = mMatrixDataBaseModel.selectAll().reversed().toMutableList()
             uiScope.launch {
-                viewState.setRecyclerViewArrayList(ArrayList(result))
+                viewState.setRecyclerViewList(result)
             }
         }
     }

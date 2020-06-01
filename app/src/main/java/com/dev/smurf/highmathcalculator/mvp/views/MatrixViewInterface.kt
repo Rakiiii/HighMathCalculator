@@ -20,7 +20,7 @@ interface MatrixViewInterface : MvpView
 
     //установить новый список в Recycler view
     @StateStrategyType(SkipStrategy::class)
-    fun setRecyclerViewArrayList(ar : ArrayList<MatrixGroup>)
+    fun setRecyclerViewList(ar : MutableList<MatrixGroup>)
 
     @StateStrategyType(SkipStrategy::class)
     fun setBtnFragment(position : Int)

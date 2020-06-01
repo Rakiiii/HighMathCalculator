@@ -16,9 +16,22 @@ interface PolynomialViewInterface : MvpView
     fun showToast(obj : String)
 
     //установить новый список элементов RecyclerView
-    fun setRecyclerViewList(ar : ArrayList<PolynomialGroup>)
+    fun setRecyclerViewList(ar : MutableList<PolynomialGroup>)
 
     //set @position btn fragment
     @StateStrategyType(SkipStrategy::class)
     fun setBtnFragment(position : Int)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun setImageAdapter()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun setTxtAdapter()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun restoreFromViewModel()
+
+
+    @StateStrategyType(SkipStrategy::class)
+    fun saveRecyclerViewToViewModel()
 }

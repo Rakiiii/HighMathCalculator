@@ -18,3 +18,14 @@ data class PolynomialGroup(var polLeftPolynomial : PolynomialBase,
                            var roots : PolynomialRoots? = null,
                            @PrimaryKey var time : java.util.GregorianCalendar = GregorianCalendar()
 )
+{
+    fun Copy() = PolynomialGroup(
+        polLeftPolynomial = polLeftPolynomial,
+        polRightPolynomial = polRightPolynomial,
+        polSignPolynomial = polSignPolynomial,
+        polOstPolynomial = polOstPolynomial,
+        polResPolynomial = polResPolynomial,
+        time = time,
+        roots = roots
+    )
+}
