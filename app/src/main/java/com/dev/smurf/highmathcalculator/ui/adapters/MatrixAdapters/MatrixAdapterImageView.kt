@@ -2,6 +2,7 @@ package com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters
 
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +24,7 @@ class MatrixAdapterImageView(
     val context: Context,
     val firstMatrix: EditText,
     val secondMatrix: EditText,
-    val width: Float
+    val width : Float
 ) :
     RecyclerView.Adapter<MatrixAdapterImageView.MatrixViewHolder>()
 {
@@ -91,8 +92,7 @@ class MatrixAdapterImageView(
                 R.layout.matrix_expressions_imageview,
                 parent,
                 false
-            ), width
-        )
+            ),width)
     }
 
 
@@ -132,7 +132,7 @@ class MatrixAdapterImageView(
     }
 
 
-    class MatrixViewHolder constructor(itemView: View, val width: Float) :
+    class MatrixViewHolder constructor(itemView: View,val width:Float) :
         RecyclerView.ViewHolder(itemView)
     {
         //val width: Float = 40.0f
@@ -157,7 +157,6 @@ class MatrixAdapterImageView(
 
         fun bind(group: MatrixGroup)
         {
-
             save(group)
 
             val blackPainter = CanvasRenderSpecification.createBlackPainter()

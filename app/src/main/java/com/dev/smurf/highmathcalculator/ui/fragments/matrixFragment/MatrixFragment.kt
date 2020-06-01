@@ -152,7 +152,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         val point = Point()
         requireActivity().windowManager.defaultDisplay.getSize(point)
         val margin =    46*requireContext().resources.displayMetrics.density
-        Log.d("den@","densety is:"+requireContext().resources.displayMetrics.density.toString())
+
+
         mMatrixRecyclerImageAdapter =
             MatrixAdapterImageView(
                 requireContext(),
