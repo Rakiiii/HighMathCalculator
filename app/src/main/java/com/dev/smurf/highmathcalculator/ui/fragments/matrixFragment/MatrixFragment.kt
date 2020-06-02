@@ -175,7 +175,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     private fun initViewPager()
     {
-        //if (isViewPagerInited()) return
+        if (isViewPagerInited()) return
         if (activity != null)
         {
             mBtnMatrixViewPagerAdapter =
