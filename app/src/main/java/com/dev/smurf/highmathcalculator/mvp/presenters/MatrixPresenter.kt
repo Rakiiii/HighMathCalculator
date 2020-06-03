@@ -24,6 +24,7 @@ import moxy.presenterScope
 import org.jetbrains.anko.doAsync
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 @InjectViewState
 class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 {
@@ -60,9 +61,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     private val mExceptionRenderModel = InputFormatExceptionsRenderModel()
 
     private var isLoaded = false
-
-    private var isImageViewHolder = false
-
 
     private val supJob = SupervisorJob()
 
