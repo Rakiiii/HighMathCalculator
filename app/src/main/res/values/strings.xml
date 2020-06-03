@@ -50,4 +50,13 @@
     <string name="btnOk" translatable="false">Ok</string>
     <string name="errorDialogTitle">Oops, input format is wrong</string>
 
+    <!--matrix exceptions extra text-->
+
+    <string name="diffLineLength">All lines must have same length</string>
+    <string name="emptyLineInMatrix">Matrix can not contain empty lines</string>
+    <string name="wrongCofFormat">Matrix can contain only complex numbers</string>
+    <string name="wrongSymbols">You can not use this symbols in matrix</string>
+    <string name="moreLeftBrackets">Too many left brackets</string>
+    <string name="moreRightBrackets">Too many right brackets</string>
+
 </resources>

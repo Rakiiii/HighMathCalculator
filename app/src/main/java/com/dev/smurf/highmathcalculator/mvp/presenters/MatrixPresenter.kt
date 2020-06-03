@@ -5,8 +5,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.dev.smurf.highmathcalculator.CalculatorApplication
+import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.DifferentAmountOfElementsInMatrixLineException
+import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongAmountOfBracketsInMatrixException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongElemntAtMatrixInputException
+import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongSymbolAtMatrixInputException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixModel
@@ -52,6 +56,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         CalculatorApplication.graph.inject(this)
     }
 
+    @ExperimentalCoroutinesApi
     private val mExceptionRenderModel = InputFormatExceptionsRenderModel()
 
     private var isLoaded = false
@@ -65,6 +70,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     private val uiScope = CoroutineScope(Dispatchers.Main + supJob)
 
 
+    @ExperimentalCoroutinesApi
     private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
         when (error)
         {
@@ -80,7 +86,68 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
                     viewState.showErrorDialog(
                         errorBitmap,
                         mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(R.string.wrongCofFormat)
+                    )
+                }
+            }
+            is DifferentAmountOfElementsInMatrixLineException ->
+            {
+                uiScope.launch {
+                    val errorBitmap =
+                        mExceptionRenderModel.drawErroredMatrixWhenFullLineIsWrong(
+                            presenterScope,
+                            error.input,
+                            error.unrecognizedPart
+                        )
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        if (error.unrecognizedPart == "") CalculatorApplication.context.getString(
+                            R.string.emptyLineInMatrix
+                        )
+                        else CalculatorApplication.context.getString(R.string.diffLineLength)
+                    )
+                }
+            }
+            is WrongSymbolAtMatrixInputException ->
+            {
+                uiScope.launch {
+                    val errorBitmap =
+                        mExceptionRenderModel.drawErroredMatrixWithWrongChars(
+                            presenterScope,
+                            error.input,
+                            error.unrecognizedPart
+                        )
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(R.string.wrongSymbols)
+                    )
+                }
+            }
+            is WrongAmountOfBracketsInMatrixException ->
+            {
+                uiScope.launch {
+                    val errorBitmap =
+                        mExceptionRenderModel.drawErroredMatrixWithWrongChars(
+                            presenterScope,
+                            error.input,
+                            error.unrecognizedPart
+                        )
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(
+                            if (error.unrecognizedPart.contains(
+                                    '('
+                                )
+                            ) R.string.moreLeftBrackets
+                            else R.string.moreRightBrackets
+                        )
                     )
                 }
             }

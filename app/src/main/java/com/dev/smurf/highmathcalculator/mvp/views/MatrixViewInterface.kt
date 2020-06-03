@@ -48,7 +48,7 @@ interface MatrixViewInterface : MvpView
     fun setObservable()
 
     @StateStrategyType(AddToEndSingleStrategy::class)
-    fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float)
+    fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float, errorText: String)
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun dismissErrorDialog()

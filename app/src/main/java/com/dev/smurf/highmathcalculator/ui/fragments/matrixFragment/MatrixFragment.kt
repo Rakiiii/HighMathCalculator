@@ -472,10 +472,10 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         matrixListenerViewModel.updateListener(this)
     }
 
-    override fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float)
+    override fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float, errorText: String)
     {
         Log.d("errorDialog@", "show dialog")
-        errorDialogFragment = DefaultInputExceptionDialogFragment(errorBitmap, this, width, height)
+        errorDialogFragment = DefaultInputExceptionDialogFragment(errorBitmap, this, width, height,errorText)
         errorDialogFragment.show(childFragmentManager, "ERROR_DIALOG")
     }
 

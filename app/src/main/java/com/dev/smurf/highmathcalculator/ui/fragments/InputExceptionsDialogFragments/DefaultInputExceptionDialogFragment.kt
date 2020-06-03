@@ -20,7 +20,8 @@ class DefaultInputExceptionDialogFragment(
     private val errorBitmap: Bitmap,
     private val listener: onFragmentInteractionListener,
     private val width : Float,
-    private val height : Float
+    private val height : Float,
+    private val errorText : String
 ) : DialogFragment()
 {
     override fun onCreate(savedInstanceState: Bundle?)
@@ -49,6 +50,7 @@ class DefaultInputExceptionDialogFragment(
         view.btnOk.setOnClickListener {
             listener.btnOkPressed()
         }
+        view.tvErrorText.text = errorText
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
