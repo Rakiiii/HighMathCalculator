@@ -1,13 +1,17 @@
 package com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Point
+import android.os.Build
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -23,6 +27,7 @@ import com.dev.smurf.highmathcalculator.ui.ViewModels.MatrixListenerViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapterImageView
+import com.dev.smurf.highmathcalculator.ui.fragments.InputExceptionsDialogFragments.DefaultInputExceptionDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
@@ -35,7 +40,8 @@ import org.jetbrains.anko.toast
 
 class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     MatrixButtonGridFragmentFirstPage.onFragmentInteractionListener,
-    MatrixButtonGridFragmentSecondPage.onFragmentInteractionListener
+    MatrixButtonGridFragmentSecondPage.onFragmentInteractionListener,
+    DefaultInputExceptionDialogFragment.onFragmentInteractionListener
 {
 
     @InjectPresenter
@@ -48,6 +54,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     private lateinit var mMatrixRecyclerImageAdapter: MatrixAdapterImageView
     private lateinit var mBtnMatrixViewPagerAdapter: BtnViewPagerFragmentStateAdapter
 
+    private lateinit var errorDialogFragment: DefaultInputExceptionDialogFragment
+
     private val mMatrixRecyclerViewModel by viewModels<MatrixRecyclerViewModel>()
 
     private val mMatrixEdittextViewModel by viewModels<EditTextViewModel>()
@@ -56,7 +64,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     private var btnFragmentSet = mutableListOf<Fragment>()
 
-    private val matrixListenerViewModel : MatrixListenerViewModel<MatrixFragment> by activityViewModels()
+    private val matrixListenerViewModel: MatrixListenerViewModel<MatrixFragment> by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,6 +90,20 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     override fun onStart()
     {
         super.onStart()
+
+        val viewTreeObserver = ltMatrixInput.viewTreeObserver
+        if (viewTreeObserver.isAlive)
+        {
+            viewTreeObserver.addOnGlobalLayoutListener(object :
+                ViewTreeObserver.OnGlobalLayoutListener
+            {
+                override fun onGlobalLayout()
+                {
+                    getMaxSizeOfErrorDialog()
+                    ltMatrixInput.viewTreeObserver.removeOnGlobalLayoutListener(this);
+                }
+            })
+        }
 
         matrixListenerViewModel.updateListener(this)
 
@@ -180,8 +203,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         {
             mBtnMatrixViewPagerAdapter =
                 BtnViewPagerFragmentStateAdapter(
-                    requireActivity(),this
-                                )
+                    requireActivity(), this
+                )
             btnFragmentSet.add(MatrixButtonGridFragmentFirstPage())
             btnFragmentSet.add(MatrixButtonGridFragmentSecondPage())
             mBtnMatrixViewPagerAdapter.setNewFragmentSet(btnFragmentSet)
@@ -336,7 +359,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
             )
         }
 
-        Log.d("edit@","restore called:"+(firstMatrix == null).toString())
+        Log.d("edit@", "restore called:" + (firstMatrix == null).toString())
 
         firstMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.firstValue)
         secondMatrix.text = SpannableStringBuilder(mMatrixEdittextViewModel.secondValue)
@@ -359,7 +382,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun btnInverseClicked()
     {
-        Log.d("edit@","inv call:"+(firstMatrix == null).toString())
+        Log.d("edit@", "inv call:" + (firstMatrix == null).toString())
         mMatrixPresenter.onInversClick(firstMatrix.text.toString())
     }
 
@@ -447,6 +470,34 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     override fun setObservable()
     {
         matrixListenerViewModel.updateListener(this)
+    }
+
+    override fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float)
+    {
+        Log.d("errorDialog@", "show dialog")
+        errorDialogFragment = DefaultInputExceptionDialogFragment(errorBitmap, this, width, height)
+        errorDialogFragment.show(childFragmentManager, "ERROR_DIALOG")
+    }
+
+    override fun btnOkPressed()
+    {
+        Log.d("errorDialog@", "btn ok pressed")
+        mMatrixPresenter.onBtnOkInErrorDialogPressed()
+    }
+
+    override fun dismissErrorDialog()
+    {
+        Log.d("errorDialog@", "dismiss")
+        if (::errorDialogFragment.isInitialized && errorDialogFragment.isVisible) errorDialogFragment.dismiss()
+    }
+
+    override fun getMaxSizeOfErrorDialog()
+    {
+
+        mMatrixPresenter.setMaxDialogSize(
+            ltMatrixInput.measuredWidth.toFloat(),
+            ltMatrixInput.measuredHeight.toFloat()
+        )
     }
 }
 

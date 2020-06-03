@@ -3,6 +3,7 @@ package com.dev.smurf.highmathcalculator.CanvasExtension
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
+import java.lang.reflect.Type
 
 class CanvasRenderSpecification
 {
@@ -14,6 +15,8 @@ class CanvasRenderSpecification
 
         const val textSize = 40.0f
 
+        const val biggerTextSize = 60.0f
+
         const val strokeWidth = 2.0f
 
         const val defspaceSize = 5.0f
@@ -21,6 +24,21 @@ class CanvasRenderSpecification
         const val PolynomialTopMargin = 6.0f
         const val PolynomialBottomMargin = 6.0f
 
+        fun createRedPainterWithUnderline() : Paint
+        {
+            val redPainter = Paint(Color.RED)
+
+            redPainter.color = Color.RED
+
+            redPainter.typeface = Typeface.SERIF
+
+            redPainter.textSize = biggerTextSize
+
+            redPainter.flags = Paint.UNDERLINE_TEXT_FLAG
+            redPainter.flags = Paint.FAKE_BOLD_TEXT_FLAG
+
+            return redPainter
+        }
 
         fun createBlackPainter() : Paint
         {

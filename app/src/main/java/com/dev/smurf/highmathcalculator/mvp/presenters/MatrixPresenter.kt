@@ -5,7 +5,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.dev.smurf.highmathcalculator.CalculatorApplication
+import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongElemntAtMatrixInputException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
@@ -50,6 +52,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         CalculatorApplication.graph.inject(this)
     }
 
+    private val mExceptionRenderModel = InputFormatExceptionsRenderModel()
+
     private var isLoaded = false
 
     private var isImageViewHolder = false
@@ -64,6 +68,22 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
         when (error)
         {
+            is WrongElemntAtMatrixInputException ->
+            {
+                uiScope.launch {
+                    val errorBitmap =
+                        mExceptionRenderModel.drawErroredMatrixWhenPartOfLineIsWrong(
+                            presenterScope,
+                            error.input,
+                            error.unrecognizedPart
+                        )
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight
+                    )
+                }
+            }
             is WrongDataException ->
             {
                 viewState.showToast(error.toString().substringAfter(':'))
@@ -225,6 +245,15 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         viewState.showToast("WIP")
     }
 
+    fun setMaxDialogSize(width: Float, height: Float)
+    {
+        presenterScope.launch(Dispatchers.IO + supJob) {
+            Log.d("size@", "set width:$width height:$height")
+            mExceptionRenderModel.screenWidth = width
+            mExceptionRenderModel.screenHeight = height
+        }
+    }
+
 
     /*
      * Реализация работы с базой данных
@@ -257,6 +286,11 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         }
     }
 
+    fun onBtnOkInErrorDialogPressed()
+    {
+        viewState.dismissErrorDialog()
+    }
+
     //загрузка из базы данных сохраненных результатов
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart()
@@ -273,6 +307,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume()
     {
+        //viewState.getMaxSizeOfErrorDialog()
         updateSettings()
         viewState.restoreFromViewModel()
     }
@@ -281,6 +316,12 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     fun onPause()
     {
         viewState.saveListRecyclerViewViewModel()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun onStop()
+    {
+        viewState.dismissErrorDialog()
     }
 
     fun updateSettings()
