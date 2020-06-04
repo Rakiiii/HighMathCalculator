@@ -13,6 +13,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
+//todo:: move from cycles to map
+//todo::move to strategy pattern
+//todo:: implement single responsibility principal
+
+
 @ExperimentalCoroutinesApi
 class InputFormatExceptionsRenderModel
 {
