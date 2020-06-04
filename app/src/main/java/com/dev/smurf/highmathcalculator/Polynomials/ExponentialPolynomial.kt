@@ -155,7 +155,7 @@ class ExponentialPolynomial private constructor(
             val amountOfRightBrackets = str.count { s -> s == ')' }
             if (amountOfLeftBrackets != amountOfRightBrackets) throw WrongAmountOfBracketsInPolynomialException(
                 str,
-                ""
+                if(amountOfLeftBrackets > amountOfRightBrackets)"(" else ")"
             )
 
             var polynomial =
@@ -226,7 +226,7 @@ class ExponentialPolynomial private constructor(
 
                     if (variable.count { s -> s == '^' } != 1) throw TooManyDegreeSymbolsInExponentialPolynomialVariableException(
                         str,
-                        ""
+                        "^"
                     )
 
 

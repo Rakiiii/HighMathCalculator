@@ -7,7 +7,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.dev.smurf.highmathcalculator.CalculatorApplication
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.*
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.R
+import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialDataBaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
@@ -21,6 +24,7 @@ import org.jetbrains.anko.doAsync
 import javax.inject.Inject
 
 
+@ExperimentalCoroutinesApi
 @InjectViewState
 class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleObserver
 {
@@ -52,6 +56,9 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         CalculatorApplication.graph.inject(this)
     }
 
+    @ExperimentalCoroutinesApi
+    private val mExceptionRenderModel = InputFormatExceptionsRenderModel()
+
     private var isLoaded = false
 
     val supJob = SupervisorJob()
@@ -62,10 +69,170 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     //corutine scope для работы с памятью
     private val ioScope = CoroutineScope(Dispatchers.IO + supJob)
 
+
+    //todo:: move to two render types and chosing extra line only
     //обработчик ошибок
     private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
         when (error)
         {
+            is WrongAmountOfBracketsInPolynomialException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongChars(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(
+                            if (error.unrecognizablePart.contains(
+                                    '('
+                                )
+                            ) R.string.moreLeftBrackets
+                            else R.string.moreRightBrackets
+                        )
+                    )
+                }
+            }
+            is TooManyDegreeSymbolsInExponentialPolynomialVariableException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongChars(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(
+                            R.string.tooManyExpSymbols
+                        )
+                    )
+                }
+            }
+            is WrongSymbolInPolynomialInputException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongChars(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(
+                            R.string.wrongSymbolAtPolynomial
+                        ) + " ${error.unrecognizablePart}"
+                    )
+                }
+            }
+            is WrongSymbolAtExponetialPolynomialInputException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(
+                            R.string.wrongSymbolAtExpPolynomial
+                        )
+                    )
+                }
+            }
+            is WrongDiofantPolynomialVariableLengthException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(
+                            R.string.wrongSymbolInDioPolynomialVariable
+                        )
+                    )
+                }
+            }
+            is WrongExponensialSymbolPositionException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(
+                            R.string.wrongPositionForExpSymbol
+                        )
+                    )
+                }
+            }
+            is WrongExponentialPolynomialVariableFormat ->
+            {
+
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(
+                            R.string.wrongExpVariableFormat
+                        )
+                    )
+                }
+
+            }
+            is WrongPolynomialCofFormatException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.screenWidth - 30,
+                        mExceptionRenderModel.screenHeight,
+                        CalculatorApplication.context.getString(
+                            R.string.wrongPolynomialCofFormat
+                        )
+                    )
+                }
+            }
             is WrongDataException ->
             {
                 viewState.showToast(error.toString().substringAfter(':'))
@@ -84,7 +251,6 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
      */
 
     //нажатие кнопки плюс
-    //@SuppressLint("StaticFieldLeak")
     fun onPlusClick(left: String, right: String)
     {
         presenterScope.launch(Dispatchers.Main + errorHandler)
@@ -182,7 +348,6 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     }
 
     //нажатие на кнопку решения
-    //@SuppressLint("StaticFieldLeak")
     fun onRootsOfClick(left: String)
     {
         viewState.showToast("Work in progress")
@@ -230,6 +395,20 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         }
     }
 
+
+    fun setMaxDialogSize(width: Float, height: Float)
+    {
+        presenterScope.launch(Dispatchers.IO + supJob) {
+            Log.d("size@", "set width:$width height:$height")
+            mExceptionRenderModel.screenWidth = width
+            mExceptionRenderModel.screenHeight = height
+        }
+    }
+
+    fun onErrorDialogBtnOkPressed()
+    {
+        viewState.dismissErrorDialog()
+    }
 /*
  * Реализация работы с бд
  */

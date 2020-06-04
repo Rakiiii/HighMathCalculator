@@ -1,70 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:background="@android:color/transparent"
+        android:id="@+id/errorDialogRoot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:id="@+id/errorDialogRoot"
-        >
+        android:background="@android:color/transparent">
+
     <TextView
+            android:id="@+id/tvErrorTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tvErrorTitle"
+            android:layout_marginBottom="10dp"
             android:text="@string/errorDialogTitle"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:layout_marginBottom="10dp"
 
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/ivError"
-            />
-    <ImageView
-            android:id="@+id/ivError"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-
-
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvErrorTitle"
-            app:layout_constraintBottom_toTopOf="@id/tvErrorText"
             app:layout_constraintEnd_toEndOf="parent"
-        />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
             android:id="@+id/tvErrorText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:fontFamily="Serif"
-            android:textSize="12sp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
+            android:fontFamily="Serif"
+            android:textColor="@color/black"
+            android:textSize="12sp"
 
-            app:layout_constraintTop_toBottomOf="@+id/ivError"
+            app:layout_constraintBottom_toTopOf="@id/ivError"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/btnOk"
-        />
+            app:layout_constraintTop_toBottomOf="@+id/tvErrorTitle" />
+
+    <ImageView
+            android:id="@+id/ivError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+
+
+            app:layout_constraintBottom_toTopOf="@+id/btnOk"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvErrorText" />
+
 
     <Button
             android:id="@+id/btnOk"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btnOk"
-            android:background="@android:color/transparent"
-            android:textSize="20sp"
             android:layout_marginTop="40dp"
-            style="@style/Widget.AppCompat.Button.Borderless"
+            android:background="@android:color/transparent"
+            android:text="@string/btnOk"
+            android:textSize="20sp"
 
-            app:layout_constraintTop_toBottomOf="@id/ivError"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivError" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

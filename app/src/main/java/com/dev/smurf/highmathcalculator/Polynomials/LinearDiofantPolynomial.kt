@@ -60,7 +60,10 @@ class LinearDiofantPolynomial private constructor(private val polynomial: Mutabl
         {
             val amountOfLeftBrackets = str.count { s -> s == '(' }
             val amountOfRightBrackets = str.count { s -> s == ')' }
-            if(amountOfLeftBrackets != amountOfRightBrackets)throw WrongAmountOfBracketsInPolynomialException(str,"")
+            if (amountOfLeftBrackets != amountOfRightBrackets) throw WrongAmountOfBracketsInPolynomialException(
+                str,
+                if (amountOfLeftBrackets > amountOfRightBrackets) "(" else ")"
+            )
 
             var polynomial =
                 str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofs()
@@ -106,7 +109,8 @@ class LinearDiofantPolynomial private constructor(private val polynomial: Mutabl
                     str,
                     cof
                 )
-            }else throw WrongSymbolInPolynomialInputException(
+            }
+            else throw WrongSymbolInPolynomialInputException(
                 str,
                 str.last().toString()
             )
@@ -196,7 +200,7 @@ class LinearDiofantPolynomial private constructor(private val polynomial: Mutabl
 
         val filteredPolynomial = polynomial.filter { s -> s.value != ComplexNumber() }
 
-        if(filteredPolynomial.isEmpty()) return "0"
+        if (filteredPolynomial.isEmpty()) return "0"
 
         for (i in filteredPolynomial)
         {
@@ -214,7 +218,7 @@ class LinearDiofantPolynomial private constructor(private val polynomial: Mutabl
 
         val filteredPolynomial = polynomial.filter { s -> s.value != ComplexNumber() }
 
-        if(filteredPolynomial.isEmpty()) return arrayListOf(Pair("",ComplexNumber()))
+        if (filteredPolynomial.isEmpty()) return arrayListOf(Pair("", ComplexNumber()))
 
         for (i in filteredPolynomial)
         {

@@ -1,5 +1,6 @@
 package com.dev.smurf.highmathcalculator.ui.fragments.polynomialFragment
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -22,19 +24,24 @@ import com.dev.smurf.highmathcalculator.ui.ViewModels.MatrixListenerViewModel
 import com.dev.smurf.highmathcalculator.ui.ViewModels.PolynomialListenerViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialAdapterImageView
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
+import com.dev.smurf.highmathcalculator.ui.fragments.InputExceptionsDialogFragments.DefaultInputExceptionDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import com.example.smurf.mtarixcalc.PolynomialRecyclerViewModel
 import com.example.smurf.mtarixcalc.PolynomialTxtAdapter
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_matrix.*
 import kotlinx.android.synthetic.main.fragment_polinom.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import org.jetbrains.anko.toast
 
+@ExperimentalCoroutinesApi
 class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Settingable,
-    PolynomialButtonsGridFirstPageFragment.OnFragmentInteractionListener
+    PolynomialButtonsGridFirstPageFragment.OnFragmentInteractionListener,
+        DefaultInputExceptionDialogFragment.onFragmentInteractionListener
 {
 
     //вставляем презентер
@@ -66,6 +73,8 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     private var isPaused = false
 
+    private lateinit var errorDialogFragment: DefaultInputExceptionDialogFragment
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -89,6 +98,20 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         super.onStart()
 
         Log.d("lifecycle@", "onStart")
+
+        val viewTreeObserver = ltPolynomialInput.viewTreeObserver
+        if (viewTreeObserver.isAlive)
+        {
+            viewTreeObserver.addOnGlobalLayoutListener(object :
+                ViewTreeObserver.OnGlobalLayoutListener
+            {
+                override fun onGlobalLayout()
+                {
+                    getMaxSizeOfErrorDialog()
+                    ltPolynomialInput.viewTreeObserver.removeOnGlobalLayoutListener(this);
+                }
+            })
+        }
 
         //инициализация recyclerView для полиномов
         initRecyclerView()
@@ -390,6 +413,37 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     override fun setObserver()
     {
         listenerViewModel.updateListener(this)
+    }
+
+    override fun getMaxSizeOfErrorDialog()
+    {
+        mPolynomialPresenter.setMaxDialogSize(
+            ltPolynomialInput.measuredWidth.toFloat(),
+            ltPolynomialInput.measuredHeight.toFloat()
+        )
+    }
+
+    override fun btnOkPressed()
+    {
+        mPolynomialPresenter.onErrorDialogBtnOkPressed()
+    }
+
+    override fun showErrorDialog(
+        errorBitmap: Bitmap,
+        width: Float,
+        height: Float,
+        errorText: String
+    )
+    {
+        Log.d("errorDialog@", "show dialog")
+        errorDialogFragment = DefaultInputExceptionDialogFragment(errorBitmap, this, width, height,errorText)
+        errorDialogFragment.show(childFragmentManager, "ERROR_DIALOG")
+    }
+
+    override fun dismissErrorDialog()
+    {
+        Log.d("errorDialog@", "dismiss")
+        if (::errorDialogFragment.isInitialized && errorDialogFragment.isVisible) errorDialogFragment.dismiss()
     }
 }
 

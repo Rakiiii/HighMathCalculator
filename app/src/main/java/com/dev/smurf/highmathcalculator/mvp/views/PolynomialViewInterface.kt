@@ -1,8 +1,10 @@
 package com.dev.smurf.highmathcalculator.mvp.views
 
 
+import android.graphics.Bitmap
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import moxy.MvpView
+import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.SkipStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
@@ -10,17 +12,17 @@ import moxy.viewstate.strategy.StateStrategyType
 interface PolynomialViewInterface : MvpView
 {
     //добавить в recycler view с полиномами новый элемент
-    fun addToPolynomialRecyclerView(obj : PolynomialGroup)
+    fun addToPolynomialRecyclerView(obj: PolynomialGroup)
 
     //вывести что-то в тост
-    fun showToast(obj : String)
+    fun showToast(obj: String)
 
     //установить новый список элементов RecyclerView
-    fun setRecyclerViewList(ar : MutableList<PolynomialGroup>)
+    fun setRecyclerViewList(ar: MutableList<PolynomialGroup>)
 
     //set @position btn fragment
     @StateStrategyType(SkipStrategy::class)
-    fun setBtnFragment(position : Int)
+    fun setBtnFragment(position: Int)
 
     @StateStrategyType(SkipStrategy::class)
     fun setImageAdapter()
@@ -37,4 +39,13 @@ interface PolynomialViewInterface : MvpView
 
     @StateStrategyType(SkipStrategy::class)
     fun setObserver()
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float, errorText: String)
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun dismissErrorDialog()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun getMaxSizeOfErrorDialog()
 }
