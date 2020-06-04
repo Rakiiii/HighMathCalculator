@@ -459,11 +459,12 @@ class InputFormatExceptionsRenderModel
 
         for (line in lines)
         {
-            if(line != "")
+            if (line != "")
             {
                 if (line == wrongLine) emit(getSizeOfMatrixLine(errorPainter, line))
                 else emit(getSizeOfMatrixLine(defaultPainter, line))
-            }else emit(getSizeOfEmptyMatrix(errorPainter))
+            }
+            else emit(getSizeOfEmptyMatrix(errorPainter))
         }
     }.flowOn(Dispatchers.Default)
 
@@ -500,12 +501,12 @@ class InputFormatExceptionsRenderModel
         return bitmap
     }
 
-    fun getSizeOfEmptyMatrix(errorPainter: Paint):Pair<Float,Float>
+    fun getSizeOfEmptyMatrix(errorPainter: Paint): Pair<Float, Float>
     {
         val rect = Rect()
         errorPainter.getTextBounds("1", 0, 1, rect)
 
-        return Pair(widthOfEmptyMatrix.toFloat(),rect.height().toFloat())
+        return Pair(widthOfEmptyMatrix.toFloat(), rect.height().toFloat())
     }
 
     suspend fun getSizeOfLineWithWrongChars(
@@ -658,4 +659,48 @@ class InputFormatExceptionsRenderModel
         }
 
     }.flowOn(Dispatchers.Default)
+
+
+    /*
+     *   Polynomials
+     *
+     * Render functions for polynomials input errors
+     *
+     */
+
+    private val stepSize = 10
+
+    fun getPossibleLineSeparations(
+        input: String,
+        defaultPainter: Paint,
+        errorPainter: Paint,
+        getSize: (String, Paint, Paint) -> Float
+    ): MutableList<String>
+    {
+        val separation = ArrayList<String>()
+
+        if (getSize(input, defaultPainter, errorPainter) < screenWidth) return arrayListOf(input)
+        var subString = input
+
+        while (subString.isNotEmpty())
+        {
+            val subWidth = getSize(subString, defaultPainter, errorPainter)
+
+            val maxSymbolsLength = (subString.length*(screenWidth / subWidth)).toInt()
+            var line = subString.substring(0,maxSymbolsLength)
+            var lineWidth = getSize(line,defaultPainter,errorPainter)
+
+            while (lineWidth >= screenWidth )
+            {
+                line = line.substring(0,line.length - stepSize)
+                lineWidth = getSize(line,defaultPainter,errorPainter)
+            }
+
+            subString = subString.substring(line.length)
+            separation.add(line)
+        }
+
+        return separation
+    }
+
 }
