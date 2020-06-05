@@ -133,6 +133,10 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     override fun onResume()
     {
         isPaused = false
+        if(mMatrixRecyclerView.adapter is MatrixAdapterImageView)
+        {
+            mMatrixRecyclerImageAdapter.startLoading()
+        }
         Log.d("lifecycle@", "onResume")
         super.onResume()
     }

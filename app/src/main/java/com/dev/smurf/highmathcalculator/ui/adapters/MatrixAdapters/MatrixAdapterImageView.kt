@@ -11,11 +11,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRenderInHolderStrategyConstracter
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.Utils.*
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.BindableViewHolder
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.MatrixViewHolder
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.RoundingProgressBarViewHolder
 import org.jetbrains.anko.imageBitmap
 import java.text.SimpleDateFormat
 
@@ -24,10 +28,34 @@ class MatrixAdapterImageView(
     val context: Context,
     val firstMatrix: EditText,
     val secondMatrix: EditText,
-    val width : Float
+    val width: Float
 ) :
-    RecyclerView.Adapter<MatrixAdapterImageView.MatrixViewHolder>()
+    RecyclerView.Adapter<BindableViewHolder>()
 {
+
+    private var loading = false
+
+    fun startLoading()
+    {
+        loading = true
+        listOfMatrices.add(
+            0,
+            MatrixGroup(
+                leftMatrix = Matrix.EmptyMatrix,
+                resMatrix = Matrix.EmptyMatrix,
+                rightMatrix = Matrix.EmptyMatrix,
+                sign = "",
+                time = java.util.GregorianCalendar()
+            )
+        )
+        notifyItemInserted(0)
+    }
+
+    fun stopLoading()
+    {
+        loading = false
+        listOfMatrices.removeAt(0)
+    }
 
     //списое элементов
     private var listOfMatrices: MutableList<MatrixGroup> = ArrayList()
@@ -71,6 +99,7 @@ class MatrixAdapterImageView(
     //установить новый список элементов
     fun setList(newArray: MutableList<MatrixGroup>)
     {
+        if (loading) newArray.add(0, listOfMatrices[0])
         listOfMatrices = newArray
         notifyDataSetChanged()
     }
@@ -84,111 +113,69 @@ class MatrixAdapterImageView(
         return listOfMatrices.size
     }
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatrixViewHolder
+    override fun getItemViewType(position: Int): Int
     {
-        return MatrixViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.matrix_expressions_imageview,
-                parent,
-                false
-            ),width)
+        return if (listOfMatrices[position].leftMatrix == Matrix.EmptyMatrix) 0 else 1
     }
 
 
-    override fun onBindViewHolder(holder: MatrixViewHolder, position: Int)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindableViewHolder
     {
-
-        holder.bind(listOfMatrices[position])
-
-        //листенер для контекстного меню на левую матрицу
-        holder.leftMatrix.setOnCreateContextMenuListener(
-            ContextMenuListener(
-                context,
-                firstMatrix,
-                secondMatrix,
-                holder.leftMatrixValue
-            )
-        )
-
-        holder.resMatrix.setOnCreateContextMenuListener(
-            ContextMenuListener(
-                context,
-                firstMatrix,
-                secondMatrix,
-                holder.resMatrixValue
-            )
-        )
-
-        holder.rightMatrix.setOnCreateContextMenuListener(
-            ContextMenuListener(
-                context,
-                firstMatrix,
-                secondMatrix,
-                holder.rightMatrixValue
-            )
-        )
-
-    }
-
-
-    class MatrixViewHolder constructor(itemView: View,val width:Float) :
-        RecyclerView.ViewHolder(itemView)
-    {
-        //val width: Float = 40.0f
-
-        var leftMatrix: ImageView = itemView.findViewById(R.id.leftMatrix)
-            private set
-        var rightMatrix: ImageView = itemView.findViewById(R.id.rightMatrix)
-            private set
-        var resMatrix: ImageView = itemView.findViewById(R.id.resMatrix)
-            private set
-        var sign: ImageView = itemView.findViewById(R.id.operationSignMatrix)
-            private set
-        var equalSign: ImageView = itemView.findViewById(R.id.equalsSignMatrix)
-        var timeMatrix: TextView = itemView.findViewById(R.id.timeMatrix)
-
-        lateinit var leftMatrixValue: String
-            private set
-        lateinit var rightMatrixValue: String
-            private set
-        lateinit var resMatrixValue: String
-            private set
-
-        fun bind(group: MatrixGroup)
+        return when (viewType)
         {
-            save(group)
-
-            val blackPainter = CanvasRenderSpecification.createBlackPainter()
-
-            val bitmapSet = MatrixRenderInHolderStrategyConstracter.getWorkStrategyGroup(
-                group,
-                width,
-                blackPainter
-            ).renderMatrix(group, blackPainter)
-
-
-            leftMatrix.imageBitmap = bitmapSet.leftMatrixBitmap
-            if (!bitmapSet.rightMatrixBitmap.IsEmpty()) rightMatrix.imageBitmap =
-                bitmapSet.rightMatrixBitmap
-            sign.imageBitmap = bitmapSet.signBitmap
-            resMatrix.imageBitmap = bitmapSet.resultMatrixBitmap
-            equalSign.imageBitmap = bitmapSet.equalsSignBitmap
-
-
-            group.time.let {
-                val fmt = SimpleDateFormat.getDateInstance()
-                fmt.calendar = it
-                timeMatrix.text = fmt.format(it.time)
-            }
+            0 -> RoundingProgressBarViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.rounding_progress_bar_view_holder,
+                    parent,
+                    false
+                ), width
+            )
+            else -> MatrixViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.matrix_expressions_imageview,
+                    parent,
+                    false
+                ), width
+            )
         }
+    }
 
-        private fun save(matrixGroup: MatrixGroup)
+
+    override fun onBindViewHolder(holder: BindableViewHolder, position: Int)
+    {
+
+        if (holder is MatrixViewHolder)
         {
-            leftMatrixValue = matrixGroup.leftMatrix.toString()
-            rightMatrixValue =
-                if (matrixGroup.rightMatrix.isEmpty()) matrixGroup.resMatrix.toString() else matrixGroup.rightMatrix.toString()
-            resMatrixValue = matrixGroup.resMatrix.toString()
+            holder.bind(listOfMatrices[position])
+
+            //листенер для контекстного меню на левую матрицу
+            holder.leftMatrix.setOnCreateContextMenuListener(
+                ContextMenuListener(
+                    context,
+                    firstMatrix,
+                    secondMatrix,
+                    holder.leftMatrixValue
+                )
+            )
+
+            holder.resMatrix.setOnCreateContextMenuListener(
+                ContextMenuListener(
+                    context,
+                    firstMatrix,
+                    secondMatrix,
+                    holder.resMatrixValue
+                )
+            )
+
+            holder.rightMatrix.setOnCreateContextMenuListener(
+                ContextMenuListener(
+                    context,
+                    firstMatrix,
+                    secondMatrix,
+                    holder.rightMatrixValue
+                )
+            )
+
         }
     }
 }
