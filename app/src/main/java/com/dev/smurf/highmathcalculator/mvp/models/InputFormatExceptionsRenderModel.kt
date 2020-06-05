@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-//todo:: move from cycles to map
-//todo::move to strategy pattern
+//todo::add extra function layer for less boilerplate in matrix render [must get only 2 functions]
 //todo:: implement single responsibility principal
+//todo:: add some comments
 
 
 @ExperimentalCoroutinesApi
@@ -21,8 +21,15 @@ class InputFormatExceptionsRenderModel
 
     var screenWidth = 0.0f
     var screenHeight = 0.0f
-    fun getHeightMargin() = screenHeight / 20
-    fun getWidthMargin() = screenWidth / 20
+    private val otherElemsHeight = 100
+
+    fun getErrorDialogWidth() = screenWidth - getWidthMargin()
+    fun getErrorDialogHeight() = screenHeight
+    private fun getHeightMargin() = screenHeight / 20
+    private fun getWidthMargin() = screenWidth / 20
+    private fun getMaxBitmapWidth() = getErrorDialogWidth() - 2 * getWidthMargin()
+    private fun getMaxBitmapHeight() = getErrorDialogHeight() - 2 * getHeightMargin() - otherElemsHeight
+
 
     private val bitmapConfig = Bitmap.Config.ARGB_8888
     private val widthOfEmptyMatrix = 15
@@ -89,125 +96,113 @@ class InputFormatExceptionsRenderModel
         coroutineScope: CoroutineScope,
         input: String,
         wrongLine: String
-    ): Bitmap
-    {
-        return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
-            val defaultPainter = CanvasRenderSpecification.createBlackPainter()
-            val errorPainter = CanvasRenderSpecification.createRedPainterWithUnderline()
+    ): Bitmap = withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
 
-            defaultPainter.textSize += 20
-            errorPainter.textSize += 20
-
-            var size: Pair<Float, Float>
-
-            do
-            {
-                defaultPainter.textSize -= 5
-                errorPainter.textSize -= 5
-
-                var width = 0.0f
-                var height = 0.0f
-                getSizeOfMatrixLinesWithWrongLine(
-                    input,
-                    wrongLine,
-                    defaultPainter,
-                    errorPainter
-                ).collect { lineSize ->
-                    width =
-                        if (lineSize.first > width) lineSize.first else width; height += lineSize.second
+        return@withContext drawErroredText(
+            coroutineScope = coroutineScope,
+            input = input,
+            wrongLine = wrongLine,
+            getSize = { s, s2, paint, paint2 ->
+                getSizeOfProbablyWrongLine(
+                    coroutineScope = coroutineScope,
+                    line = s,
+                    wrongLine = s2,
+                    defaultPainter = paint,
+                    errorPainter = paint2
+                )
+            },
+            separate = { s, s2, paint, paint2, suspendFunction4 ->
+                withContext(Dispatchers.Default) {
+                    spreadMatrixOnLines(
+                        s
+                    )
                 }
-
-                size = Pair(width, height)
-            } while (size.first > screenWidth || size.second > screenHeight)
-
-            val leftFloat = getWidthMargin()
-            var topFloat = getHeightMargin()
-
-            val finalBitmap = Bitmap.createBitmap(
-                (size.first + leftFloat * 2).toInt(),
-                (size.second + topFloat * 2).toInt(),
-                bitmapConfig
-            )
-
-            val canvas = Canvas(finalBitmap)
-
-            val bitmapFlow =
-                drawMatrixLinesWithWrongLine(input, wrongLine, defaultPainter, errorPainter)
-            bitmapFlow.collect { lineBitmap ->
-                canvas.drawBitmap(
-                    lineBitmap,
-                    leftFloat,
-                    topFloat,
-                    defaultPainter
-                );topFloat += lineBitmap.height
+            },
+            getSeparatedSize = { mutableList, s, paint, paint2, suspendFunction4 ->
+                getSizeOfLines(
+                    lines = mutableList,
+                    wrongPart = s,
+                    defaultPainter = paint,
+                    errorPainter = paint2,
+                    getSize = suspendFunction4
+                )
+            },
+            drawLines = { mutableList, s, paint, paint2 ->
+                drawLines(
+                    coroutineScope = coroutineScope,
+                    lines = mutableList,
+                    wrongLine = s,
+                    defaultPainter = paint,
+                    errorPainter = paint2,
+                    drawLine = { str1: String, str2: String, p1: Paint, p2: Paint ->
+                        drawProbablyWrongLine(
+                            coroutineScope = coroutineScope,
+                            line = str1,
+                            wrongLine = str2,
+                            defaultPainter = p1,
+                            errorPainter = p2
+                        )
+                    }
+                )
             }
-
-            return@withContext finalBitmap
-        }
+        )
     }
+
 
     suspend fun drawErroredMatrixWithWrongChars(
         coroutineScope: CoroutineScope,
         input: String,
         wrongLine: String
-    ): Bitmap
-    {
-        return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
-            val defaultPainter = CanvasRenderSpecification.createBlackPainter()
-            val errorPainter = CanvasRenderSpecification.createRedPainterWithUnderline()
+    ): Bitmap = withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
 
-            defaultPainter.textSize += 20
-            errorPainter.textSize += 20
-
-            var size: Pair<Float, Float>
-
-            do
-            {
-                defaultPainter.textSize -= 5
-                errorPainter.textSize -= 5
-
-                var width = 0.0f
-                var height = errorPainter.getVerticalSpacing()
-                getSizeOfMatrixLinesWithWrongChars(
-                    coroutineScope,
-                    input,
-                    wrongLine,
-                    defaultPainter,
-                    errorPainter
-                ).collect { lineSize ->
-                    width =
-                        if (lineSize.first > width) lineSize.first else width; height += lineSize.second + errorPainter.getVerticalSpacing()
+        return@withContext drawErroredText(
+            coroutineScope = coroutineScope,
+            input = input,
+            wrongLine = wrongLine,
+            getSize = { s, s2, paint, paint2 ->
+                getSizeOfLineWithWrongChars(
+                    coroutineScope = coroutineScope,
+                    line = s,
+                    wrongChars = s2,
+                    defaultPainter = paint,
+                    errorPainter = paint2
+                )
+            },
+            separate = { s, s2, paint, paint2, suspendFunction4 ->
+                withContext(Dispatchers.Default) {
+                    spreadMatrixOnLines(
+                        s
+                    )
                 }
-
-                size = Pair(width, height)
-            } while (size.first > screenWidth || size.second > screenHeight)
-
-            val leftFloat = getWidthMargin()
-            var topFloat = getHeightMargin()
-
-            val finalBitmap = Bitmap.createBitmap(
-                (size.first + leftFloat * 2).toInt(),
-                (size.second + topFloat * 2).toInt(),
-                bitmapConfig
-            )
-
-            val canvas = Canvas(finalBitmap)
-
-            val bitmapFlow = drawMatrixLinesWithWrongChars(
-                coroutineScope, spreadMatrixOnLines(input), wrongLine, defaultPainter, errorPainter
-            )
-
-            bitmapFlow.collect { lineBitmap ->
-                canvas.drawBitmap(
-                    lineBitmap,
-                    leftFloat,
-                    topFloat,
-                    defaultPainter
-                );topFloat += lineBitmap.height + errorPainter.getVerticalSpacing()
+            },
+            getSeparatedSize = { mutableList, s, paint, paint2, suspendFunction4 ->
+                getSizeOfLines(
+                    lines = mutableList,
+                    wrongPart = s,
+                    defaultPainter = paint,
+                    errorPainter = paint2,
+                    getSize = suspendFunction4
+                )
+            },
+            drawLines = { mutableList, s, paint, paint2 ->
+                drawLines(
+                    coroutineScope = coroutineScope,
+                    lines = mutableList,
+                    wrongLine = s,
+                    defaultPainter = paint,
+                    errorPainter = paint2,
+                    drawLine = { str1: String, str2: String, p1: Paint, p2: Paint ->
+                        drawLineWithWrongChars(
+                            coroutineScope = coroutineScope,
+                            line = str1,
+                            wrongChars = str2,
+                            defaultPainter = p1,
+                            errorPainter = p2
+                        )
+                    }
+                )
             }
-
-            return@withContext finalBitmap
-        }
+        )
     }
 
 
@@ -220,7 +215,8 @@ class InputFormatExceptionsRenderModel
     ): Bitmap
     {
         return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
-            if (!line.contains(wrongLine, true)) return@withContext drawMatrixLine(
+            if (line == "") return@withContext drawEmptyLine(errorPainter)
+            if (!line.contains(wrongLine, true)) return@withContext drawLine(
                 line,
                 defaultPainter
             )
@@ -303,9 +299,9 @@ class InputFormatExceptionsRenderModel
 
     }
 
-    fun drawMatrixLine(line: String, defaultPainter: Paint): Bitmap
+    private fun drawLine(line: String, defaultPainter: Paint): Bitmap
     {
-        val size = getSizeOfMatrixLine(defaultPainter, line)
+        val size = getSizeOfLine(defaultPainter, line)
         val bitmap = Bitmap.createBitmap(size.first.toInt(), size.second.toInt(), bitmapConfig)
 
         Canvas(bitmap).drawText(line, 0, line.length, 0.0f, size.second, defaultPainter)
@@ -314,7 +310,7 @@ class InputFormatExceptionsRenderModel
     }
 
 
-    suspend fun getSizeOfLineWithWrongSubstring(
+    private suspend fun getSizeOfLineWithWrongSubstring(
         coroutineScope: CoroutineScope,
         defaultPainter: Paint,
         errorPainter: Paint,
@@ -323,7 +319,8 @@ class InputFormatExceptionsRenderModel
     ): Pair<Float, Float>
     {
         return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
-            if (!line.contains(wrongLine, true)) return@withContext getSizeOfMatrixLine(
+            if (line == "") return@withContext getSizeOfEmptyMatrix(errorPainter)
+            if (!line.contains(wrongLine, true)) return@withContext getSizeOfLine(
                 defaultPainter = defaultPainter,
                 input = line
             )
@@ -383,7 +380,7 @@ class InputFormatExceptionsRenderModel
         }
     }
 
-    fun getSizeOfMatrixLine(defaultPainter: Paint, input: String): Pair<Float, Float>
+    private fun getSizeOfLine(defaultPainter: Paint, input: String): Pair<Float, Float>
     {
         val rect = Rect()
         defaultPainter.getTextBounds(input, 0, input.length, rect)
@@ -393,63 +390,61 @@ class InputFormatExceptionsRenderModel
         return Pair(width, rect.height().toFloat() + defaultPainter.getVerticalSpacing())
     }
 
-    fun spreadMatrixOnLines(input: String) = input.fields("\n")
+    private fun spreadMatrixOnLines(input: String) = input.fields("\n")
 
 
-    @ExperimentalCoroutinesApi
-    suspend fun getSizeOfMatrixLinesWithWrongLine(
-        input: String,
+    private suspend fun getSizeOfProbablyWrongLine(
+        coroutineScope: CoroutineScope,
+        line: String,
         wrongLine: String,
         defaultPainter: Paint,
         errorPainter: Paint
-    ): Flow<Pair<Float, Float>> = flow {
-        val lines = spreadMatrixOnLines(input)
-
-        for (line in lines)
-        {
+    ): Pair<Float, Float>
+    {
+        return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
             if (line != "")
             {
-                if (line == wrongLine) emit(getSizeOfMatrixLine(errorPainter, line))
-                else emit(getSizeOfMatrixLine(defaultPainter, line))
+                if (line == wrongLine) getSizeOfLine(errorPainter, line)
+                else getSizeOfLine(defaultPainter, line)
             }
-            else emit(getSizeOfEmptyMatrix(errorPainter))
+            else getSizeOfEmptyMatrix(errorPainter)
         }
-    }.flowOn(Dispatchers.Default)
+    }
 
-    fun drawMatrixLinesWithWrongLine(
-        input: String,
+    private suspend fun drawProbablyWrongLine(
+        coroutineScope: CoroutineScope,
+        line: String,
         wrongLine: String,
         defaultPainter: Paint,
         errorPainter: Paint
-    ): Flow<Bitmap> = flow {
-        val lines = spreadMatrixOnLines(input)
-
-        for (line in lines)
-        {
+    ): Bitmap
+    {
+        return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
             if (line != "")
             {
                 if (line == wrongLine)
                 {
-                    emit(drawMatrixLine(line, errorPainter))
+                    drawLine(line, errorPainter)
                 }
-                else emit(drawMatrixLine(line, defaultPainter))
+                else drawLine(line, defaultPainter)
             }
-            else emit(drawEmptyLine(errorPainter))
+            else drawEmptyLine(errorPainter)
         }
     }
 
-    fun drawEmptyLine(errorPainter: Paint): Bitmap
+    private fun drawEmptyLine(errorPainter: Paint): Bitmap
     {
         val rect = Rect()
         errorPainter.getTextBounds("1", 0, 1, rect)
 
         val bitmap = Bitmap.createBitmap(widthOfEmptyMatrix, rect.height(), bitmapConfig)
 
-        bitmap.eraseColor(errorPainter.color)
+        Canvas(bitmap).drawOval(0.0f,0.0f,bitmap.width.toFloat(),bitmap.height.toFloat(),errorPainter)
+
         return bitmap
     }
 
-    fun getSizeOfEmptyMatrix(errorPainter: Paint): Pair<Float, Float>
+    private fun getSizeOfEmptyMatrix(errorPainter: Paint): Pair<Float, Float>
     {
         val rect = Rect()
         errorPainter.getTextBounds("1", 0, 1, rect)
@@ -457,7 +452,7 @@ class InputFormatExceptionsRenderModel
         return Pair(widthOfEmptyMatrix.toFloat(), rect.height().toFloat())
     }
 
-    suspend fun getSizeOfLineWithWrongChars(
+    private suspend fun getSizeOfLineWithWrongChars(
         coroutineScope: CoroutineScope,
         line: String,
         wrongChars: String,
@@ -466,7 +461,8 @@ class InputFormatExceptionsRenderModel
     ): Pair<Float, Float>
     {
         return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
-            if (line.filter { s -> wrongChars.contains(s) } == "") return@withContext getSizeOfMatrixLine(
+            if (line == "") return@withContext getSizeOfEmptyMatrix(errorPainter)
+            if (line.filter { s -> wrongChars.contains(s) } == "") return@withContext getSizeOfLine(
                 defaultPainter = defaultPainter,
                 input = line
             )
@@ -500,7 +496,7 @@ class InputFormatExceptionsRenderModel
         }
     }
 
-    suspend fun drawLineWithWrongChars(
+    private suspend fun drawLineWithWrongChars(
         coroutineScope: CoroutineScope,
         line: String,
         wrongChars: String,
@@ -509,7 +505,8 @@ class InputFormatExceptionsRenderModel
     ): Bitmap
     {
         return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
-            if (line.filter { s -> wrongChars.contains(s) } == "") return@withContext drawMatrixLine(
+            if (line == "") return@withContext drawEmptyLine(errorPainter)
+            if (line.filter { s -> wrongChars.contains(s) } == "") return@withContext drawLine(
                 line,
                 defaultPainter
             )
@@ -571,55 +568,6 @@ class InputFormatExceptionsRenderModel
     }
 
 
-    suspend fun getSizeOfMatrixLinesWithWrongChars(
-        coroutineScope: CoroutineScope,
-        input: String,
-        wrongChars: String,
-        defaultPainter: Paint,
-        errorPainter: Paint
-    ): Flow<Pair<Float, Float>> = flow {
-        val lines = spreadMatrixOnLines(input)
-
-        for (line in lines)
-        {
-            if (line.filter { s -> wrongChars.contains(s) } != "") emit(
-                getSizeOfLineWithWrongChars(
-                    coroutineScope,
-                    line,
-                    wrongChars,
-                    defaultPainter,
-                    errorPainter
-                )
-            )
-            else emit(getSizeOfMatrixLine(defaultPainter, line))
-        }
-    }.flowOn(Dispatchers.Default)
-
-    suspend fun drawMatrixLinesWithWrongChars(
-        coroutineScope: CoroutineScope,
-        lines: MutableList<String>,
-        wrongChars: String,
-        defaultPainter: Paint,
-        errorPainter: Paint
-    ): Flow<Bitmap> = flow {
-
-        for (line in lines)
-        {
-            if (line.filter { s -> wrongChars.contains(s) } != "") emit(
-                drawLineWithWrongChars(
-                    coroutineScope,
-                    line,
-                    wrongChars,
-                    defaultPainter,
-                    errorPainter
-                )
-            )
-            else emit(drawMatrixLine(line, defaultPainter))
-        }
-
-    }.flowOn(Dispatchers.Default)
-
-
     /*
      *   Polynomials
      *
@@ -629,7 +577,7 @@ class InputFormatExceptionsRenderModel
 
     private val stepSize = 10
 
-    suspend fun getPossibleLineSeparations(
+    private suspend fun getPossibleLineSeparationsForPolynomial(
         input: String,
         wrongPart: String,
         defaultPainter: Paint,
@@ -673,7 +621,7 @@ class InputFormatExceptionsRenderModel
         return@withContext separation
     }
 
-    suspend fun drawLines(
+    private suspend fun drawLines(
         coroutineScope: CoroutineScope,
         lines: MutableList<String>,
         wrongLine: String,
@@ -686,7 +634,7 @@ class InputFormatExceptionsRenderModel
         }
     }.flowOn(Dispatchers.Default)
 
-    suspend fun getSizeOfLines(
+    private suspend fun getSizeOfLines(
         lines: MutableList<String>,
         wrongPart: String,
         defaultPainter: Paint,
@@ -699,7 +647,7 @@ class InputFormatExceptionsRenderModel
     }.flowOn(Dispatchers.Default)
 
 
-    suspend fun drawErroredText(
+    private suspend fun drawErroredText(
         coroutineScope: CoroutineScope,
         input: String,
         wrongLine: String,
@@ -744,7 +692,7 @@ class InputFormatExceptionsRenderModel
             }
 
             size = Pair(width, height)
-        } while (size.first > screenWidth || size.second > screenHeight)
+        } while (size.first > getMaxBitmapWidth() || size.second > getMaxBitmapHeight())
 
         val leftFloat = getWidthMargin()
         var topFloat = getHeightMargin()
@@ -792,7 +740,7 @@ class InputFormatExceptionsRenderModel
                 )
             },
             separate = { str1, str2, p1, p2, f1 ->
-                getPossibleLineSeparations(
+                getPossibleLineSeparationsForPolynomial(
                     input = str1,
                     wrongPart = str2,
                     defaultPainter = p1,
@@ -810,12 +758,21 @@ class InputFormatExceptionsRenderModel
                 )
             },
             drawLines = { list, str, p1, p2 ->
-                drawMatrixLinesWithWrongChars(
+                drawLines(
                     coroutineScope = coroutineScope,
                     lines = list,
-                    wrongChars = str,
+                    wrongLine = str,
                     defaultPainter = p1,
-                    errorPainter = p2
+                    errorPainter = p2,
+                    drawLine = { s, s2, paint, paint2 ->
+                        drawLineWithWrongChars(
+                            coroutineScope = coroutineScope,
+                            line = s,
+                            wrongChars = s2,
+                            defaultPainter = paint,
+                            errorPainter = paint2
+                        )
+                    }
                 )
             }
         )
@@ -845,7 +802,7 @@ class InputFormatExceptionsRenderModel
                          paint1: Paint,
                          paint2: Paint,
                          suspendFunction4: suspend (String, String, Paint, Paint) -> Float ->
-                getPossibleLineSeparations(
+                getPossibleLineSeparationsForPolynomial(
                     input = s1,
                     wrongPart = s2,
                     defaultPainter = paint1,
@@ -872,7 +829,7 @@ class InputFormatExceptionsRenderModel
                         drawLineWithWrongSubstring(
                             coroutineScope = coroutineScope,
                             line = str1,
-                            wrongLine = str1,
+                            wrongLine = str2,
                             defaultPainter = p1,
                             errorPainter = p2
                         )

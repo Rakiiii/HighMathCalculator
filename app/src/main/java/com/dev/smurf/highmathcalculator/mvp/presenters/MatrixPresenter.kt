@@ -83,8 +83,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
                         )
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(R.string.wrongCofFormat)
                     )
                 }
@@ -100,8 +100,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
                         )
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         if (error.unrecognizedPart == "") CalculatorApplication.context.getString(
                             R.string.emptyLineInMatrix
                         )
@@ -120,8 +120,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
                         )
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(R.string.wrongSymbols)
                     )
                 }
@@ -137,8 +137,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
                         )
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(
                             if (error.unrecognizedPart.contains(
                                     '('

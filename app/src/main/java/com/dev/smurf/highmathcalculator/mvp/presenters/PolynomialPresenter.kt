@@ -70,7 +70,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     private val ioScope = CoroutineScope(Dispatchers.IO + supJob)
 
 
-    //todo:: move to two render types and chosing extra line only
+    //todo:: move to two render types and choosing extra line only, by adding extra layer to error hierarchy
     //обработчик ошибок
     private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
         when (error)
@@ -86,8 +86,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
 
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(
                             if (error.unrecognizablePart.contains(
                                     '('
@@ -109,8 +109,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
 
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(
                             R.string.tooManyExpSymbols
                         )
@@ -128,8 +128,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
 
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(
                             R.string.wrongSymbolAtPolynomial
                         ) + " ${error.unrecognizablePart}"
@@ -147,8 +147,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
 
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(
                             R.string.wrongSymbolAtExpPolynomial
                         )
@@ -166,8 +166,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
 
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(
                             R.string.wrongSymbolInDioPolynomialVariable
                         )
@@ -185,8 +185,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
 
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(
                             R.string.wrongPositionForExpSymbol
                         )
@@ -205,8 +205,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
 
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(
                             R.string.wrongExpVariableFormat
                         )
@@ -225,8 +225,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
 
                     viewState.showErrorDialog(
                         errorBitmap,
-                        mExceptionRenderModel.screenWidth - 30,
-                        mExceptionRenderModel.screenHeight,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
                         CalculatorApplication.context.getString(
                             R.string.wrongPolynomialCofFormat
                         )
