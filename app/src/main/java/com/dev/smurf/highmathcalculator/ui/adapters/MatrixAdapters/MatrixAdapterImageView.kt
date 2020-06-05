@@ -37,24 +37,31 @@ class MatrixAdapterImageView(
 
     fun startLoading()
     {
-        loading = true
-        listOfMatrices.add(
-            0,
-            MatrixGroup(
-                leftMatrix = Matrix.EmptyMatrix,
-                resMatrix = Matrix.EmptyMatrix,
-                rightMatrix = Matrix.EmptyMatrix,
-                sign = "",
-                time = java.util.GregorianCalendar()
+        if(!loading)
+        {
+            loading = true
+            listOfMatrices.add(
+                0,
+                MatrixGroup(
+                    leftMatrix = Matrix.EmptyMatrix,
+                    resMatrix = Matrix.EmptyMatrix,
+                    rightMatrix = Matrix.EmptyMatrix,
+                    sign = "",
+                    time = java.util.GregorianCalendar()
+                )
             )
-        )
-        notifyItemInserted(0)
+            notifyItemInserted(0)
+        }
     }
 
     fun stopLoading()
     {
-        loading = false
-        listOfMatrices.removeAt(0)
+        if(loading)
+        {
+            loading = false
+            listOfMatrices.removeAt(0)
+            notifyItemRemoved(0)
+        }
     }
 
     //списое элементов

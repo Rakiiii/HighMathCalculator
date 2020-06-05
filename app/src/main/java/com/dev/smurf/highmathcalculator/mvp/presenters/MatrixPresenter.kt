@@ -410,8 +410,11 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         presenterScope.launch(Dispatchers.IO + supJob + errorHandler)
         {
+            uiScope.launch { viewState.startLoadingInRecyclerView() }
+            delay(3000)
             val result = mMatrixDataBaseModel.selectAll().reversed().toMutableList()
             uiScope.launch {
+                viewState.stopLoadingInRecyclerView()
                 viewState.setRecyclerViewList(result)
             }
         }
