@@ -3,7 +3,6 @@ package com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRenderInHolderStrategyConstracter
 import com.dev.smurf.highmathcalculator.R
@@ -12,8 +11,8 @@ import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import org.jetbrains.anko.imageBitmap
 import java.text.SimpleDateFormat
 
-class MatrixViewHolder constructor(itemView: View, width: Float) :
-    BindableViewHolder(itemView, width)
+class MatrixViewHolderMatrix constructor(itemView: View, width: Float) :
+    MatrixBindableViewHolder(itemView, width)
 {
     //val width: Float = 40.0f
 

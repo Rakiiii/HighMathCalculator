@@ -445,6 +445,22 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         Log.d("errorDialog@", "dismiss")
         if (::errorDialogFragment.isInitialized && errorDialogFragment.isVisible) errorDialogFragment.dismiss()
     }
+
+    override fun startLoadingInRecyclerView()
+    {
+        if(mPolynomialRecyclerView.adapter is PolynomialAdapterImageView)
+        {
+            mPolynomialRecyclerImageViewAdapter.startLoading()
+        }
+    }
+
+    override fun stopLoadingInRecyclerView()
+    {
+        if(mPolynomialRecyclerView.adapter is PolynomialAdapterImageView)
+        {
+            mPolynomialRecyclerImageViewAdapter.stopLoading()
+        }
+    }
 }
 
 

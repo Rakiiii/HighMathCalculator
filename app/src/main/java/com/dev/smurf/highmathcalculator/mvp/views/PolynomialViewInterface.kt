@@ -48,4 +48,10 @@ interface PolynomialViewInterface : MvpView
 
     @StateStrategyType(SkipStrategy::class)
     fun getMaxSizeOfErrorDialog()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun startLoadingInRecyclerView()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun stopLoadingInRecyclerView()
 }

@@ -2,26 +2,17 @@ package com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters
 
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
-import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRenderInHolderStrategyConstracter
 import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.Utils.*
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
-import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.BindableViewHolder
-import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.MatrixViewHolder
-import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.RoundingProgressBarViewHolder
-import org.jetbrains.anko.imageBitmap
-import java.text.SimpleDateFormat
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.MatrixBindableViewHolder
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.MatrixViewHolderMatrix
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.RoundingProgressBarViewHolderMatrix
 
 
 class MatrixAdapterImageView(
@@ -30,7 +21,7 @@ class MatrixAdapterImageView(
     val secondMatrix: EditText,
     val width: Float
 ) :
-    RecyclerView.Adapter<BindableViewHolder>()
+    RecyclerView.Adapter<MatrixBindableViewHolder>()
 {
 
     private var loading = false
@@ -126,18 +117,18 @@ class MatrixAdapterImageView(
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindableViewHolder
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatrixBindableViewHolder
     {
         return when (viewType)
         {
-            0 -> RoundingProgressBarViewHolder(
+            0 -> RoundingProgressBarViewHolderMatrix(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.rounding_progress_bar_view_holder,
                     parent,
                     false
                 ), width
             )
-            else -> MatrixViewHolder(
+            else -> MatrixViewHolderMatrix(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.matrix_expressions_imageview,
                     parent,
@@ -148,38 +139,38 @@ class MatrixAdapterImageView(
     }
 
 
-    override fun onBindViewHolder(holder: BindableViewHolder, position: Int)
+    override fun onBindViewHolder(holderMatrix: MatrixBindableViewHolder, position: Int)
     {
 
-        if (holder is MatrixViewHolder)
+        if (holderMatrix is MatrixViewHolderMatrix)
         {
-            holder.bind(listOfMatrices[position])
+            holderMatrix.bind(listOfMatrices[position])
 
             //листенер для контекстного меню на левую матрицу
-            holder.leftMatrix.setOnCreateContextMenuListener(
+            holderMatrix.leftMatrix.setOnCreateContextMenuListener(
                 ContextMenuListener(
                     context,
                     firstMatrix,
                     secondMatrix,
-                    holder.leftMatrixValue
+                    holderMatrix.leftMatrixValue
                 )
             )
 
-            holder.resMatrix.setOnCreateContextMenuListener(
+            holderMatrix.resMatrix.setOnCreateContextMenuListener(
                 ContextMenuListener(
                     context,
                     firstMatrix,
                     secondMatrix,
-                    holder.resMatrixValue
+                    holderMatrix.resMatrixValue
                 )
             )
 
-            holder.rightMatrix.setOnCreateContextMenuListener(
+            holderMatrix.rightMatrix.setOnCreateContextMenuListener(
                 ContextMenuListener(
                     context,
                     firstMatrix,
                     secondMatrix,
-                    holder.rightMatrixValue
+                    holderMatrix.rightMatrixValue
                 )
             )
 
