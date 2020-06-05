@@ -368,13 +368,25 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     fun onResume()
     {
         updateSettings()
-        viewState.restoreFromViewModel()
+        if (!isLoaded)
+        {
+            presenterScope.launch(Dispatchers.IO)
+            {
+                uiScope.launch { viewState.startLoadingInRecyclerView() }
+                delay(500)
+                uiScope.launch {
+                    viewState.stopLoadingInRecyclerView()
+                    viewState.restoreFromViewModel()
+                }
+            }
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onPause()
     {
         viewState.saveRecyclerViewToViewModel()
+        isLoaded = false
     }
 
 
