@@ -20,9 +20,8 @@ import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.PolynomialPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
-import com.dev.smurf.highmathcalculator.ui.ViewModels.MatrixListenerViewModel
 import com.dev.smurf.highmathcalculator.ui.ViewModels.PolynomialListenerViewModel
-import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialAdapterImageView
+import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialImageAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
 import com.dev.smurf.highmathcalculator.ui.fragments.InputExceptionsDialogFragments.DefaultInputExceptionDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
@@ -31,7 +30,6 @@ import com.example.smurf.mtarixcalc.PolynomialRecyclerViewModel
 import com.example.smurf.mtarixcalc.PolynomialTxtAdapter
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_matrix.*
 import kotlinx.android.synthetic.main.fragment_polinom.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import moxy.MvpAppCompatFragment
@@ -59,7 +57,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     //recycler view для полиномов
     private lateinit var mPolynomialRecyclerView: RecyclerView
     private lateinit var mPolynomialRecyclerViewAdapter: PolynomialTxtAdapter
-    private lateinit var mPolynomialRecyclerImageViewAdapter: PolynomialAdapterImageView
+    private lateinit var mPolynomialImageAdapter: PolynomialImageAdapter
     private lateinit var mPolynomialRecyclerViewLayoutManager: LinearLayoutManager
 
     private lateinit var mBtnMatrixViewPagerAdapter: BtnViewPagerFragmentStateAdapter
@@ -162,8 +160,8 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
         val margin = 6 * requireContext().resources.displayMetrics.density
 
-        mPolynomialRecyclerImageViewAdapter =
-            PolynomialAdapterImageView(
+        mPolynomialImageAdapter =
+            PolynomialImageAdapter(
                 this.requireContext(),
                 firstPolinom,
                 secondPolinom,
@@ -172,7 +170,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
         mPolynomialRecyclerView = requireView().findViewById(R.id.polinomRecycler)
 
-        mPolynomialRecyclerView.adapter = mPolynomialRecyclerViewAdapter
+        mPolynomialRecyclerView.adapter = mPolynomialImageAdapter
 
         mPolynomialRecyclerView.layoutManager = mPolynomialRecyclerViewLayoutManager
     }
@@ -184,7 +182,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int)
             {
 
-                if (mPolynomialRecyclerView.adapter !is PolynomialAdapterImageView)
+                if (mPolynomialRecyclerView.adapter !is PolynomialImageAdapter)
                 {
                     var isUnded = false
 
@@ -218,16 +216,16 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
                     var isUnded = false
 
                     val position = viewHolder.absoluteAdapterPosition
-                    val item = mPolynomialRecyclerImageViewAdapter.getData(position)
+                    val item = mPolynomialImageAdapter.getData(position)
 
-                    mPolynomialRecyclerImageViewAdapter.removeElement(position)
+                    mPolynomialImageAdapter.removeElement(position)
 
 
                     val snackbar = Snackbar
                         .make(polinomFrame, "Item was removed from the list.", Snackbar.LENGTH_LONG)
                     snackbar.setAction("UNDO")
                     {
-                        mPolynomialRecyclerImageViewAdapter.restoreItem(item, position)
+                        mPolynomialImageAdapter.restoreItem(item, position)
                         isUnded = true
                         mPolynomialRecyclerView.scrollToPosition(position)
                     }
@@ -253,9 +251,9 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     override fun addToPolynomialRecyclerView(obj: PolynomialGroup)
     {
-        if (mPolynomialRecyclerView.adapter !is PolynomialAdapterImageView)
+        if (mPolynomialRecyclerView.adapter !is PolynomialImageAdapter)
             mPolynomialRecyclerViewAdapter.addElement(obj)
-        else mPolynomialRecyclerImageViewAdapter.addElement(obj)
+        else mPolynomialImageAdapter.addElement(obj)
     }
 
     override fun showToast(obj: String)
@@ -265,13 +263,13 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     override fun setRecyclerViewList(ar: MutableList<PolynomialGroup>)
     {
-        if (mPolynomialRecyclerView.adapter !is PolynomialAdapterImageView)
+        if (mPolynomialRecyclerView.adapter !is PolynomialImageAdapter)
         {
             mPolynomialRecyclerViewAdapter.setList(ar)
         }
         else
         {
-            mPolynomialRecyclerImageViewAdapter.setList(ar)
+            mPolynomialImageAdapter.setList(ar)
         }
     }
 
@@ -280,11 +278,12 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     {
         if (!isPaused && isRecycleViewInited())
         {
-            mPolynomialRecyclerImageViewAdapter.setList(
+            Log.d("loading@","image adapter seted")
+            mPolynomialImageAdapter.setList(
                 mPolynomialRecyclerViewAdapter.getList()
             )
-            mPolynomialRecyclerView.adapter = mPolynomialRecyclerImageViewAdapter
-            mPolynomialRecyclerImageViewAdapter.notifyDataSetChanged()
+            mPolynomialRecyclerView.adapter = mPolynomialImageAdapter
+            mPolynomialImageAdapter.notifyDataSetChanged()
         }
     }
 
@@ -293,7 +292,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         if (!isPaused && isRecycleViewInited())
         {
             mPolynomialRecyclerViewAdapter.setList(
-                mPolynomialRecyclerImageViewAdapter.getList()
+                mPolynomialImageAdapter.getList()
             )
             mPolynomialRecyclerView.adapter = mPolynomialRecyclerViewAdapter
             mPolynomialRecyclerViewAdapter.notifyDataSetChanged()
@@ -310,10 +309,10 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         //востанавливаемя из view model
         if (!mPolynomialRecyclerViewModel.isEmpty())
         {
-            if (mPolynomialRecyclerView.adapter !is PolynomialAdapterImageView) mPolynomialRecyclerViewAdapter.setList(
+            if (mPolynomialRecyclerView.adapter !is PolynomialImageAdapter) mPolynomialRecyclerViewAdapter.setList(
                 mPolynomialRecyclerViewModel.getList()
             )
-            else mPolynomialRecyclerImageViewAdapter.setList(
+            else mPolynomialImageAdapter.setList(
                 mPolynomialRecyclerViewModel.getList()
             )
         }
@@ -325,7 +324,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     override fun saveRecyclerViewToViewModel()
     {
         mPolynomialRecyclerViewModel.updateList(
-            (if (mPolynomialRecyclerView.adapter is PolynomialAdapterImageView) mPolynomialRecyclerImageViewAdapter.getList()
+            (if (mPolynomialRecyclerView.adapter is PolynomialImageAdapter) mPolynomialImageAdapter.getList()
             else mPolynomialRecyclerViewAdapter.getList())
         )
     }
@@ -349,7 +348,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     private fun isRecycleViewInited() =
         (::mPolynomialRecyclerView.isInitialized &&
                 ::mPolynomialRecyclerViewAdapter.isInitialized &&
-                ::mPolynomialRecyclerImageViewAdapter.isInitialized &&
+                ::mPolynomialImageAdapter.isInitialized &&
                 ::mPolynomialRecyclerViewLayoutManager.isInitialized
                 )
 
@@ -448,17 +447,19 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     override fun startLoadingInRecyclerView()
     {
-        if(mPolynomialRecyclerView.adapter is PolynomialAdapterImageView)
+        if(mPolynomialRecyclerView.adapter is PolynomialImageAdapter)
         {
-            mPolynomialRecyclerImageViewAdapter.startLoading()
+            Log.d("loading@","start loading")
+            mPolynomialImageAdapter.startLoading()
         }
+        else Log.d("loading@","txt adapter setted")
     }
 
     override fun stopLoadingInRecyclerView()
     {
-        if(mPolynomialRecyclerView.adapter is PolynomialAdapterImageView)
+        if(mPolynomialRecyclerView.adapter is PolynomialImageAdapter)
         {
-            mPolynomialRecyclerImageViewAdapter.stopLoading()
+            mPolynomialImageAdapter.stopLoading()
         }
     }
 }

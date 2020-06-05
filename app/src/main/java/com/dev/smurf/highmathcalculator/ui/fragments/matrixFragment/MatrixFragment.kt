@@ -192,7 +192,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
         mMatrixRecyclerView.layoutManager = mMatrixRecyclerLayoutManager
 
-        mMatrixRecyclerView.adapter = mMatrixRecyclerTextAdapter
+        mMatrixRecyclerView.adapter = mMatrixRecyclerImageAdapter
 
     }
 
@@ -236,6 +236,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         if (!isPaused && isRecycleViewInitted())
         {
+            Log.d("loading@","image adapter seted")
             mMatrixRecyclerImageAdapter.setList(
                 mMatrixRecyclerTextAdapter.getList()
             )
@@ -504,6 +505,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         if(mMatrixRecyclerView.adapter is MatrixAdapterImageView)
         {
+            Log.d("loading@","start loading")
             mMatrixRecyclerImageAdapter.startLoading()
         }
     }

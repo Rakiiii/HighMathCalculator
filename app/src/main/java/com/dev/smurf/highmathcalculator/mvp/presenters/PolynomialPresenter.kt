@@ -426,7 +426,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     fun onLoadSavedInstance()
     {
         presenterScope.launch(Dispatchers.IO + errorHandler) {
-            uiScope.launch { viewState.startLoadingInRecyclerView() }
+            Log.d("loading","before loading call")
+            uiScope.launch { viewState.startLoadingInRecyclerView();Log.d("loading","after loading call") }
             val result = mPolynomialDataBaseModel.selectAll().reversed()
             delay(1000)
             uiScope.launch {

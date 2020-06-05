@@ -17,7 +17,7 @@ import com.example.smurf.mtarixcalc.PolynomialGroup
 import java.util.*
 import kotlin.collections.ArrayList
 
-class PolynomialAdapterImageView(
+class PolynomialImageAdapter(
     val context: Context,
     val polFirstPolynomial: EditText,
     val polSecPolynomial: EditText,
@@ -121,6 +121,7 @@ class PolynomialAdapterImageView(
             (listOfPolynomials[position].polLeftPolynomial == PolynomialBase.EmptyPolynomial
                     && listOfPolynomials[position].polRightPolynomial == PolynomialBase.EmptyPolynomial
                     ) -> 0
+            loading && position == 0 -> 0
             else -> 1
         }
     }
