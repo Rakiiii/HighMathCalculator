@@ -132,6 +132,14 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
             secondPolinom.text = tmp
         }
 
+        btnFirstPolynomialDelete.setOnClickListener {
+            firstPolinom.text?.clear()
+        }
+
+        btnSecondPolynomialDelete.setOnClickListener {
+            secondPolinom.text?.clear()
+        }
+
         polynomialScroller.setOnScrollChangeListener(ExtraScroller(this))
     }
 

@@ -131,6 +131,13 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
             secondMatrix.text = tmp
         }
 
+        btnFirstMatrixDelete.setOnClickListener {
+            firstMatrix.text?.clear()
+        }
+        btnSecondMatrixDelete.setOnClickListener {
+            secondMatrix.text?.clear()
+        }
+
         //matrixRecycler.addOnScrollListener(ToScroller.createToScroller(this)!!)
         scroll.setOnScrollChangeListener(ExtraScroller(this))
 
