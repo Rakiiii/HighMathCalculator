@@ -390,8 +390,10 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onPause()
     {
+        viewState.setTopPosition()
         viewState.stopLoadingInRecyclerView()
         viewState.saveRecyclerViewToViewModel()
+        viewState.clearRecyclerView()
         isLoaded = !isLoaded
     }
 

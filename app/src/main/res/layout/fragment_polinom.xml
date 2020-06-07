@@ -8,16 +8,18 @@
              style="@style/frameLayoutStyle">
 
     <androidx.core.widget.NestedScrollView
+            android:id="@+id/polynomialScroller"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"
             tools:context=".activity_polinom_calc"
             android:fillViewport="true">
 
         <LinearLayout
+                android:layout_marginTop="72dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="72dp"
         >
 
 
@@ -112,7 +114,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/polinomRecycler"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="550dp"
                         android:layout_marginTop="5dp"
                         android:clipToPadding="false"
                         android:padding="5dp"

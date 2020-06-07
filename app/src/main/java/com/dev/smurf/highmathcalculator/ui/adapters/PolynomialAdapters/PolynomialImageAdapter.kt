@@ -79,7 +79,7 @@ class PolynomialImageAdapter(
     //очиститть список элементов
     fun clear()
     {
-        listOfPolynomials.clear()
+        listOfPolynomials = ArrayList()
         notifyDataSetChanged()
     }
 

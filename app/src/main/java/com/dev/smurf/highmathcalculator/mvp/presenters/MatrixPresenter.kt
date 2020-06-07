@@ -372,7 +372,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume()
     {
-        //viewState.getMaxSizeOfErrorDialog()
         updateSettings()
         if (!isLoaded)
         {
@@ -395,8 +394,10 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onPause()
     {
+        viewState.setTopPosition()
         viewState.stopLoadingInRecyclerView()
         viewState.saveListRecyclerViewViewModel()
+        viewState.clearRecyclerView()
         isLoaded = !isLoaded
     }
 

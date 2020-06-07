@@ -30,7 +30,7 @@ class MatrixAdapter(val context: Context, val firstMatrix : EditText, val second
         //очистка списка элементов
         fun clear()
         {
-            listOfMatrices.clear()
+            listOfMatrices = ArrayList()
             //Log.d("RV@" , "clear list")
             notifyDataSetChanged()
         }

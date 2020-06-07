@@ -2,6 +2,7 @@ package com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters
 
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
@@ -69,7 +70,7 @@ class MatrixAdapterImageView(
     //очистка списка элементов
     fun clear()
     {
-        listOfMatrices.clear()
+        listOfMatrices = ArrayList()
         notifyDataSetChanged()
     }
 
@@ -138,6 +139,7 @@ class MatrixAdapterImageView(
         }
     }
 
+    private var counter = 0
 
     override fun onBindViewHolder(holderMatrix: MatrixBindableViewHolder, position: Int)
     {
@@ -145,6 +147,8 @@ class MatrixAdapterImageView(
         if (holderMatrix is MatrixViewHolderMatrix)
         {
             holderMatrix.bind(listOfMatrices[position])
+            counter++
+            //Log.d("recycler@","on bind view holder "+counter.toString())
 
             //листенер для контекстного меню на левую матрицу
             holderMatrix.leftMatrix.setOnCreateContextMenuListener(

@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.PolynomialPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
+import com.dev.smurf.highmathcalculator.ui.CustomRecylerViewLayoutManagers.LayoutManagerWithOffableScroll
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.ViewModels.PolynomialListenerViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialImageAdapter
@@ -30,6 +32,7 @@ import com.example.smurf.mtarixcalc.PolynomialRecyclerViewModel
 import com.example.smurf.mtarixcalc.PolynomialTxtAdapter
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_matrix.*
 import kotlinx.android.synthetic.main.fragment_polinom.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import moxy.MvpAppCompatFragment
@@ -58,7 +61,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     private lateinit var mPolynomialRecyclerView: RecyclerView
     private lateinit var mPolynomialRecyclerViewAdapter: PolynomialTxtAdapter
     private lateinit var mPolynomialImageAdapter: PolynomialImageAdapter
-    private lateinit var mPolynomialRecyclerViewLayoutManager: LinearLayoutManager
+    private lateinit var mPolynomialRecyclerViewLayoutManager: LayoutManagerWithOffableScroll
 
     private lateinit var mBtnMatrixViewPagerAdapter: BtnViewPagerFragmentStateAdapter
     private var benFragmentSet = mutableListOf<Fragment>()
@@ -128,7 +131,40 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
             secondPolinom.text = tmp
         }
 
+        polynomialScroller.setOnScrollChangeListener(ExtraScroller(this))
     }
+
+    private class ExtraScroller(val polynomialFragment: PolynomialFragment) :
+        NestedScrollView.OnScrollChangeListener
+    {
+        private val someScrollConst = 300
+        override fun onScrollChange(
+            v: androidx.core.widget.NestedScrollView?,
+            scrollX: Int,
+            scrollY: Int,
+            oldScrollX: Int,
+            oldScrollY: Int
+        )
+        {
+            v ?: return
+            //Log.d("recycler@", "bottom ${v.bottom} scrollY $scrollY oldScrollY $oldScrollY height ${-(v.measuredHeight - v.getChildAt(0).measuredHeight)}")
+            if ((scrollY ==  -(v.measuredHeight - v.getChildAt(0).measuredHeight)) || !v.canScrollVertically(1) && v.canScrollVertically(-1))
+            {
+                polynomialFragment.mPolynomialRecyclerViewLayoutManager.isVerticalScrollEnable = true
+                polynomialFragment.polinomRecycler.smoothScrollBy(0,someScrollConst)
+                return
+            }
+            if (!polynomialFragment.mPolynomialRecyclerViewLayoutManager.isVerticalScrollEnable) return
+            if ( v.canScrollVertically(1) && !v.canScrollVertically(-1))
+            {
+                polynomialFragment.mPolynomialRecyclerViewLayoutManager.isVerticalScrollEnable =
+                    false
+
+            }
+
+        }
+    }
+
 
 
     override fun onResume()
@@ -150,7 +186,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     private fun initRecyclerView()
     {
-        mPolynomialRecyclerViewLayoutManager = LinearLayoutManager(this.context)
+        mPolynomialRecyclerViewLayoutManager = LayoutManagerWithOffableScroll(context)
 
         mPolynomialRecyclerViewAdapter =
             PolynomialTxtAdapter(this.requireContext(), firstPolinom, secondPolinom)
@@ -461,6 +497,17 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         {
             mPolynomialImageAdapter.stopLoading()
         }
+    }
+
+    override fun clearRecyclerView()
+    {
+        if(polinomRecycler.adapter is PolynomialImageAdapter) mPolynomialImageAdapter.clear()
+        else mPolynomialRecyclerViewAdapter.clear()
+    }
+
+    override fun setTopPosition()
+    {
+        polynomialScroller.scrollTo(0,0)
     }
 }
 

@@ -3,7 +3,6 @@ package com.dev.smurf.highmathcalculator.ui.fragments.matrixFragment
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Point
-import android.os.Build
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.Log
@@ -11,16 +10,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import androidx.fragment.app.DialogFragment
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
+import com.dev.smurf.highmathcalculator.ui.CustomRecylerViewLayoutManagers.LayoutManagerWithOffableScroll
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.ViewModels.MatrixListenerViewModel
@@ -49,7 +48,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
 
     private lateinit var mMatrixRecyclerView: RecyclerView
-    private lateinit var mMatrixRecyclerLayoutManager: LinearLayoutManager
+    private lateinit var mMatrixRecyclerLayoutManager: LayoutManagerWithOffableScroll
     private lateinit var mMatrixRecyclerTextAdapter: MatrixAdapter
     private lateinit var mMatrixRecyclerImageAdapter: MatrixAdapterImageView
     private lateinit var mBtnMatrixViewPagerAdapter: BtnViewPagerFragmentStateAdapter
@@ -127,6 +126,44 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
             firstMatrix.text = secondMatrix.text
             secondMatrix.text = tmp
         }
+
+        //matrixRecycler.addOnScrollListener(ToScroller.createToScroller(this)!!)
+        scroll.setOnScrollChangeListener(ExtraScroller(this))
+
+
+    }
+
+    private class ExtraScroller(val matrixFragment: MatrixFragment) :
+        NestedScrollView.OnScrollChangeListener
+    {
+        private val someScrollConst = 300
+        override fun onScrollChange(
+            v: androidx.core.widget.NestedScrollView?,
+            scrollX: Int,
+            scrollY: Int,
+            oldScrollX: Int,
+            oldScrollY: Int
+        )
+        {
+            v ?: return
+            if ((scrollY == -(v.measuredHeight - v.getChildAt(0).measuredHeight)) || !v.canScrollVertically(
+                    1
+                ) && v.canScrollVertically(-1)
+            )
+            {
+                matrixFragment.mMatrixRecyclerLayoutManager.isVerticalScrollEnable = true
+                matrixFragment.matrixRecycler.smoothScrollBy(0, someScrollConst)
+                return
+            }
+            if (!matrixFragment.mMatrixRecyclerLayoutManager.isVerticalScrollEnable) return
+            if (v.canScrollVertically(1) && !v.canScrollVertically(-1))
+            {
+                matrixFragment.mMatrixRecyclerLayoutManager.isVerticalScrollEnable =
+                    false
+
+            }
+
+        }
     }
 
 
@@ -167,7 +204,10 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     private fun initRecyclerView()
     {
         if (isRecycleViewInitted()) return
-        mMatrixRecyclerLayoutManager = LinearLayoutManager(context)
+        mMatrixRecyclerLayoutManager =
+            LayoutManagerWithOffableScroll(
+                context
+            )//LinearLayoutManager(context)
 
         mMatrixRecyclerTextAdapter =
             MatrixAdapter(
@@ -236,7 +276,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         if (!isPaused && isRecycleViewInitted())
         {
-            Log.d("loading@","image adapter seted")
+            Log.d("loading@", "image adapter seted")
             mMatrixRecyclerImageAdapter.setList(
                 mMatrixRecyclerTextAdapter.getList()
             )
@@ -473,10 +513,16 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         matrixListenerViewModel.updateListener(this)
     }
 
-    override fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float, errorText: String)
+    override fun showErrorDialog(
+        errorBitmap: Bitmap,
+        width: Float,
+        height: Float,
+        errorText: String
+    )
     {
         Log.d("errorDialog@", "show dialog")
-        errorDialogFragment = DefaultInputExceptionDialogFragment(errorBitmap, this, width, height,errorText)
+        errorDialogFragment =
+            DefaultInputExceptionDialogFragment(errorBitmap, this, width, height, errorText)
         errorDialogFragment.show(childFragmentManager, "ERROR_DIALOG")
     }
 
@@ -503,19 +549,30 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun startLoadingInRecyclerView()
     {
-        if(mMatrixRecyclerView.adapter is MatrixAdapterImageView)
+        if (mMatrixRecyclerView.adapter is MatrixAdapterImageView)
         {
-            Log.d("loading@","start loading")
+            Log.d("loading@", "start loading")
             mMatrixRecyclerImageAdapter.startLoading()
         }
     }
 
     override fun stopLoadingInRecyclerView()
     {
-        if(mMatrixRecyclerView.adapter is MatrixAdapterImageView)
+        if (mMatrixRecyclerView.adapter is MatrixAdapterImageView)
         {
             mMatrixRecyclerImageAdapter.stopLoading()
         }
+    }
+
+    override fun clearRecyclerView()
+    {
+        if (matrixRecycler.adapter is MatrixAdapterImageView) mMatrixRecyclerImageAdapter.clear()
+        else mMatrixRecyclerTextAdapter.clear()
+    }
+
+    override fun setTopPosition()
+    {
+        scroll.scrollTo(0,0)
     }
 }
 

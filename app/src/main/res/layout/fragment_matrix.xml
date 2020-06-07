@@ -8,6 +8,7 @@
         tools:context=".ui.fragments.matrixFragment.MatrixFragment">
 
     <androidx.core.widget.NestedScrollView
+            android:overScrollMode="never"
             android:id="@+id/scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -15,9 +16,9 @@
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_marginTop="72dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="72dp"
                 android:orientation="vertical">
 
 
@@ -122,7 +123,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/matrixRecycler"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="550dp"
                         android:layout_marginTop="5dp"
                         android:clickable="true"
                         android:clipToPadding="false"

@@ -37,7 +37,7 @@ class PolynomialTxtAdapter(val context: Context, val polFirstPolynomial: EditTex
     //очиститть список элементов
     fun clear()
     {
-        listOfPolynomials.clear()
+        listOfPolynomials = ArrayList()
         notifyDataSetChanged()
     }
 

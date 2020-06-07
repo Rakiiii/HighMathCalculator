@@ -59,4 +59,10 @@ interface MatrixViewInterface : MvpView
 
     @StateStrategyType(SkipStrategy::class)
     fun stopLoadingInRecyclerView()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun clearRecyclerView()
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun setTopPosition()
 }
