@@ -54,38 +54,79 @@
                         <com.google.android.material.textfield.TextInputEditText
                                 style="@style/edttxtStylePolinom"
                                 android:id="@+id/firstPolinom"
-                                android:layout_width="match_parent"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
 
-                                android:layout_weight="1.0"
+                                android:layout_weight="6"
 
                                 android:hint="@string/hintPolinomA"/>
 
+                    <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_weight="1">
+                        <Button
+                                android:id="@+id/btnFirstPolynomialDelete"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_gravity="center_vertical"
+                                android:background="@drawable/ic_highlight_off_24px"
+
+                                android:gravity="center_vertical" />
                         <Button
                                 android:id="@+id/btnSwapPolynomial"
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-
-                                android:layout_weight="1.0"
+                                android:gravity="center_vertical"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="center_vertical"
 
                                 android:background="@drawable/ic_swap_vert_black_24dp"
                         />
+                    </RelativeLayout>
 
                 </LinearLayout>
+                <LinearLayout
+                        android:id="@+id/lowerPolynomialInputSet"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+
+                        app:layout_constraintTop_toBottomOf="@id/firstPolinomLayout"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
                         style="@style/edttxtStylePolinom"
                         android:id="@+id/secondPolinom"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
+                        android:layout_weight="6"
 
-                        app:layout_constraintTop_toBottomOf="@id/firstPolinomLayout"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
+
 
                         android:hint="@string/hintPolinomB"/>
+                    <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_weight="1">
+                        <Button
+                                android:id="@+id/btnSecondPolynomialDelete"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+
+                                android:layout_gravity="center_vertical"
+                                android:background="@drawable/ic_highlight_off_24px"
+
+                                android:gravity="center_vertical" />
+                    </RelativeLayout>
+
+                </LinearLayout>
 
                 <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/buttonViewPagerPolynomail"
@@ -96,7 +137,7 @@
                         android:layout_marginEnd="5dp"
                         android:layout_marginBottom="6dp"
 
-                        app:layout_constraintTop_toBottomOf="@id/secondPolinom"
+                        app:layout_constraintTop_toBottomOf="@id/lowerPolynomialInputSet"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent">
