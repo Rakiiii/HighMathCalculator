@@ -87,7 +87,10 @@ class PolynomialImageAdapter(
     fun removeElement(position: Int)
     {
         listOfPolynomials.removeAt(position)
-        notifyDataSetChanged()
+
+        notifyItemRemoved(position)
+
+        //notifyDataSetChanged()
     }
 
 
@@ -111,7 +114,7 @@ class PolynomialImageAdapter(
     {
         if (loading) newArrayList.add(0, listOfPolynomials[0])
         listOfPolynomials = newArrayList
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, listOfPolynomials.size - 1)
     }
 
     override fun getItemViewType(position: Int): Int

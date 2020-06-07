@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.animation.OvershootInterpolator
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -31,6 +32,9 @@ import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settinga
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.fragment_matrix.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
@@ -233,6 +237,10 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
         mMatrixRecyclerView.adapter = mMatrixRecyclerImageAdapter
 
+        matrixRecycler.itemAnimator = SlideInRightAnimator()
+        matrixRecycler.itemAnimator?.apply {
+            addDuration = 400
+        }
     }
 
     private fun initViewPager()

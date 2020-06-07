@@ -79,7 +79,7 @@ class MatrixAdapterImageView(
     fun removeElement(position: Int)
     {
         listOfMatrices.removeAt(position)
-        notifyDataSetChanged()
+        notifyItemRemoved(position)
     }
 
     //получить элемент из позиции position
@@ -100,7 +100,7 @@ class MatrixAdapterImageView(
     {
         if (loading) newArray.add(0, listOfMatrices[0])
         listOfMatrices = newArray
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0,listOfMatrices.size-1)
     }
 
     //получение всего списка элементов

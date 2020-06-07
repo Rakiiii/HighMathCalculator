@@ -32,6 +32,7 @@ import com.example.smurf.mtarixcalc.PolynomialRecyclerViewModel
 import com.example.smurf.mtarixcalc.PolynomialTxtAdapter
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
 import kotlinx.android.synthetic.main.fragment_matrix.*
 import kotlinx.android.synthetic.main.fragment_polinom.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -209,6 +210,11 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         mPolynomialRecyclerView.adapter = mPolynomialImageAdapter
 
         mPolynomialRecyclerView.layoutManager = mPolynomialRecyclerViewLayoutManager
+
+        polinomRecycler.itemAnimator = SlideInRightAnimator()
+        polinomRecycler.itemAnimator?.apply {
+            addDuration = 400
+        }
     }
 
     private fun enableSwipeToDeleteAndUndo()
