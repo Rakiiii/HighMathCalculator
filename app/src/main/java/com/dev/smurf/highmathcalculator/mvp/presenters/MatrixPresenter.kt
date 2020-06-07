@@ -168,10 +168,9 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
     fun onPlusClick(firstMatrix: String, secondMatrix: String)
     {
-
+        if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
-
             //сохраняем время начала операции
             val time = java.util.GregorianCalendar()
             time.timeInMillis = System.currentTimeMillis()
@@ -191,7 +190,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
     fun onMinusClick(firstMatrix: String, secondMatrix: String)
     {
-
+        if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
@@ -214,6 +213,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
     fun onTimesClick(firstMatrix: String, secondMatrix: String)
     {
+        if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
@@ -236,6 +236,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
     fun onInversClick(firstMatrix: String)
     {
+        if (firstMatrix.isEmpty()) return
         //CoroutineScope(Dispatchers.Main)
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
@@ -257,7 +258,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
     fun onDeterminantClick(firstMatrix: String)
     {
-
+        if (firstMatrix.isEmpty()) return
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
@@ -384,7 +385,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
                     viewState.restoreFromViewModel()
                 }
             }
-        }else
+        }
+        else
         {
             onLoadSavedInstance()
             isLoaded = true

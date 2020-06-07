@@ -253,6 +253,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     //нажатие кнопки плюс
     fun onPlusClick(left: String, right: String)
     {
+        if(left.isEmpty() || right.isEmpty())return
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
@@ -277,6 +278,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     //@SuppressLint("StaticFieldLeak")
     fun onMinusClick(left: String, right: String)
     {
+        if(left.isEmpty() || right.isEmpty())return
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
@@ -301,6 +303,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     //@SuppressLint("StaticFieldLeak")
     fun onTimesClick(left: String, right: String)
     {
+        if(left.isEmpty() || right.isEmpty())return
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
@@ -323,6 +326,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     //@SuppressLint("StaticFieldLeak")
     fun onDivisionClick(left: String, right: String)
     {
+        if(left.isEmpty() || right.isEmpty())return
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
