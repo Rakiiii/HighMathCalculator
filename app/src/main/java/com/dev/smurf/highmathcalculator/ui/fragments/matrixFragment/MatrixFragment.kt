@@ -130,7 +130,6 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         //matrixRecycler.addOnScrollListener(ToScroller.createToScroller(this)!!)
         scroll.setOnScrollChangeListener(ExtraScroller(this))
 
-
     }
 
     private class ExtraScroller(val matrixFragment: MatrixFragment) :
@@ -263,8 +262,9 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         if (matrixRecycler.adapter !is MatrixAdapterImageView)
             mMatrixRecyclerTextAdapter.addNewElem(obj)
-        else mMatrixRecyclerImageAdapter.addNewElem(obj)
-
+        else
+            mMatrixRecyclerImageAdapter.addNewElem(obj)
+        mMatrixRecyclerLayoutManager.scrollToPosition(0)
     }
 
     override fun showToast(obj: String)

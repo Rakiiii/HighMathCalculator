@@ -290,6 +290,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         if (mPolynomialRecyclerView.adapter !is PolynomialImageAdapter)
             mPolynomialRecyclerViewAdapter.addElement(obj)
         else mPolynomialImageAdapter.addElement(obj)
+        mPolynomialRecyclerViewLayoutManager.scrollToPosition(0)
     }
 
     override fun showToast(obj: String)
