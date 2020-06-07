@@ -1,8 +1,11 @@
 package com.dev.smurf.highmathcalculator.CanvasExtension
 
+import android.app.Application
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
+import com.dev.smurf.highmathcalculator.CalculatorApplication
+import com.dev.smurf.highmathcalculator.R
 import java.lang.reflect.Type
 
 class CanvasRenderSpecification
@@ -43,7 +46,8 @@ class CanvasRenderSpecification
         fun createBlackPainter() : Paint
         {
             val blackPainter = Paint(Color.BLACK)
-
+            //blackPainter.color = CalculatorApplication.context.getColor(R.color.darker_gray)
+            blackPainter.color = Color.GRAY
             blackPainter.typeface = Typeface.SERIF
 
 
