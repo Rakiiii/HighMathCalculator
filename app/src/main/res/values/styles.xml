@@ -11,6 +11,10 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@android:color/darker_gray</item>
         <item name="android:fontFamily">bold</item>
+
+
+        <!--item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">true</item-->
     </style>
 
     <style name="MainActivityBtn" parent="MainTheme">
@@ -24,7 +28,7 @@
         <item name="android:layout_width">wrap_content</item>
     </style>
     <style name="btnStyle" parent="MainTheme">
-        <item name="android:background">@drawable/button_shape</item>
+        <item name="android:background">@drawable/button_click</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_columnWeight">1</item>
