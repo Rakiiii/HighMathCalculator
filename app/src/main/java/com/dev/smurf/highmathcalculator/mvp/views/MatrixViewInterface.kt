@@ -4,10 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Matrix
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import moxy.MvpView
-import moxy.viewstate.strategy.AddToEndSingleStrategy
-import moxy.viewstate.strategy.AddToEndStrategy
-import moxy.viewstate.strategy.SkipStrategy
-import moxy.viewstate.strategy.StateStrategyType
+import moxy.viewstate.strategy.*
 
 @StateStrategyType(value = AddToEndStrategy::class)
 interface MatrixViewInterface : MvpView
@@ -21,7 +18,7 @@ interface MatrixViewInterface : MvpView
     fun showToast(obj: String)
 
     //установить новый список в Recycler view
-    @StateStrategyType(SkipStrategy::class)
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun setRecyclerViewList(ar: MutableList<MatrixGroup>)
 
     @StateStrategyType(SkipStrategy::class)
@@ -47,10 +44,10 @@ interface MatrixViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun setObservable()
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float, errorText: String)
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun dismissErrorDialog()
 
     @StateStrategyType(SkipStrategy::class)

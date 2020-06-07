@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
+import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.SkipStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
@@ -12,12 +13,15 @@ import moxy.viewstate.strategy.StateStrategyType
 interface PolynomialViewInterface : MvpView
 {
     //добавить в recycler view с полиномами новый элемент
+    @StateStrategyType(SkipStrategy::class)
     fun addToPolynomialRecyclerView(obj: PolynomialGroup)
 
     //вывести что-то в тост
+    @StateStrategyType(SkipStrategy::class)
     fun showToast(obj: String)
 
     //установить новый список элементов RecyclerView
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun setRecyclerViewList(ar: MutableList<PolynomialGroup>)
 
     //set @position btn fragment
@@ -40,10 +44,10 @@ interface PolynomialViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun setObserver()
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float, errorText: String)
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun dismissErrorDialog()
 
     @StateStrategyType(SkipStrategy::class)

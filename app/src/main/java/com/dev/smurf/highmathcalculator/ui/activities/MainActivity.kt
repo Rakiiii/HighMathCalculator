@@ -59,6 +59,7 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface,
 
         mainViewPager.adapter = mViewPagerFragmentStateAdapter
 
+        mainViewPager.isUserInputEnabled = false
 
         supportActionBar?.hide()
 

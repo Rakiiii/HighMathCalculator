@@ -117,7 +117,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         //init view oager for button fragments
         initViewPager()
         //off view pager swap page by gesture
-        buttonViewPagerPolynomail.isUserInputEnabled = false
+        //buttonViewPagerPolynomail.isUserInputEnabled = false
 
         //добавление удаления свайпом
         enableSwipeToDeleteAndUndo()

@@ -363,8 +363,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         viewState.setObservable()
         if (!isLoaded)
         {
-            isLoaded = true
             onLoadSavedInstance()
+            isLoaded = true
         }
     }
 
@@ -385,14 +385,19 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
                     viewState.restoreFromViewModel()
                 }
             }
+        }else
+        {
+            onLoadSavedInstance()
+            isLoaded = true
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onPause()
     {
+        viewState.stopLoadingInRecyclerView()
         viewState.saveListRecyclerViewViewModel()
-        isLoaded = false
+        isLoaded = !isLoaded
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
@@ -423,8 +428,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         presenterScope.launch(Dispatchers.IO + supJob + errorHandler)
         {
             uiScope.launch { viewState.startLoadingInRecyclerView() }
+            delay(1500)
             val result = mMatrixDataBaseModel.selectAll().reversed().toMutableList()
-            delay(1000)
             uiScope.launch {
                 viewState.stopLoadingInRecyclerView()
                 viewState.setRecyclerViewList(result)

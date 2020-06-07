@@ -119,7 +119,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         enableSwipeToDeleteAndUndo()
 
         //off view pager swap page by gesture
-        buttonViewPager.isUserInputEnabled = false
+        //buttonViewPager.isUserInputEnabled = false
 
         //swap matrix btn listener
         btnSwap.setOnClickListener {

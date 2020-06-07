@@ -359,8 +359,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         viewState.setObserver()
         if (!isLoaded)
         {
-            isLoaded = true
             onLoadSavedInstance()
+            isLoaded = true
         }
     }
 
@@ -380,13 +380,19 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
                 }
             }
         }
+        else
+        {
+            onLoadSavedInstance()
+            isLoaded = true
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onPause()
     {
+        viewState.stopLoadingInRecyclerView()
         viewState.saveRecyclerViewToViewModel()
-        isLoaded = false
+        isLoaded = !isLoaded
     }
 
 
