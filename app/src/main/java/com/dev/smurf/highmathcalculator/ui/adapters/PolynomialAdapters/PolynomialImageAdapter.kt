@@ -27,11 +27,13 @@ class PolynomialImageAdapter(
 {
 
     private var loading = false
+    private var dropAnimations = false
 
     fun startLoading()
     {
         if (!loading)
         {
+            dropAnimations = false
             loading = true
             listOfPolynomials.add(
                 0,
@@ -41,7 +43,7 @@ class PolynomialImageAdapter(
                     polResPolynomial = PolynomialBase.EmptyPolynomial,
                     polOstPolynomial = PolynomialBase.EmptyPolynomial,
                     polSignPolynomial = "",
-                    time = java.util.GregorianCalendar()
+                    time = GregorianCalendar()
                 )
             )
             notifyItemInserted(0)
@@ -73,6 +75,7 @@ class PolynomialImageAdapter(
     fun addElement(PolynomialGroup: PolynomialGroup)
     {
         listOfPolynomials.add(0, PolynomialGroup)
+        dropAnimations = true
         notifyItemInserted(0)
     }
 
@@ -155,7 +158,7 @@ class PolynomialImageAdapter(
 
     override fun onBindViewHolder(holder: PolynomialBindableViewHolder, position: Int)
     {
-
+        holder.doDropAnimations = dropAnimations
         if (holder is PolynomialImageViewHolder)
         {
             holder.bind(listOfPolynomials[position])

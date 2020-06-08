@@ -26,11 +26,13 @@ class MatrixAdapterImageView(
 {
 
     private var loading = false
+    private var dropAnimations = false
 
     fun startLoading()
     {
         if(!loading)
         {
+            dropAnimations = false
             loading = true
             listOfMatrices.add(
                 0,
@@ -63,6 +65,7 @@ class MatrixAdapterImageView(
     fun addNewElem(group: MatrixGroup)
     {
         listOfMatrices.add(0, group)
+        dropAnimations = true
         notifyItemInserted(0)
 
     }
@@ -143,7 +146,7 @@ class MatrixAdapterImageView(
 
     override fun onBindViewHolder(holderMatrix: MatrixBindableViewHolder, position: Int)
     {
-
+        holderMatrix.doDropAnimations = dropAnimations
         if (holderMatrix is MatrixViewHolderMatrix)
         {
             holderMatrix.bind(listOfMatrices[position])

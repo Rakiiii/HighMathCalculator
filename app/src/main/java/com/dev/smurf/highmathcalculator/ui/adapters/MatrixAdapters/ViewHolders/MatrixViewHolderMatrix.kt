@@ -3,6 +3,8 @@ package com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewPropertyAnimatorListener
+import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRenderInHolderStrategyConstracter
 import com.dev.smurf.highmathcalculator.R
@@ -14,6 +16,8 @@ import java.text.SimpleDateFormat
 class MatrixViewHolderMatrix constructor(itemView: View, width: Float) :
     MatrixBindableViewHolder(itemView, width)
 {
+
+
     //val width: Float = 40.0f
 
     var leftMatrix: ImageView = itemView.findViewById(R.id.leftMatrix)
