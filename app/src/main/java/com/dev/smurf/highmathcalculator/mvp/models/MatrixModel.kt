@@ -34,6 +34,17 @@ class MatrixModel
         return obj
     }
 
+    private fun solve(matrix: Matrix): MatrixGroup
+    {
+        val res = matrix.solve()
+        return  MatrixGroup(
+            leftMatrix = matrix,
+            rightMatrix = Matrix.EmptyMatrix,
+            resMatrix = res,
+            sign = "solve"
+        )
+    }
+
 
     //определитель матрицы
     private fun determinant(left: Matrix): MatrixGroup
@@ -72,38 +83,57 @@ class MatrixModel
     }
 
 
-    suspend fun MatrixPlus(scope : CoroutineScope, leftMatrix : String, rightMatrix : String) : MatrixGroup
+    suspend fun MatrixPlus(
+        scope: CoroutineScope,
+        leftMatrix: String,
+        rightMatrix: String
+    ): MatrixGroup
     {
         return withContext(scope.coroutineContext + Dispatchers.Default) {
             plus(createMatrix(leftMatrix), createMatrix(rightMatrix))
         }
     }
 
-    suspend fun MatrixMinus(scope : CoroutineScope, leftMatrix : String, rightMatrix : String) : MatrixGroup
+    suspend fun MatrixMinus(
+        scope: CoroutineScope,
+        leftMatrix: String,
+        rightMatrix: String
+    ): MatrixGroup
     {
         return withContext(scope.coroutineContext + Dispatchers.Default) {
             minus(createMatrix(leftMatrix), createMatrix(rightMatrix))
         }
     }
 
-    suspend fun MatrixTimes(scope : CoroutineScope, leftMatrix : String, rightMatrix : String) : MatrixGroup
+    suspend fun MatrixTimes(
+        scope: CoroutineScope,
+        leftMatrix: String,
+        rightMatrix: String
+    ): MatrixGroup
     {
         return withContext(scope.coroutineContext + Dispatchers.Default) {
             times(createMatrix(leftMatrix), createMatrix(rightMatrix))
         }
     }
 
-    suspend fun MatrixDeterminant(scope : CoroutineScope, leftMatrix : String) : MatrixGroup
+    suspend fun MatrixDeterminant(scope: CoroutineScope, leftMatrix: String): MatrixGroup
     {
         return withContext(scope.coroutineContext + Dispatchers.Default) {
             determinant(createMatrix(leftMatrix))
         }
     }
 
-    suspend fun MatrixInverse(scope : CoroutineScope, leftMatrix : String) : MatrixGroup
+    suspend fun MatrixInverse(scope: CoroutineScope, leftMatrix: String): MatrixGroup
     {
         return withContext(scope.coroutineContext + Dispatchers.Default) {
             inverse(createMatrix(leftMatrix))
+        }
+    }
+
+    suspend fun MatrixSolve(scope: CoroutineScope,leftMatrix: String) : MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default){
+            solve(createMatrix(leftMatrix))
         }
     }
 

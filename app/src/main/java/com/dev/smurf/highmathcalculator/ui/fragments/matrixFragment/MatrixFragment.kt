@@ -505,7 +505,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun btnSolveSystemClicked()
     {
-        mMatrixPresenter.btnSolveSystemClicked()
+        mMatrixPresenter.btnSolveSystemClicked(firstMatrix.text.toString())
     }
 
     override fun btnSwitchSPClicked()

@@ -82,7 +82,7 @@ open class Matrix private constructor(
             return Matrix(width = matrixWidth, height = matrixHeight, m = matrices)
         }
 
-        fun createDiagonlMatrix(size: Int, elem: ComplexNumber): Matrix
+        fun createDiagonalMatrix(size: Int, elem: ComplexNumber): Matrix
         {
             val matrixWidth = size
             val matrixHeight = size
@@ -193,6 +193,7 @@ open class Matrix private constructor(
 
 
     operator fun get(i: Int, j: Int) = matrices[i][j]
+    operator fun get(i: Int) = matrices[i]
 
     fun columnIndices() = (0 until width)
     fun rowIndices() = (0 until height)
@@ -321,6 +322,7 @@ open class Matrix private constructor(
 
 
     //сложение строки по элементно с коэфицентом
+    @Deprecated("Use MatrixLine.plus instead")
     private fun plusLines(firstLine: Int, secondLine: Int, cof: ComplexNumber)
     {
         for (i in 0 until width)
@@ -330,6 +332,7 @@ open class Matrix private constructor(
     }
 
     //вычитание строк с коэффицентом по элементно
+    @Deprecated("Use MatrixLine.minus instead")
     private fun minusLines(firstLine: Int, secondLine: Int, cof: ComplexNumber)
     {
         for (i in 0 until width)
@@ -339,6 +342,7 @@ open class Matrix private constructor(
     }
 
     //деление строки на число
+    @Deprecated("Use MatrixLine.div instead")
     private fun dividLine(line: Int, cof: ComplexNumber)
     {
         for (i in 0 until width)
@@ -347,6 +351,7 @@ open class Matrix private constructor(
 
 
     //умножение матрицы на число
+    @Deprecated("Use MatrixLine.times instead")
     fun matrixTimesNumber(number: ComplexNumber): Matrix
     {
         //копируем матрицу
@@ -402,7 +407,7 @@ open class Matrix private constructor(
     {
 
         //создаем нулевую матрицу
-        val res = createDiagonlMatrix(width - 1, ComplexNumber())
+        val res = createDiagonalMatrix(width - 1, ComplexNumber())
 
         //два счетчика для движение по минору матрицы
         var c = 0
@@ -454,7 +459,7 @@ open class Matrix private constructor(
         }
 
         //если больше чем три на три по заполняем матрицу определителями миноров
-        val res = createDiagonlMatrix(width, ComplexNumber())
+        val res = createDiagonalMatrix(width, ComplexNumber())
 
         for (i in 0 until width)
         {
@@ -517,6 +522,32 @@ open class Matrix private constructor(
         }
 
         return res
+    }
+
+    fun solve(): Matrix
+    {
+        //todo::add solving non square matrix (multiple solutions) with better
+        if (width - 1 != height) throw MatrixNotSquareException()
+        val betterMatrixRepresentation = MatrixLine.createArrayOfMatrixLines(this)
+
+        for (majorLine in betterMatrixRepresentation.indices)
+        {
+            betterMatrixRepresentation[majorLine] =
+                betterMatrixRepresentation[majorLine] / (betterMatrixRepresentation[majorLine][majorLine])
+            for (minorLine in betterMatrixRepresentation.indices)
+            {
+                if (majorLine != minorLine)
+                {
+                    betterMatrixRepresentation[minorLine] =
+                        betterMatrixRepresentation[minorLine] -
+                                (betterMatrixRepresentation[majorLine] * betterMatrixRepresentation[minorLine][majorLine])
+                }
+            }
+        }
+
+        val resultMatrix = Array(height){pos -> Array(1){betterMatrixRepresentation[pos].last()} }
+
+        return Matrix(width = 1,height = height, m = resultMatrix)
     }
 
 

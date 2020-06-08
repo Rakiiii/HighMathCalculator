@@ -10,6 +10,7 @@ import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.Wro
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongElemntAtMatrixInputException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongSymbolAtMatrixInputException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
@@ -306,9 +307,25 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         viewState.showToast("WIP")
     }
 
-    fun btnSolveSystemClicked()
+    fun btnSolveSystemClicked(matrix : String)
     {
-        viewState.showToast("WIP")
+        if (matrix.isEmpty()) return
+        presenterScope.launch(Dispatchers.Main + errorHandler)
+        {
+
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
+            val mMatrixGroup = mMatrixModel.MatrixSolve(presenterScope, matrix)
+
+            mMatrixGroup.time = time
+
+            addToDb(mMatrixGroup)
+
+            uiScope.launch {
+                viewState.addToRecyclerView(mMatrixGroup)
+            }
+        }
+        //viewState.showToast("WIP")
     }
 
     fun setMaxDialogSize(width: Float, height: Float)
