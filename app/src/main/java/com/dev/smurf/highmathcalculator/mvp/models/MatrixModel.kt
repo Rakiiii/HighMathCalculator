@@ -3,8 +3,10 @@ package com.dev.smurf.highmathcalculator.mvp.models
 import com.dev.smurf.highmathcalculator.Exceptions.TimeableException
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
+import com.dev.smurf.highmathcalculator.withTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -138,23 +140,12 @@ class MatrixModel
         time: GregorianCalendar
     ): MatrixGroup
     {
-        return withTime(scope,time){
+        return withTime(scope.coroutineContext + Dispatchers.Default,time){
+            delay(3000)
             solve(createMatrix(leftMatrix))
         }
     }
 
-    private suspend fun withTime(scope: CoroutineScope, time: GregorianCalendar, action : () -> MatrixGroup ) : MatrixGroup
-    {
-        return withContext(scope.coroutineContext + Dispatchers.Default) {
-            try
-            {
-                action()
-            } catch (e: TimeableException)
-            {
-                e.time = time
-                throw e
-            }
-        }
-    }
+
 
 }
