@@ -450,6 +450,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         viewState.setTopPosition()
         viewState.stopLoadingInRecyclerView()
+        viewState.allCalculationsStoped()
         viewState.saveListRecyclerViewViewModel()
         viewState.clearRecyclerView()
         isLoaded = !isLoaded

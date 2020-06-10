@@ -613,6 +613,14 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         }
     }
 
+    override fun allCalculationsStoped()
+    {
+        if(matrixRecycler.adapter is MatrixAdapterImageView)
+        {
+            mMatrixRecyclerImageAdapter.removeAllCalculation()
+        }
+    }
+
     override fun stopCalculation(matrixGroup: MatrixGroup)
     {
         if(matrixRecycler.adapter is MatrixAdapterImageView)

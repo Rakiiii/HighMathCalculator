@@ -5,7 +5,6 @@ import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -139,11 +138,17 @@ class MatrixModel
         time: GregorianCalendar
     ): MatrixGroup
     {
+        return withTime(scope,time){
+            solve(createMatrix(leftMatrix))
+        }
+    }
+
+    private suspend fun withTime(scope: CoroutineScope, time: GregorianCalendar, action : () -> MatrixGroup ) : MatrixGroup
+    {
         return withContext(scope.coroutineContext + Dispatchers.Default) {
             try
             {
-                delay(4000)
-                solve(createMatrix(leftMatrix))
+                action()
             } catch (e: TimeableException)
             {
                 e.time = time

@@ -101,6 +101,11 @@ class MatrixAdapterImageView(
         }
     }
 
+    fun removeAllCalculation()
+    {
+        listOfMatrices = listOfMatrices.filterNot { s -> s.sign == MatrixGroup.CALCULATION }.toMutableList()
+    }
+
     //очистка списка элементов
     fun clear()
     {
