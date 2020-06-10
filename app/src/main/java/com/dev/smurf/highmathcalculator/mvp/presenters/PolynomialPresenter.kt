@@ -235,7 +235,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
             }
             is WrongDataException ->
             {
-                viewState.showToast(error.toString().substringAfter(':'))
+                viewState.displayError(error.toString().substringAfter(':'))
+                //viewState.showToast(error.toString().substringAfter(':'))
             }
             else ->
             {
@@ -446,17 +447,25 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         }
     }
 
+    fun restoreInDb(polynomialGroup: PolynomialGroup)
+    {
+        presenterScope.launch(Dispatchers.IO){
+            mPolynomialDataBaseModel.insert(polynomialGroup)
+            mPolynomialDataBaseModel.addToCache(polynomialGroup)
+        }
+    }
+
     //загрузка созраненного в бд состояния
     fun onLoadSavedInstance()
     {
         presenterScope.launch(Dispatchers.IO + errorHandler) {
             Log.d("loading","before loading call")
             uiScope.launch { viewState.startLoadingInRecyclerView();Log.d("loading","after loading call") }
-            val result = mPolynomialDataBaseModel.selectAll().reversed()
+            val result = mPolynomialDataBaseModel.selectAll().sortedBy { s -> s.time }.reversed().toMutableList()
             delay(1000)
             uiScope.launch {
                 viewState.stopLoadingInRecyclerView()
-                viewState.setRecyclerViewList(result.toMutableList())
+                viewState.setRecyclerViewList(result)
             }
         }
     }

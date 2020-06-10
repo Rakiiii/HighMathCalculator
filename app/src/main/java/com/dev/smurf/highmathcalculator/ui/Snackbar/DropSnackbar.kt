@@ -1,16 +1,20 @@
 package com.dev.smurf.highmathcalculator.ui.Snackbar
 
+import android.animation.AnimatorSet
 import android.graphics.Color
+import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationSet
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.ViewExtension.findSuitableParent
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import kotlinx.coroutines.*
 import org.jetbrains.anko.textColor
+import org.jetbrains.anko.windowManager
 
 class DropSnackbar private constructor(
     parent: ViewGroup,
@@ -23,6 +27,9 @@ class DropSnackbar private constructor(
     {
         getView().setBackgroundColor(CalculatorApplication.context.getColor(android.R.color.transparent))
         getView().setPadding(0, 0, 0, 6)
+        val point = Point()
+        context.windowManager.defaultDisplay.getSize(point)
+        //getView().setPadding(0,point.y , 0, 6)
     }
 
     companion object
@@ -89,6 +96,24 @@ class DropSnackbar private constructor(
         return this
     }
 
+    fun setDropInAnimation() : DropSnackbar
+    {
+        snackbarView.contentInAnimatorSet = snackbarView.getDropAnimator()
+        return this
+    }
+
+    fun setInAnimation(animatorSet: AnimatorSet) : DropSnackbar
+    {
+        snackbarView.contentInAnimatorSet = animatorSet
+        return this
+    }
+
+    fun setOutAnimation(animatorSet: AnimatorSet) : DropSnackbar
+    {
+        snackbarView.contentOutAnimatorSet = animatorSet
+        return this
+    }
+
     override fun show()
     {
         val ioScope = CoroutineScope(Dispatchers.IO)
@@ -115,6 +140,7 @@ class DropSnackbar private constructor(
             {
                 uiScope.launch { snackbarView.progressBarPercenteTextView.text = i.toString() }
                 delay(1000)
+                //getView().setPadding(0, 0, 0, 6)
             }
         }
     }

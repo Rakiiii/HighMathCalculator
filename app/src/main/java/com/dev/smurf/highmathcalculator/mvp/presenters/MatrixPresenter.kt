@@ -152,7 +152,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
             }
             is WrongDataException ->
             {
-                viewState.showToast(error.toString().substringAfter(':'))
+                viewState.displayError(error.toString().substringAfter(':'))
+                //viewState.showToast(error.toString().substringAfter(':'))
             }
             else ->
             {
@@ -351,6 +352,14 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         }
     }
 
+    fun restoreInDb(matrixGroup: MatrixGroup)
+    {
+        presenterScope.launch(Dispatchers.IO){
+            mMatrixDataBaseModel.insert(matrixGroup)
+            mMatrixDataBaseModel.addToCache(matrixGroup)
+        }
+    }
+
     suspend fun addToDb(group: MatrixGroup)
     {
         withContext(presenterScope.coroutineContext + Dispatchers.IO + errorHandler)
@@ -448,8 +457,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         presenterScope.launch(Dispatchers.IO + supJob + errorHandler)
         {
             uiScope.launch { viewState.startLoadingInRecyclerView() }
-            delay(1500)
-            val result = mMatrixDataBaseModel.selectAll().reversed().toMutableList()
+            delay(1000)
+            val result = mMatrixDataBaseModel.selectAll().sortedBy { s -> s.time }.reversed().toMutableList()
             uiScope.launch {
                 viewState.stopLoadingInRecyclerView()
                 viewState.setRecyclerViewList(result)

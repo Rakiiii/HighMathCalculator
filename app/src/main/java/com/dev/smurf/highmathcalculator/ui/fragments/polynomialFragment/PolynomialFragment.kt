@@ -17,10 +17,12 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.PolynomialPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
 import com.dev.smurf.highmathcalculator.ui.CustomRecylerViewLayoutManagers.LayoutManagerWithOffableScroll
+import com.dev.smurf.highmathcalculator.ui.Snackbar.DropSnackbar
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.ViewModels.PolynomialListenerViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialImageAdapter
@@ -43,7 +45,7 @@ import org.jetbrains.anko.toast
 @ExperimentalCoroutinesApi
 class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Settingable,
     PolynomialButtonsGridFirstPageFragment.OnFragmentInteractionListener,
-        DefaultInputExceptionDialogFragment.onFragmentInteractionListener
+    DefaultInputExceptionDialogFragment.onFragmentInteractionListener
 {
 
     //вставляем презентер
@@ -71,7 +73,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     private val mPolynomialEditTextViewModel by viewModels<EditTextViewModel>()
 
-    private val listenerViewModel : PolynomialListenerViewModel<PolynomialFragment> by activityViewModels()
+    private val listenerViewModel: PolynomialListenerViewModel<PolynomialFragment> by activityViewModels()
 
     private var isPaused = false
 
@@ -140,6 +142,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
             secondPolinom.text?.clear()
         }
 
+
         polynomialScroller.setOnScrollChangeListener(ExtraScroller(this))
     }
 
@@ -157,14 +160,18 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         {
             v ?: return
             //Log.d("recycler@", "bottom ${v.bottom} scrollY $scrollY oldScrollY $oldScrollY height ${-(v.measuredHeight - v.getChildAt(0).measuredHeight)}")
-            if ((scrollY ==  -(v.measuredHeight - v.getChildAt(0).measuredHeight)) || !v.canScrollVertically(1) && v.canScrollVertically(-1))
+            if ((scrollY == -(v.measuredHeight - v.getChildAt(0).measuredHeight)) || !v.canScrollVertically(
+                    1
+                ) && v.canScrollVertically(-1)
+            )
             {
-                polynomialFragment.mPolynomialRecyclerViewLayoutManager.isVerticalScrollEnable = true
-                polynomialFragment.polinomRecycler.smoothScrollBy(0,someScrollConst)
+                polynomialFragment.mPolynomialRecyclerViewLayoutManager.isVerticalScrollEnable =
+                    true
+                polynomialFragment.polinomRecycler.smoothScrollBy(0, someScrollConst)
                 return
             }
             if (!polynomialFragment.mPolynomialRecyclerViewLayoutManager.isVerticalScrollEnable) return
-            if ( v.canScrollVertically(1) && !v.canScrollVertically(-1))
+            if (v.canScrollVertically(1) && !v.canScrollVertically(-1))
             {
                 polynomialFragment.mPolynomialRecyclerViewLayoutManager.isVerticalScrollEnable =
                     false
@@ -173,7 +180,6 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
         }
     }
-
 
 
     override fun onResume()
@@ -235,41 +241,10 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
                 if (mPolynomialRecyclerView.adapter !is PolynomialImageAdapter)
                 {
                     var isUnded = false
-
                     val position = viewHolder.absoluteAdapterPosition
                     val item = mPolynomialRecyclerViewAdapter.getData(position)
 
                     mPolynomialRecyclerViewAdapter.removeElement(position)
-
-
-                    val snackbar = Snackbar
-                        .make(polinomFrame, "Item was removed from the list.", Snackbar.LENGTH_LONG)
-                    snackbar.setAction("UNDO")
-                    {
-                        mPolynomialRecyclerViewAdapter.restoreItem(item, position)
-                        isUnded = true
-                        mPolynomialRecyclerView.scrollToPosition(position)
-                    }
-
-                    snackbar.setActionTextColor(Color.YELLOW)
-                    snackbar.show()
-
-                    //mPolynomialRecyclerViewModel.updateList(mPolinomRecyclerViewAdapter.getList().clone() as ArrayList<PolynomialGroup>)
-                    if (!isUnded)
-                    {
-                        mPolynomialPresenter.deleteFromDb(item)
-                        mPolynomialRecyclerViewModel.deleteItem(item)
-                    }
-                }
-                else
-                {
-                    var isUnded = false
-
-                    val position = viewHolder.absoluteAdapterPosition
-                    val item = mPolynomialImageAdapter.getData(position)
-
-                    mPolynomialImageAdapter.removeElement(position)
-
 
                     val snackbar = Snackbar
                         .make(polinomFrame, "Item was removed from the list.", Snackbar.LENGTH_LONG)
@@ -289,6 +264,28 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
                         mPolynomialPresenter.deleteFromDb(item)
                         mPolynomialRecyclerViewModel.deleteItem(item)
                     }
+
+                }
+                else
+                {
+                    val position = viewHolder.absoluteAdapterPosition
+                    val item = mPolynomialImageAdapter.getData(position)
+
+                    mPolynomialImageAdapter.removeElement(position)
+
+
+                    val dropSnackbar = DropSnackbar.make(polinomFrame)
+                    dropSnackbar.setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_with_outline)!!)
+                        .setMessage("Item was removed from the list")
+                        .setButton("UNDO", color = Color.BLACK, action = {
+                            mPolynomialImageAdapter.restoreItem(item, position)
+                            mPolynomialRecyclerView.scrollToPosition(position)
+                            mPolynomialPresenter.restoreInDb(item)
+                            dropSnackbar.dismiss()
+                        }).setProgressBar().setDuration(5000)
+                    dropSnackbar.show()
+
+                    mPolynomialPresenter.deleteFromDb(item)
                 }
             }
 
@@ -329,7 +326,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     {
         if (!isPaused && isRecycleViewInited())
         {
-            Log.d("loading@","image adapter seted")
+            Log.d("loading@", "image adapter seted")
             mPolynomialImageAdapter.setList(
                 mPolynomialRecyclerViewAdapter.getList()
             )
@@ -387,7 +384,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         {
             mBtnMatrixViewPagerAdapter =
                 BtnViewPagerFragmentStateAdapter(
-                    requireActivity(),this
+                    requireActivity(), this
                 )
             benFragmentSet.add(PolynomialButtonsGridFirstPageFragment())
             mBtnMatrixViewPagerAdapter.setNewFragmentSet(benFragmentSet)
@@ -486,7 +483,8 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     )
     {
         Log.d("errorDialog@", "show dialog")
-        errorDialogFragment = DefaultInputExceptionDialogFragment(errorBitmap, this, width, height,errorText)
+        errorDialogFragment =
+            DefaultInputExceptionDialogFragment(errorBitmap, this, width, height, errorText)
         errorDialogFragment.show(childFragmentManager, "ERROR_DIALOG")
     }
 
@@ -498,17 +496,17 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     override fun startLoadingInRecyclerView()
     {
-        if(mPolynomialRecyclerView.adapter is PolynomialImageAdapter)
+        if (mPolynomialRecyclerView.adapter is PolynomialImageAdapter)
         {
-            Log.d("loading@","start loading")
+            Log.d("loading@", "start loading")
             mPolynomialImageAdapter.startLoading()
         }
-        else Log.d("loading@","txt adapter setted")
+        else Log.d("loading@", "txt adapter setted")
     }
 
     override fun stopLoadingInRecyclerView()
     {
-        if(mPolynomialRecyclerView.adapter is PolynomialImageAdapter)
+        if (mPolynomialRecyclerView.adapter is PolynomialImageAdapter)
         {
             mPolynomialImageAdapter.stopLoading()
         }
@@ -516,13 +514,21 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     override fun clearRecyclerView()
     {
-        if(polinomRecycler.adapter is PolynomialImageAdapter) mPolynomialImageAdapter.clear()
+        if (polinomRecycler.adapter is PolynomialImageAdapter) mPolynomialImageAdapter.clear()
         else mPolynomialRecyclerViewAdapter.clear()
     }
 
     override fun setTopPosition()
     {
-        polynomialScroller.scrollTo(0,0)
+        polynomialScroller.scrollTo(0, 0)
+    }
+
+    override fun displayError(message: String)
+    {
+        DropSnackbar.make(polinomFrame).setMessage(message, color = Color.BLACK)
+            .setProgressBar()
+            .setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_error)!!)
+            .setDuration(3000).show()
     }
 }
 

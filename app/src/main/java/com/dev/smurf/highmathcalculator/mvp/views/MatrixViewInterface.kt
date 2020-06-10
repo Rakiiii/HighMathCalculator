@@ -65,4 +65,7 @@ interface MatrixViewInterface : MvpView
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun setTopPosition()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun displayError(message : String)
 }

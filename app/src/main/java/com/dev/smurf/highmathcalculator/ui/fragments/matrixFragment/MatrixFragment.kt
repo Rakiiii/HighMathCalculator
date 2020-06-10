@@ -17,11 +17,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.MatrixPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.dev.smurf.highmathcalculator.ui.CustomRecylerViewLayoutManagers.LayoutManagerWithOffableScroll
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
+import com.dev.smurf.highmathcalculator.ui.Snackbar.DropSnackbar
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.ViewModels.MatrixListenerViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
@@ -36,11 +38,13 @@ import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.fragment_matrix.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import org.jetbrains.anko.toast
 
 
+@ExperimentalCoroutinesApi
 class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     MatrixButtonGridFragmentFirstPage.onFragmentInteractionListener,
     MatrixButtonGridFragmentSecondPage.onFragmentInteractionListener,
@@ -315,6 +319,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
 
     //add swipe deletting behaviour
+    @ExperimentalCoroutinesApi
     private fun enableSwipeToDeleteAndUndo()
     {
         val swipeToDeleteCallback = object : SwipeToDeleteCallback(requireContext())
@@ -324,33 +329,25 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
             {
                 if (matrixRecycler.adapter is MatrixAdapterImageView)
                 {
-                    var isUnded = false
-
-
                     val position = viewHolder.absoluteAdapterPosition
                     val item = mMatrixRecyclerImageAdapter.getData(position)
 
                     mMatrixRecyclerImageAdapter.removeElement(position)
 
 
-                    val snackbar = Snackbar
-                        .make(matrixFrame, "Item was removed from the list.", Snackbar.LENGTH_LONG)
-                    snackbar.setAction("UNDO")
-                    {
-                        mMatrixRecyclerImageAdapter.restoreItem(position, item)
-                        isUnded = true
-                        mMatrixRecyclerView.scrollToPosition(position)
-                    }
+                    val dropSnackbar = DropSnackbar.make(matrixFrame)
+                    dropSnackbar.setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_with_outline)!!)
+                        .setMessage("Item was removed from the list")
+                        .setButton("UNDO", color = Color.BLACK, action = {
+                            mMatrixRecyclerImageAdapter.restoreItem(position, item)
+                            mMatrixRecyclerView.scrollToPosition(position)
+                            mMatrixPresenter.restoreInDb(item)
+                            dropSnackbar.dismiss()
+                        }).setProgressBar().setDuration(5000)
+                    dropSnackbar.show()
 
-                    snackbar.setActionTextColor(Color.YELLOW)
-                    snackbar.show()
-
-                    //mMatrixRecyclerViewModel.updateList(matrixRecyclerAdapter.getList())
-                    if (!isUnded)
-                    {
-                        mMatrixPresenter.deleteFromDb(item)
-                        mMatrixRecyclerViewModel.deleteItem(item)
-                    }
+                    Log.d("snackbar","must be called after dismiss")
+                    mMatrixPresenter.deleteFromDb(item)
                 }
                 else
                 {
@@ -587,7 +584,16 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun setTopPosition()
     {
-        scroll.scrollTo(0,0)
+        scroll.scrollTo(0, 0)
+    }
+
+    override fun displayError(message: String)
+    {
+        DropSnackbar.make(matrixFrame).setMessage(message, color = Color.BLACK)
+            .setProgressBar()
+            .setDropInAnimation()
+            .setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_error)!!)
+            .setDuration(3000).show()
     }
 }
 
