@@ -19,6 +19,7 @@ import com.dev.smurf.highmathcalculator.mvp.models.MatrixModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.MatrixViewInterface
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
+import com.dev.smurf.highmathcalculator.withTime
 import kotlinx.coroutines.*
 import moxy.InjectViewState
 import moxy.MvpPresenter
@@ -72,7 +73,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
     @ExperimentalCoroutinesApi
     private val errorHandler = CoroutineExceptionHandler(handler = { job, error ->
-        if(error is TimeableException && error.time != TimeableException.zeroTime)
+        if (error is TimeableException && error.time != TimeableException.zeroTime)
         {
             uiScope.launch {
                 viewState.calculationFailed(
@@ -342,7 +343,10 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
                 )
             )
 
-            val mMatrixGroup =  mMatrixModel.MatrixSolve(presenterScope, matrix,time)
+            val mMatrixGroup = withTime(
+                presenterScope.coroutineContext + Dispatchers.Default,
+                time
+            ) { mMatrixModel.MatrixSolve(presenterScope, matrix) }
 
 
             mMatrixGroup.time = time

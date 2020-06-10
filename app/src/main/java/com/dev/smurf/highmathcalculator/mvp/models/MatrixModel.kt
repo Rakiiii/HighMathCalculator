@@ -136,12 +136,10 @@ class MatrixModel
 
     suspend fun MatrixSolve(
         scope: CoroutineScope,
-        leftMatrix: String,
-        time: GregorianCalendar
+        leftMatrix: String
     ): MatrixGroup
     {
-        return withTime(scope.coroutineContext + Dispatchers.Default,time){
-            delay(3000)
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
             solve(createMatrix(leftMatrix))
         }
     }
