@@ -595,5 +595,30 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
             .setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_error)!!)
             .setDuration(3000).show()
     }
+
+    override fun startCalculation(matrixGroup: MatrixGroup)
+    {
+        if(matrixRecycler.adapter is MatrixAdapterImageView)
+        {
+            mMatrixRecyclerImageAdapter.addNewElem(matrixGroup)
+            mMatrixRecyclerLayoutManager.scrollToPosition(0)
+        }
+    }
+
+    override fun calculationFailed(matrixGroup: MatrixGroup)
+    {
+        if(matrixRecycler.adapter is MatrixAdapterImageView)
+        {
+            mMatrixRecyclerImageAdapter.removeCalculation(matrixGroup)
+        }
+    }
+
+    override fun stopCalculation(matrixGroup: MatrixGroup)
+    {
+        if(matrixRecycler.adapter is MatrixAdapterImageView)
+        {
+            mMatrixRecyclerImageAdapter.stopCalculation(matrixGroup)
+        }
+    }
 }
 

@@ -25,6 +25,8 @@ data class MatrixGroup(
         val MINUS = "-"
         val PLUS = "+"
         val TIMES = "*"
+        val CALCULATION="calculation"
+        val LOADING = "loading"
     }
 
     fun Copy() : MatrixGroup

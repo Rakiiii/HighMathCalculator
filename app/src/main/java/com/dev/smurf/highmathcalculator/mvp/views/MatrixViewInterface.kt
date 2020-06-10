@@ -61,6 +61,15 @@ interface MatrixViewInterface : MvpView
     fun stopLoadingInRecyclerView()
 
     @StateStrategyType(SkipStrategy::class)
+    fun startCalculation(matrixGroup: MatrixGroup)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun stopCalculation(matrixGroup: MatrixGroup)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun calculationFailed(matrixGroup: MatrixGroup)
+
+    @StateStrategyType(SkipStrategy::class)
     fun clearRecyclerView()
 
     @StateStrategyType(AddToEndSingleStrategy::class)

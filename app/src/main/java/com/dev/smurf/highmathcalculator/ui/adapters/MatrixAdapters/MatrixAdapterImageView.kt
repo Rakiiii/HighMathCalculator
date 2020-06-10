@@ -13,6 +13,7 @@ import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.MatrixBindableViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.MatrixViewHolderMatrix
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.OnCalculationGoingViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.RoundingProgressBarViewHolderMatrix
 
 
@@ -30,7 +31,7 @@ class MatrixAdapterImageView(
 
     fun startLoading()
     {
-        if(!loading)
+        if (!loading)
         {
             dropAnimations = false
             loading = true
@@ -40,7 +41,7 @@ class MatrixAdapterImageView(
                     leftMatrix = Matrix.EmptyMatrix,
                     resMatrix = Matrix.EmptyMatrix,
                     rightMatrix = Matrix.EmptyMatrix,
-                    sign = "",
+                    sign = MatrixGroup.LOADING,
                     time = java.util.GregorianCalendar()
                 )
             )
@@ -50,7 +51,7 @@ class MatrixAdapterImageView(
 
     fun stopLoading()
     {
-        if(loading)
+        if (loading)
         {
             loading = false
             listOfMatrices.removeAt(0)
@@ -67,7 +68,37 @@ class MatrixAdapterImageView(
         listOfMatrices.add(0, group)
         dropAnimations = true
         notifyItemInserted(0)
+    }
 
+    fun stopCalculation(group: MatrixGroup)
+    {
+        var saveIndice = -1
+        for (i in listOfMatrices.indices)
+        {
+            if (listOfMatrices[i].time == group.time)
+            {
+                listOfMatrices[i] = group
+                saveIndice = i
+                break
+            }
+        }
+        if (saveIndice != -1)
+        {
+            notifyItemChanged(saveIndice)
+        }
+    }
+
+    fun removeCalculation(group: MatrixGroup)
+    {
+        for (i in listOfMatrices.indices)
+        {
+            if (listOfMatrices[i].time == group.time)
+            {
+                listOfMatrices.removeAt(i)
+                notifyItemRemoved(i)
+                break
+            }
+        }
     }
 
     //очистка списка элементов
@@ -103,7 +134,7 @@ class MatrixAdapterImageView(
     {
         if (loading) newArray.add(0, listOfMatrices[0])
         listOfMatrices = newArray
-        notifyItemRangeChanged(0,listOfMatrices.size-1)
+        notifyItemRangeChanged(0, listOfMatrices.size - 1)
     }
 
     //получение всего списка элементов
@@ -117,7 +148,12 @@ class MatrixAdapterImageView(
 
     override fun getItemViewType(position: Int): Int
     {
-        return if (listOfMatrices[position].leftMatrix == Matrix.EmptyMatrix) 0 else 1
+        return when
+        {
+            (listOfMatrices[position].leftMatrix == Matrix.EmptyMatrix && listOfMatrices[position].sign == MatrixGroup.LOADING) -> 0
+            (listOfMatrices[position].leftMatrix == Matrix.EmptyMatrix && listOfMatrices[position].sign == MatrixGroup.CALCULATION) -> 2
+            else -> 1
+        }
     }
 
 
@@ -128,6 +164,13 @@ class MatrixAdapterImageView(
             0 -> RoundingProgressBarViewHolderMatrix(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.rounding_progress_bar_view_holder,
+                    parent,
+                    false
+                ), width
+            )
+            2 -> OnCalculationGoingViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.calulation_on_going_viewholder,
                     parent,
                     false
                 ), width
@@ -147,11 +190,13 @@ class MatrixAdapterImageView(
     override fun onBindViewHolder(holderMatrix: MatrixBindableViewHolder, position: Int)
     {
         holderMatrix.doDropAnimations = dropAnimations
+        if(holderMatrix is OnCalculationGoingViewHolder)
+        {
+            holderMatrix.bind(listOfMatrices[position])
+        }
         if (holderMatrix is MatrixViewHolderMatrix)
         {
             holderMatrix.bind(listOfMatrices[position])
-            counter++
-            //Log.d("recycler@","on bind view holder "+counter.toString())
 
             //листенер для контекстного меню на левую матрицу
             holderMatrix.leftMatrix.setOnCreateContextMenuListener(

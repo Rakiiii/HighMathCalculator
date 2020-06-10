@@ -9,6 +9,7 @@ import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.Dif
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongAmountOfBracketsInMatrixException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongElemntAtMatrixInputException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongSymbolAtMatrixInputException
+import com.dev.smurf.highmathcalculator.Exceptions.TimeableException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.R
@@ -70,7 +71,21 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
 
     @ExperimentalCoroutinesApi
-    private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
+    private val errorHandler = CoroutineExceptionHandler(handler = { job, error ->
+        if(error is TimeableException && error.time != TimeableException.zeroTime)
+        {
+            uiScope.launch {
+                viewState.calculationFailed(
+                    MatrixGroup(
+                        Matrix.EmptyMatrix,
+                        Matrix.EmptyMatrix,
+                        MatrixGroup.CALCULATION,
+                        Matrix.EmptyMatrix,
+                        error.time
+                    )
+                )
+            }
+        }
         when (error)
         {
             is WrongElemntAtMatrixInputException ->
@@ -308,7 +323,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         viewState.showToast("WIP")
     }
 
-    fun btnSolveSystemClicked(matrix : String)
+    fun btnSolveSystemClicked(matrix: String)
     {
         if (matrix.isEmpty()) return
         presenterScope.launch(Dispatchers.Main + errorHandler)
@@ -316,17 +331,28 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
             val time = java.util.GregorianCalendar()
             time.timeInMillis = System.currentTimeMillis()
-            val mMatrixGroup = mMatrixModel.MatrixSolve(presenterScope, matrix)
+
+            viewState.startCalculation(
+                MatrixGroup(
+                    Matrix.EmptyMatrix,
+                    Matrix.EmptyMatrix,
+                    MatrixGroup.CALCULATION,
+                    Matrix.EmptyMatrix,
+                    time
+                )
+            )
+
+            val mMatrixGroup =  mMatrixModel.MatrixSolve(presenterScope, matrix,time)
+
 
             mMatrixGroup.time = time
 
             addToDb(mMatrixGroup)
 
             uiScope.launch {
-                viewState.addToRecyclerView(mMatrixGroup)
+                viewState.stopCalculation(mMatrixGroup)
             }
         }
-        //viewState.showToast("WIP")
     }
 
     fun setMaxDialogSize(width: Float, height: Float)
@@ -354,7 +380,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
     fun restoreInDb(matrixGroup: MatrixGroup)
     {
-        presenterScope.launch(Dispatchers.IO){
+        presenterScope.launch(Dispatchers.IO) {
             mMatrixDataBaseModel.insert(matrixGroup)
             mMatrixDataBaseModel.addToCache(matrixGroup)
         }
@@ -458,7 +484,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         {
             uiScope.launch { viewState.startLoadingInRecyclerView() }
             delay(1000)
-            val result = mMatrixDataBaseModel.selectAll().sortedBy { s -> s.time }.reversed().toMutableList()
+            val result =
+                mMatrixDataBaseModel.selectAll().sortedBy { s -> s.time }.reversed().toMutableList()
             uiScope.launch {
                 viewState.stopLoadingInRecyclerView()
                 viewState.setRecyclerViewList(result)

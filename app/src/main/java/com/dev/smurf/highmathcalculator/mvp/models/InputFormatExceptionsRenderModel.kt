@@ -390,7 +390,12 @@ class InputFormatExceptionsRenderModel
         return Pair(width, rect.height().toFloat() + defaultPainter.getVerticalSpacing())
     }
 
-    private fun spreadMatrixOnLines(input: String) = input.fields("\n")
+    private fun spreadMatrixOnLines(input: String) : MutableList<String>
+    {
+        val subRes = input.fields("\n")
+        val finalRes = MutableList(subRes.size){ pos -> subRes[pos].trim{s -> s == ' ' || s == '\n'}}
+        return finalRes
+    }
 
 
     private suspend fun getSizeOfProbablyWrongLine(
