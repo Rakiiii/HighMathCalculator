@@ -466,7 +466,7 @@ open class Matrix private constructor(
             for (j in 0 until width)
             {
                 res.matrices[i][j] =
-                    ComplexNumber(Fraction((-1).pow(i + j)), Fraction()) * this.minor(
+                    ComplexNumber(Fraction((-1L).pow((i + j).toLong())), Fraction()) * this.minor(
                         string = i,
                         columne = j
                     ).determinant()
@@ -517,7 +517,7 @@ open class Matrix private constructor(
             if(zeroCounter != width) rank ++
         }
 
-        return Matrix(width = 1,height = 1,m = Array(1){ Array(1){ComplexNumber(rank)} })
+        return Matrix(width = 1,height = 1,m = Array(1){ Array(1){ ComplexNumber(rank) } })
     }
 
     //перегрузка оператора сравнения

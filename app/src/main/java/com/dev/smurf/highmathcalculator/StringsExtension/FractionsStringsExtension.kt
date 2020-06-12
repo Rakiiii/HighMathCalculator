@@ -26,7 +26,7 @@ fun String.isFraction(): Boolean
             if (fraction[1].contains('-')) return false
             if (fraction[0].first() != '-') return false
             //check is number at fraction are correct
-            if (fraction[0].toIntOrNull() == null || fraction[1].toIntOrNull() == null) return false
+            if (fraction[0].toLongOrNull() == null || fraction[1].toLongOrNull() == null) return false
         }
     }
     else
@@ -34,7 +34,7 @@ fun String.isFraction(): Boolean
         //check is minus correct
         if (trimmed.contains('-') && trimmed.first() != '-') return false
         //check is number correct
-        if (trimmed.toIntOrNull() == null) return false
+        if (trimmed.toLongOrNull() == null) return false
     }
     return true
 }
@@ -54,7 +54,7 @@ fun String.isDecimalFraction(): Boolean
     if (trimmed.count{ s -> s =='.'} > 1 || trimmed.count{ s -> s =='-'} > 1)return false
     //if we have no symbols after or before dots [ "123." or ".1234" ] it's not looks like decimal fraction
     if(trimmed.substringAfter('.') == "" || trimmed.substringBefore('.') == "")return false
-    return trimmed.filterNot { s -> s == '.' }.toIntOrNull() != null
+    return trimmed.filterNot { s -> s == '.' }.toLongOrNull() != null
 }
 
 fun String.isNotDecimalFraction() = !isDecimalFraction()
@@ -71,10 +71,10 @@ fun String.toFraction(): Fraction
     if (trimmed.contains('.'))
     {
         //upper part of decimal fraction is long number
-        val upper = trimmed.filterNot { s -> s == '.' }.toInt()
+        val upper = trimmed.filterNot { s -> s == '.' }.toLong()
 
         //lower part is pow of ten, on which must divide upper to get start decimal fraction
-        val lower = 10.pow( trimmed.substringAfter('.').length)
+        val lower = 10L.pow( trimmed.substringAfter('.').length.toLong())
 
         return Fraction(_upper = upper, _lower = lower)
     }
@@ -82,9 +82,9 @@ fun String.toFraction(): Fraction
     return if (trimmed.contains('/'))
     {
         val fraction = trimmed.fields("/")
-        Fraction(_upper = fraction[0].toInt(), _lower = fraction[1].toInt())
+        Fraction(_upper = fraction[0].toLong(), _lower = fraction[1].toLong())
     }
-    else Fraction(_upper = trimmed.toInt(), _lower = 1)
+    else Fraction(_upper = trimmed.toLong(), _lower = 1)
 }
 
 fun String.toFractionOrNull() : Fraction?

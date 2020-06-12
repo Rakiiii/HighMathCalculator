@@ -3,15 +3,16 @@ package com.dev.smurf.highmathcalculator.Numbers
 import com.dev.smurf.highmathcalculator.Exceptions.DivisionFractionByZeroException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.StringsExtension.gcd
+import com.dev.smurf.highmathcalculator.StringsExtension.gcdLong
 import kotlin.math.absoluteValue
-
-class Fraction(_upper : Int = 0, _lower : Int = 1)
+const val zero = 0L
+class Fraction(_upper : Long = 0, _lower : Long = 1)
 {
 
     var upper = _upper
     private set
 
-    var lower = if(_lower != 0)_lower else 1
+    var lower = if(_lower != zero)_lower else 1L
     private set
 
     operator fun plus(right : Any?) : Fraction
@@ -20,10 +21,10 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
         {
             is Fraction ->
             {
-                if(right.upper == 0)return this
-                if(this.upper == 0)return right
+                if(right.upper == zero)return this
+                if(this.upper == zero)return right
                 val res = Fraction ( this.upper*right.lower + this.lower*right.upper , this.lower*right.lower)
-                if(res.lower < 0)
+                if(res.lower < zero)
                 {
                     res.upper *= -1
                     res.lower *= -1
@@ -44,8 +45,8 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
         {
             is Fraction ->
             {
-                if (right.upper == 0) return this
-                if (this.upper == 0)
+                if (right.upper == zero) return this
+                if (this.upper == zero)
                     return Fraction( _upper = - right.upper , _lower = right.lower)
                 val res = Fraction(this.upper * right.lower - this.lower * right.upper, this.lower * right.lower)
                 if (res.lower < 0) {
@@ -66,10 +67,10 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
             is Fraction ->
             {
 
-                if (this.upper == 0) return Fraction()
-                if (right.upper == 0) throw DivisionFractionByZeroException()
+                if (this.upper == zero) return Fraction()
+                if (right.upper == zero) throw DivisionFractionByZeroException()
                 val res = Fraction(this.upper * right.lower, this.lower * right.upper)
-                if (res.lower < 0) {
+                if (res.lower < zero) {
                     res.upper *= -1
                     res.lower *= -1
                 }
@@ -88,9 +89,9 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
             {
 
 
-                if (this.upper == 0 || right.upper == 0) return Fraction()
+                if (this.upper == zero || right.upper == zero) return Fraction()
                 val res = Fraction(this.upper * right.upper, this.lower * right.lower)
-                if (res.lower < 0) {
+                if (res.lower < zero) {
                     res.upper *= -1
                     res.lower *= -1
                 }
@@ -107,12 +108,12 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
         {
             is Fraction ->
             {
-                if(this.upper == 0 && other.upper == 0)return true
+                if(this.upper == zero && other.upper == zero)return true
                 else return (this.upper == other.upper && this.lower == other.lower)
             }
             is Int ->
             {
-                if ( (this.upper % this.lower) == 0) return ( (this.upper/this.lower) == other )
+                if ( (this.upper % this.lower) == zero) return ( (this.upper/this.lower) == other )
                 else return false
             }
             is Double ->
@@ -131,7 +132,7 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
 
     override fun toString(): String
     {
-        if (lower == 1)return upper.toString()
+        if (lower == 1L)return upper.toString()
         else
         {
             if(upper >= 0) return( "(" + upper.toString() + "/" + lower.toString() + ")" )
@@ -146,7 +147,7 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
         {
             when
             {
-                ( other == Fraction() )->if(this.upper > 0)return 1 else return -1
+                ( other == Fraction() )->if(this.upper > zero)return 1 else return -1
                 (this.upper >= other.upper && this.lower <= other.lower)->return 1
                 (this.upper <= other.upper && this.lower >= other.lower)->return -1
                 else -> if ( ( this.upper.toDouble() / this.lower.toDouble() ) > (other.upper.toDouble() / other.lower.toDouble() ) ) return 1
@@ -158,7 +159,7 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
 
     private fun cut() : Fraction
     {
-        val _gcd = gcd(
+        val _gcd = gcdLong(
             this.upper.absoluteValue,
             this.lower.absoluteValue
         )
@@ -176,7 +177,7 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
             return lower.absoluteValue.toString().length
     }
 
-    fun isInt() = (lower == 1)
+    fun isInt() = (lower == 1L)
 
     fun isBeloweZero() = (upper < 0)
 
@@ -188,11 +189,11 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
     fun isDecimal() : Boolean
     {
         var test = lower
-        while (test % 10 == 0)
+        while (test % 10 == zero)
         {
             test /= 10
         }
-        return test == 1
+        return test == 1L
     }
 }
 

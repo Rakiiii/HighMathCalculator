@@ -285,8 +285,8 @@ class polinom( _size : Int)
                     //перебор всех знаменателей мнимой части
                     for(l in  0..100)
                     {
-                        if (rightPol(ComplexNumber( Fraction(i,k), Fraction(j,l) ) ) && amountOfRoots != size - 1)
-                        roots[amountOfRoots++] = ComplexNumber( Fraction(i,k) , Fraction(j,l) )
+                        if (rightPol(ComplexNumber( Fraction(i.toLong(),k.toLong()), Fraction(j.toLong(),l.toLong()) ) ) && amountOfRoots != size - 1)
+                        roots[amountOfRoots++] = ComplexNumber( Fraction(i.toLong(),k.toLong()) , Fraction(j.toLong(),l.toLong()) )
 
                     }
                 }
