@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.view.animation.OvershootInterpolator
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -29,14 +28,13 @@ import com.dev.smurf.highmathcalculator.ui.ViewModels.MatrixListenerViewModel
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapterImageView
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.OnMatrixCalculationGoingViewHolder
 import com.dev.smurf.highmathcalculator.ui.fragments.InputExceptionsDialogFragments.DefaultInputExceptionDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.fragment_matrix.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import moxy.MvpAppCompatFragment
@@ -329,25 +327,38 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
             {
                 if (matrixRecycler.adapter is MatrixAdapterImageView)
                 {
-                    val position = viewHolder.absoluteAdapterPosition
-                    val item = mMatrixRecyclerImageAdapter.getData(position)
+                    if (viewHolder is OnMatrixCalculationGoingViewHolder)
+                    {
+                        val position = viewHolder.absoluteAdapterPosition
+                        val item = mMatrixRecyclerImageAdapter.getData(position)
+                        mMatrixRecyclerImageAdapter.removeElement(position)
+                        mMatrixPresenter.calculationCanceled(item.time)
 
-                    mMatrixRecyclerImageAdapter.removeElement(position)
+                        val dropSnackbar = DropSnackbar.make(matrixFrame)
+                        dropSnackbar.setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_with_outline)!!)
+                            .setMessage("Calculation stopped").setProgressBar().setDuration(3000).show()
+
+                    }
+                    else
+                    {
+                        val position = viewHolder.absoluteAdapterPosition
+                        val item = mMatrixRecyclerImageAdapter.getData(position)
+
+                        mMatrixRecyclerImageAdapter.removeElement(position)
 
 
-                    val dropSnackbar = DropSnackbar.make(matrixFrame)
-                    dropSnackbar.setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_with_outline)!!)
-                        .setMessage("Item was removed from the list")
-                        .setButton("UNDO", color = Color.BLACK, action = {
-                            mMatrixRecyclerImageAdapter.restoreItem(position, item)
-                            mMatrixRecyclerView.scrollToPosition(position)
-                            mMatrixPresenter.restoreInDb(item)
-                            dropSnackbar.dismiss()
-                        }).setProgressBar().setDuration(5000)
-                    dropSnackbar.show()
-
-                    Log.d("snackbar","must be called after dismiss")
-                    mMatrixPresenter.deleteFromDb(item)
+                        val dropSnackbar = DropSnackbar.make(matrixFrame)
+                        dropSnackbar.setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_with_outline)!!)
+                            .setMessage("Item was removed from the list")
+                            .setButton("UNDO", color = Color.BLACK, action = {
+                                mMatrixRecyclerImageAdapter.restoreItem(position, item)
+                                mMatrixRecyclerView.scrollToPosition(position)
+                                mMatrixPresenter.restoreInDb(item)
+                                dropSnackbar.dismiss()
+                            }).setProgressBar().setDuration(5000)
+                        dropSnackbar.show()
+                        mMatrixPresenter.deleteFromDb(item)
+                    }
                 }
                 else
                 {
@@ -598,7 +609,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun startCalculation(matrixGroup: MatrixGroup)
     {
-        if(matrixRecycler.adapter is MatrixAdapterImageView)
+        if (matrixRecycler.adapter is MatrixAdapterImageView)
         {
             mMatrixRecyclerImageAdapter.addNewElem(matrixGroup)
             mMatrixRecyclerLayoutManager.scrollToPosition(0)
@@ -607,23 +618,23 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun calculationFailed(matrixGroup: MatrixGroup)
     {
-        if(matrixRecycler.adapter is MatrixAdapterImageView)
+        if (matrixRecycler.adapter is MatrixAdapterImageView)
         {
             mMatrixRecyclerImageAdapter.removeCalculation(matrixGroup)
         }
     }
 
-    override fun allCalculationsStoped()
+    override fun stopAllCalculations()
     {
-        if(matrixRecycler.adapter is MatrixAdapterImageView)
+        if (matrixRecycler.adapter is MatrixAdapterImageView)
         {
             mMatrixRecyclerImageAdapter.removeAllCalculation()
         }
     }
 
-    override fun stopCalculation(matrixGroup: MatrixGroup)
+    override fun calculationCompleted(matrixGroup: MatrixGroup)
     {
-        if(matrixRecycler.adapter is MatrixAdapterImageView)
+        if (matrixRecycler.adapter is MatrixAdapterImageView)
         {
             mMatrixRecyclerImageAdapter.stopCalculation(matrixGroup)
         }

@@ -25,7 +25,9 @@ import moxy.InjectViewState
 import moxy.MvpPresenter
 import moxy.presenterScope
 import org.jetbrains.anko.doAsync
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 @ExperimentalCoroutinesApi
 @InjectViewState
@@ -69,6 +71,14 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
     //корутин скоп для ui
     private val uiScope = CoroutineScope(Dispatchers.Main + supJob)
+
+    private val jobMap = HashMap<Long,Job>()
+
+    fun calculationCanceled(time : GregorianCalendar)
+    {
+        (jobMap[time.timeInMillis] ?: return).cancel()
+        jobMap.remove(time.timeInMillis)
+    }
 
 
     @ExperimentalCoroutinesApi
@@ -169,7 +179,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
             is WrongDataException ->
             {
                 viewState.displayError(error.toString().substringAfter(':'))
-                //viewState.showToast(error.toString().substringAfter(':'))
             }
             else ->
             {
@@ -187,111 +196,35 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     fun onPlusClick(firstMatrix: String, secondMatrix: String)
     {
         if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-            //сохраняем время начала операции
-            val time = java.util.GregorianCalendar()
-            time.timeInMillis = System.currentTimeMillis()
-
-            val mMatrixGroup = mMatrixModel.MatrixPlus(presenterScope, firstMatrix, secondMatrix)
-
-            mMatrixGroup.time = time
-            addToDb(mMatrixGroup)
-
-            uiScope.launch {
-                viewState.addToRecyclerView(mMatrixGroup)
-            }
-
-        }
+        doCancelableJob { mMatrixModel.MatrixPlus(presenterScope, firstMatrix, secondMatrix) }
     }
 
 
     fun onMinusClick(firstMatrix: String, secondMatrix: String)
     {
         if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-
-            //сохраняем время начала операции
-            val time = java.util.GregorianCalendar()
-            time.timeInMillis = System.currentTimeMillis()
-
-            val mMatrixGroup = mMatrixModel.MatrixMinus(presenterScope, firstMatrix, secondMatrix)
-
-            mMatrixGroup.time = time
-
-            addToDb(mMatrixGroup)
-
-            uiScope.launch {
-                viewState.addToRecyclerView(mMatrixGroup)
-            }
-        }
+        doCancelableJob { mMatrixModel.MatrixMinus(presenterScope, firstMatrix, secondMatrix) }
     }
 
 
     fun onTimesClick(firstMatrix: String, secondMatrix: String)
     {
         if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-
-            //сохраняем время начала операции
-            val time = java.util.GregorianCalendar()
-            time.timeInMillis = System.currentTimeMillis()
-
-            val mMatrixGroup = mMatrixModel.MatrixTimes(presenterScope, firstMatrix, secondMatrix)
-
-            mMatrixGroup.time = time
-
-            addToDb(mMatrixGroup)
-
-            uiScope.launch {
-                viewState.addToRecyclerView(mMatrixGroup)
-            }
-        }
+        doCancelableJob { mMatrixModel.MatrixTimes(presenterScope, firstMatrix, secondMatrix) }
     }
 
 
     fun onInversClick(firstMatrix: String)
     {
         if (firstMatrix.isEmpty()) return
-        //CoroutineScope(Dispatchers.Main)
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-
-            //сохраняем время начала операции
-            val time = java.util.GregorianCalendar()
-            time.timeInMillis = System.currentTimeMillis()
-            val mMatrixGroup = mMatrixModel.MatrixInverse(presenterScope, firstMatrix)
-
-            mMatrixGroup.time = time
-            addToDb(mMatrixGroup)
-
-            uiScope.launch {
-                viewState.addToRecyclerView(mMatrixGroup)
-            }
-        }
+        doCancelableJob { mMatrixModel.MatrixInverse(presenterScope, firstMatrix) }
     }
 
 
     fun onDeterminantClick(firstMatrix: String)
     {
         if (firstMatrix.isEmpty()) return
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-
-            val time = java.util.GregorianCalendar()
-            time.timeInMillis = System.currentTimeMillis()
-            val mMatrixGroup = mMatrixModel.MatrixDeterminant(presenterScope, firstMatrix)
-
-            mMatrixGroup.time = time
-
-            addToDb(mMatrixGroup)
-
-            uiScope.launch {
-                viewState.addToRecyclerView(mMatrixGroup)
-            }
-        }
+        doCancelableJob { mMatrixModel.MatrixDeterminant(presenterScope,firstMatrix) }
     }
 
     fun btnSwitchClicked(position: Int)
@@ -324,14 +257,42 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         viewState.showToast("WIP")
     }
 
+
+    /*
+     * example for cancelabel job
+     */
     fun btnSolveSystemClicked(matrix: String)
     {
         if (matrix.isEmpty()) return
+        doCancelableJob {mMatrixModel.MatrixSolve(presenterScope, matrix) }
+    }
+
+    private fun doUncancelableJob(calculation : suspend ()->MatrixGroup)
+    {
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
             val time = java.util.GregorianCalendar()
             time.timeInMillis = System.currentTimeMillis()
+            val mMatrixGroup = calculation()
+
+            mMatrixGroup.time = time
+
+            addToDb(mMatrixGroup)
+
+            uiScope.launch {
+                viewState.addToRecyclerView(mMatrixGroup)
+            }
+        }
+    }
+
+    private fun doCancelableJob(calculation : suspend ()->MatrixGroup)
+    {
+        val time = GregorianCalendar()
+        time.timeInMillis = System.currentTimeMillis()
+
+        val job = presenterScope.launch(Dispatchers.Main + errorHandler)
+        {
 
             viewState.startCalculation(
                 MatrixGroup(
@@ -346,27 +307,32 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
             val mMatrixGroup = withTime(
                 presenterScope.coroutineContext + Dispatchers.Default,
                 time
-            ) { mMatrixModel.MatrixSolve(presenterScope, matrix) }
+            ) {  calculation() }
 
+            //if calculation canceled do not do any thing
+            if((jobMap[time.timeInMillis] ?: return@launch).isCancelled)return@launch
 
-            mMatrixGroup.time = time
+            mMatrixGroup.time.timeInMillis = time.timeInMillis
 
             addToDb(mMatrixGroup)
 
             uiScope.launch {
-                viewState.stopCalculation(mMatrixGroup)
+                viewState.calculationCompleted(mMatrixGroup)
             }
         }
+
+        jobMap[time.timeInMillis] = job
     }
 
     fun setMaxDialogSize(width: Float, height: Float)
     {
         presenterScope.launch(Dispatchers.IO + supJob) {
-            Log.d("size@", "set width:$width height:$height")
             mExceptionRenderModel.screenWidth = width
             mExceptionRenderModel.screenHeight = height
         }
     }
+
+
 
 
     /*
@@ -454,7 +420,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         viewState.setTopPosition()
         viewState.stopLoadingInRecyclerView()
-        viewState.allCalculationsStoped()
+        viewState.stopAllCalculations()
         viewState.saveListRecyclerViewViewModel()
         viewState.clearRecyclerView()
         isLoaded = !isLoaded

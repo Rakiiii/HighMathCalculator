@@ -32,9 +32,7 @@ class POJOConverter
         {
             if(time != null)
             {
-                val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
-                fmt.calendar = time
-                return fmt.format(time.time)
+                return time.timeInMillis.toString()
             }else return ""
         }
 
@@ -47,22 +45,26 @@ class POJOConverter
             if(time == "")return null
             else
             {
-                val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
-                val date = fmt.parse(time)
-                val result = GregorianCalendar()
-                result.time = date
-                return result
+                if(time.toLongOrNull() == null)
+                {
+                    //need this in reason of old part of db
+                    val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
+                    val date = fmt.parse(time)
+                    val result = GregorianCalendar()
+                    result.time = date
+                    return result
+                }
+                else
+                {
+                    val result = GregorianCalendar()
+                    result.timeInMillis = time.toLong()
+                    return result
+                }
             }
         }
 
 
         //конвертация полинома в строку
-        /*@TypeConverter
-        @JvmStatic
-        fun fromPolynomial(polynomial : PolynomialBase?) : String
-        {
-            return  if(polynomial != null)polynomial.toString() else ""
-        }*/
         @TypeConverter
         @JvmStatic
         fun fromPolynomial(polynomial : PolynomialBase?) : String
@@ -71,14 +73,8 @@ class POJOConverter
         }
 
 
-        /*
+
         //конвертация строки к полиному
-        @TypeConverter
-        @JvmStatic
-        fun toPolynomial(polynomial : String) : PolynomialBase?
-        {
-                return if(polynomial != "")PolynomialFactory().createPolynomial(polynomial) else null
-        }*/
         @TypeConverter
         @JvmStatic
         fun toPolynomial(polynomial : String) : PolynomialBase
@@ -92,7 +88,7 @@ class POJOConverter
         @JvmStatic
         fun fromPolynomialRoots(polynomialRoots : PolynomialRoots?) : String
         {
-            return if(polynomialRoots != null)polynomialRoots.toString() else ""
+            return polynomialRoots?.toString() ?: ""
         }
 
         //конвертация строки к корням полинома

@@ -22,10 +22,13 @@ import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.PolynomialPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
 import com.dev.smurf.highmathcalculator.ui.CustomRecylerViewLayoutManagers.LayoutManagerWithOffableScroll
+import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.Snackbar.DropSnackbar
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.ViewModels.PolynomialListenerViewModel
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.OnMatrixCalculationGoingViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialImageAdapter
+import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.ViewHolder.OnPolynomialCalculationGoingViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
 import com.dev.smurf.highmathcalculator.ui.fragments.InputExceptionsDialogFragments.DefaultInputExceptionDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
@@ -268,24 +271,39 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
                 }
                 else
                 {
-                    val position = viewHolder.absoluteAdapterPosition
-                    val item = mPolynomialImageAdapter.getData(position)
+                    if (viewHolder is OnPolynomialCalculationGoingViewHolder)
+                    {
+                        val position = viewHolder.absoluteAdapterPosition
+                        val item = mPolynomialImageAdapter.getData(position)
+                        mPolynomialImageAdapter.removeElement(position)
+                        mPolynomialPresenter.calculationCanceled(item.time)
 
-                    mPolynomialImageAdapter.removeElement(position)
+                        val dropSnackbar = DropSnackbar.make(polinomFrame)
+                        dropSnackbar.setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_with_outline)!!)
+                            .setMessage("Calculation stopped").setProgressBar().setDuration(3000).show()
+
+                    }
+                    else
+                    {
+                        val position = viewHolder.absoluteAdapterPosition
+                        val item = mPolynomialImageAdapter.getData(position)
+
+                        mPolynomialImageAdapter.removeElement(position)
 
 
-                    val dropSnackbar = DropSnackbar.make(polinomFrame)
-                    dropSnackbar.setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_with_outline)!!)
-                        .setMessage("Item was removed from the list")
-                        .setButton("UNDO", color = Color.BLACK, action = {
-                            mPolynomialImageAdapter.restoreItem(item, position)
-                            mPolynomialRecyclerView.scrollToPosition(position)
-                            mPolynomialPresenter.restoreInDb(item)
-                            dropSnackbar.dismiss()
-                        }).setProgressBar().setDuration(5000)
-                    dropSnackbar.show()
+                        val dropSnackbar = DropSnackbar.make(polinomFrame)
+                        dropSnackbar.setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_with_outline)!!)
+                            .setMessage("Item was removed from the list")
+                            .setButton("UNDO", color = Color.BLACK, action = {
+                                mPolynomialImageAdapter.restoreItem(item, position)
+                                mPolynomialRecyclerView.scrollToPosition(position)
+                                mPolynomialPresenter.restoreInDb(item)
+                                dropSnackbar.dismiss()
+                            }).setProgressBar().setDuration(5000)
+                        dropSnackbar.show()
 
-                    mPolynomialPresenter.deleteFromDb(item)
+                        mPolynomialPresenter.deleteFromDb(item)
+                    }
                 }
             }
 
@@ -529,6 +547,39 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
             .setProgressBar()
             .setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_error)!!)
             .setDuration(3000).show()
+    }
+
+    override fun startCalculation(polynomialGroup: PolynomialGroup)
+    {
+        if(polinomRecycler.adapter is PolynomialImageAdapter)
+        {
+            mPolynomialImageAdapter.addElement(polynomialGroup)
+            mPolynomialRecyclerViewLayoutManager.scrollToPosition(0)
+        }
+    }
+
+    override fun stopAllCalculations()
+    {
+        if(polinomRecycler.adapter is PolynomialImageAdapter)
+        {
+            mPolynomialImageAdapter.removeAllCalculation()
+        }
+    }
+
+    override fun calculationFailed(polynomialGroup: PolynomialGroup)
+    {
+        if(polinomRecycler.adapter is PolynomialImageAdapter)
+        {
+            mPolynomialImageAdapter.removeCalculation(polynomialGroup)
+        }
+    }
+
+    override fun calculationCompleted(polynomialGroup: PolynomialGroup)
+    {
+        if(polinomRecycler.adapter is PolynomialImageAdapter)
+        {
+            mPolynomialImageAdapter.stopCalculation(polynomialGroup)
+        }
     }
 }
 

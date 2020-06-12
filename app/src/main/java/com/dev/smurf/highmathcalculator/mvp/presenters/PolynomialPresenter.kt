@@ -9,19 +9,23 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.*
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialDataBaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
+import com.dev.smurf.highmathcalculator.withTime
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import kotlinx.coroutines.*
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import moxy.presenterScope
 import org.jetbrains.anko.doAsync
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 
 @ExperimentalCoroutinesApi
@@ -68,6 +72,14 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
 
     //corutine scope для работы с памятью
     private val ioScope = CoroutineScope(Dispatchers.IO + supJob)
+
+    private val jobMap = HashMap<Long,Job>()
+
+    fun calculationCanceled(time : GregorianCalendar)
+    {
+        (jobMap[time.timeInMillis] ?: return).cancel()
+        jobMap.remove(time.timeInMillis)
+    }
 
 
     //todo:: move to two render types and choosing extra line only, by adding extra layer to error hierarchy
@@ -255,23 +267,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     fun onPlusClick(left: String, right: String)
     {
         if(left.isEmpty() || right.isEmpty())return
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-
-            val time = java.util.GregorianCalendar()
-            time.timeInMillis = System.currentTimeMillis()
-            val result =
-                mPolynomialModel.PolynomialPlus(presenterScope, left, right)
-
-            result.time = time
-
-            addToDb(result)
-
-            uiScope.launch {
-                viewState.addToPolynomialRecyclerView(result)
-            }
-
-        }
+        doCancelableJob { mPolynomialModel.PolynomialPlus(presenterScope, left, right) }
     }
 
 
@@ -280,24 +276,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     fun onMinusClick(left: String, right: String)
     {
         if(left.isEmpty() || right.isEmpty())return
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-
-            val time = java.util.GregorianCalendar()
-            time.timeInMillis = System.currentTimeMillis()
-
-            val result = mPolynomialModel.PolynomialMinus(presenterScope, left, right)
-
-            result.time = time
-
-            addToDb(result)
-
-            uiScope.launch {
-                viewState.addToPolynomialRecyclerView(result)
-            }
-
-
-        }
+        doCancelableJob { mPolynomialModel.PolynomialMinus(presenterScope, left, right) }
     }
 
     //нажатие на кнопку умножения
@@ -305,22 +284,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     fun onTimesClick(left: String, right: String)
     {
         if(left.isEmpty() || right.isEmpty())return
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-
-            val time = java.util.GregorianCalendar()
-            time.timeInMillis = System.currentTimeMillis()
-            val result = mPolynomialModel.PolynomialTimes(presenterScope, left, right)
-
-            result.time = time
-
-            addToDb(result)
-
-            uiScope.launch {
-                viewState.addToPolynomialRecyclerView(result)
-            }
-
-        }
+        doCancelableJob { mPolynomialModel.PolynomialTimes(presenterScope, left, right) }
     }
 
     //нажатие на кнопку деления
@@ -328,12 +292,28 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     fun onDivisionClick(left: String, right: String)
     {
         if(left.isEmpty() || right.isEmpty())return
+        doCancelableJob { mPolynomialModel.PolynomialDivision(presenterScope, left, right) }
+    }
+
+    fun onSwitchBtnFragmentClick(position: Int)
+    {
+        viewState.showToast("WIP")
+    }
+
+    //нажатие на кнопку решения
+    fun onRootsOfClick(left: String)
+    {
+        viewState.showToast("Work in progress")
+    }
+
+    private fun doUncancelableJob(calculation : suspend ()->PolynomialGroup)
+    {
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
 
             val time = java.util.GregorianCalendar()
             time.timeInMillis = System.currentTimeMillis()
-            val result = mPolynomialModel.PolynomialDivision(presenterScope, left, right)
+            val result = calculation()
 
             //устанавливаем время страта операции
             result.time = time
@@ -347,15 +327,44 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         }
     }
 
-    fun onSwitchBtnFragmentClick(position: Int)
+    private fun doCancelableJob(calculation : suspend ()->PolynomialGroup)
     {
-        viewState.showToast("WIP")
-    }
+        val time = GregorianCalendar()
+        time.timeInMillis = System.currentTimeMillis()
 
-    //нажатие на кнопку решения
-    fun onRootsOfClick(left: String)
-    {
-        viewState.showToast("Work in progress")
+        val job = presenterScope.launch(Dispatchers.Main + errorHandler)
+        {
+
+            viewState.startCalculation(
+                PolynomialGroup(
+                    PolynomialBase.EmptyPolynomial,
+                    PolynomialBase.EmptyPolynomial,
+                    PolynomialGroup.CALCULATION,
+                    PolynomialBase.EmptyPolynomial,
+                    PolynomialBase.EmptyPolynomial,
+                    null,
+                    time
+                )
+            )
+
+            val mPolynomialGroup = withTime(
+                presenterScope.coroutineContext + Dispatchers.Default,
+                time
+            ) {  calculation() }
+
+            //if calculation canceled do not do any thing
+            if((jobMap[time.timeInMillis] ?: return@launch).isCancelled)return@launch
+
+            mPolynomialGroup.time.timeInMillis = time.timeInMillis
+
+            addToDb(mPolynomialGroup)
+
+            uiScope.launch {
+                viewState.calculationCompleted(mPolynomialGroup)
+            }
+        }
+
+        jobMap[time.timeInMillis] = job
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -397,6 +406,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     {
         viewState.setTopPosition()
         viewState.stopLoadingInRecyclerView()
+        viewState.stopAllCalculations()
         viewState.saveRecyclerViewToViewModel()
         viewState.clearRecyclerView()
         isLoaded = !isLoaded
@@ -424,7 +434,6 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     fun setMaxDialogSize(width: Float, height: Float)
     {
         presenterScope.launch(Dispatchers.IO + supJob) {
-            Log.d("size@", "set width:$width height:$height")
             mExceptionRenderModel.screenWidth = width
             mExceptionRenderModel.screenHeight = height
         }
@@ -459,7 +468,6 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     fun onLoadSavedInstance()
     {
         presenterScope.launch(Dispatchers.IO + errorHandler) {
-            Log.d("loading","before loading call")
             uiScope.launch { viewState.startLoadingInRecyclerView();Log.d("loading","after loading call") }
             val result = mPolynomialDataBaseModel.selectAll().sortedBy { s -> s.time }.reversed().toMutableList()
             delay(1000)

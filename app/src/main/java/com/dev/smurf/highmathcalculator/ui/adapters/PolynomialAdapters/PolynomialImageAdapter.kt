@@ -1,6 +1,7 @@
 package com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
@@ -10,6 +11,7 @@ import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
+import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.ViewHolder.OnPolynomialCalculationGoingViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.ViewHolder.PolynomialBindableViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.ViewHolder.PolynomialImageViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.ViewHolder.PolynomialRoundedProgressBarViewHolder
@@ -42,7 +44,7 @@ class PolynomialImageAdapter(
                     polRightPolynomial = PolynomialBase.EmptyPolynomial,
                     polResPolynomial = PolynomialBase.EmptyPolynomial,
                     polOstPolynomial = PolynomialBase.EmptyPolynomial,
-                    polSignPolynomial = "",
+                    polSignPolynomial = PolynomialGroup.LOADING,
                     time = GregorianCalendar()
                 )
             )
@@ -58,6 +60,39 @@ class PolynomialImageAdapter(
             listOfPolynomials.removeAt(0)
             notifyItemRemoved(0)
         }
+    }
+
+    fun stopCalculation(group: PolynomialGroup)
+    {
+        for (i in listOfPolynomials.indices)
+        {
+            if (listOfPolynomials[i].time.timeInMillis == group.time.timeInMillis)
+            {
+                listOfPolynomials[i] = group
+                notifyItemChanged(i)
+                break
+            }
+        }
+    }
+
+    fun removeCalculation(group: PolynomialGroup)
+    {
+        for (i in listOfPolynomials.indices)
+        {
+            if (listOfPolynomials[i].time.timeInMillis == group.time.timeInMillis)
+            {
+                listOfPolynomials.removeAt(i)
+                notifyItemRemoved(i)
+                break
+            }
+        }
+    }
+
+    fun removeAllCalculation()
+    {
+        listOfPolynomials =
+            listOfPolynomials.filterNot { s -> s.polSignPolynomial == PolynomialGroup.CALCULATION }
+                .toMutableList()
     }
 
     //список элементов
@@ -92,8 +127,6 @@ class PolynomialImageAdapter(
         listOfPolynomials.removeAt(position)
 
         notifyItemRemoved(position)
-
-        //notifyDataSetChanged()
     }
 
 
@@ -126,8 +159,11 @@ class PolynomialImageAdapter(
         {
             (listOfPolynomials[position].polLeftPolynomial == PolynomialBase.EmptyPolynomial
                     && listOfPolynomials[position].polRightPolynomial == PolynomialBase.EmptyPolynomial
-                    ) -> 0
+                    && listOfPolynomials[position].polSignPolynomial == PolynomialGroup.LOADING) -> 0
             loading && position == 0 -> 0
+            (listOfPolynomials[position].polLeftPolynomial == PolynomialBase.EmptyPolynomial
+                    && listOfPolynomials[position].polRightPolynomial == PolynomialBase.EmptyPolynomial
+                    && listOfPolynomials[position].polSignPolynomial == PolynomialGroup.CALCULATION) -> 2
             else -> 1
         }
     }
@@ -140,6 +176,13 @@ class PolynomialImageAdapter(
             0 -> PolynomialRoundedProgressBarViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.rounding_progress_bar_view_holder,
+                    parent,
+                    false
+                ), width
+            )
+            2 -> OnPolynomialCalculationGoingViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.calulation_on_going_viewholder,
                     parent,
                     false
                 ), width
@@ -159,6 +202,11 @@ class PolynomialImageAdapter(
     override fun onBindViewHolder(holder: PolynomialBindableViewHolder, position: Int)
     {
         holder.doDropAnimations = dropAnimations
+        if(holder is OnPolynomialCalculationGoingViewHolder)
+        {
+            holder.bind(listOfPolynomials[position])
+        }
+
         if (holder is PolynomialImageViewHolder)
         {
             holder.bind(listOfPolynomials[position])

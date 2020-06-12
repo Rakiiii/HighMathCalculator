@@ -28,4 +28,15 @@ data class PolynomialGroup(var polLeftPolynomial : PolynomialBase,
         time = time,
         roots = roots
     )
+
+    companion object
+    {
+        val DIVISION ="/"
+        val MINUS = "-"
+        val PLUS = "+"
+        val TIMES = "*"
+        val EQUALS="="
+        val CALCULATION="calculation"
+        val LOADING = "loading"
+    }
 }

@@ -13,7 +13,7 @@ import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.MatrixBindableViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.MatrixViewHolderMatrix
-import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.OnCalculationGoingViewHolder
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.OnMatrixCalculationGoingViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.RoundingProgressBarViewHolderMatrix
 
 
@@ -72,19 +72,15 @@ class MatrixAdapterImageView(
 
     fun stopCalculation(group: MatrixGroup)
     {
-        var saveIndice = -1
         for (i in listOfMatrices.indices)
         {
-            if (listOfMatrices[i].time == group.time)
+            if (listOfMatrices[i].time.timeInMillis == group.time.timeInMillis)
             {
+                Log.d("solved@","stoped time ${listOfMatrices[i].time.timeInMillis}")
                 listOfMatrices[i] = group
-                saveIndice = i
+                notifyItemChanged(i)
                 break
             }
-        }
-        if (saveIndice != -1)
-        {
-            notifyItemChanged(saveIndice)
         }
     }
 
@@ -92,7 +88,7 @@ class MatrixAdapterImageView(
     {
         for (i in listOfMatrices.indices)
         {
-            if (listOfMatrices[i].time == group.time)
+            if (listOfMatrices[i].time.timeInMillis == group.time.timeInMillis)
             {
                 listOfMatrices.removeAt(i)
                 notifyItemRemoved(i)
@@ -173,7 +169,7 @@ class MatrixAdapterImageView(
                     false
                 ), width
             )
-            2 -> OnCalculationGoingViewHolder(
+            2 -> OnMatrixCalculationGoingViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.calulation_on_going_viewholder,
                     parent,
@@ -190,12 +186,11 @@ class MatrixAdapterImageView(
         }
     }
 
-    private var counter = 0
 
     override fun onBindViewHolder(holderMatrix: MatrixBindableViewHolder, position: Int)
     {
         holderMatrix.doDropAnimations = dropAnimations
-        if(holderMatrix is OnCalculationGoingViewHolder)
+        if(holderMatrix is OnMatrixCalculationGoingViewHolder)
         {
             holderMatrix.bind(listOfMatrices[position])
         }

@@ -2,6 +2,7 @@ package com.dev.smurf.highmathcalculator.mvp.views
 
 
 import android.graphics.Bitmap
+import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
@@ -67,4 +68,20 @@ interface PolynomialViewInterface : MvpView
 
     @StateStrategyType(SkipStrategy::class)
     fun displayError(message : String)
+
+    /*
+    *   Calculation animation
+    */
+
+    @StateStrategyType(SkipStrategy::class)
+    fun startCalculation(polynomialGroup: PolynomialGroup)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun calculationCompleted(polynomialGroup: PolynomialGroup)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun calculationFailed(polynomialGroup: PolynomialGroup)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun stopAllCalculations()
 }
