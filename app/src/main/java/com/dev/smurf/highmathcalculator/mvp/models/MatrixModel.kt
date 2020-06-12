@@ -76,7 +76,7 @@ class MatrixModel
     //инвертированний матриц
     private fun inverse(left: Matrix): MatrixGroup
     {
-        val res = left.invers()
+        val res = left.inversByGauseMethod()
         val obj = MatrixGroup(
             leftMatrix = left,
             rightMatrix = Matrix.EmptyMatrix,
@@ -84,6 +84,28 @@ class MatrixModel
             sign = "inv"
         )
         return obj
+    }
+
+    private fun rank(leftMatrix: Matrix) : MatrixGroup
+    {
+        val res = leftMatrix.rank()
+        val obj = MatrixGroup(
+            leftMatrix = leftMatrix,
+            rightMatrix = Matrix.EmptyMatrix,
+            resMatrix = res,
+            sign = "inv"
+        )
+        return obj
+    }
+
+    suspend fun MatrixRank(
+        scope: CoroutineScope,
+        leftMatrix: String
+    ): MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
+            rank(createMatrix(leftMatrix))
+        }
     }
 
 

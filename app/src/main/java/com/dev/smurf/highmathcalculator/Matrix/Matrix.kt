@@ -483,6 +483,43 @@ open class Matrix private constructor(
         return this.minorMatrix().trans().matrixDivideByNumber(this.determinant())
     }
 
+    fun extendedMatrix():Matrix
+    {
+        if (width != height) throw MatrixNotSquareException()
+        val extendedMatrixArray = Array(height){i -> Array(width*2){ j ->
+            if(j < width) this[i,j] else if (j-width == i) ComplexNumber(1) else ComplexNumber()
+        } }
+
+        return Matrix( m =extendedMatrixArray,width = width*2,height = height)
+    }
+
+    fun inversByGauseMethod(): Matrix
+    {
+        if (width != height) throw MatrixNotSquareException()
+        if (this.determinant() == ComplexNumber()) throw ZeroDeterminantException()
+
+        val gauseFrom = extendedMatrix().gauseMethod()
+
+        val inversedMatrixArray = Array(height){ i -> Array(width){ j -> gauseFrom[i,j+width]} }
+        return Matrix(width = width,height = height,m = inversedMatrixArray)
+    }
+
+    fun rank() : Matrix
+    {
+        var rank = 0
+        val gauseFrom = gauseMethod()
+
+        for (i in gauseFrom.rowIndices())
+        {
+            var zeroCounter = 0
+            gauseFrom[i].map { if(it == ComplexNumber()) zeroCounter++ }
+
+            if(zeroCounter != width) rank ++
+        }
+
+        return Matrix(width = 1,height = 1,m = Array(1){ Array(1){ComplexNumber(rank)} })
+    }
+
     //перегрузка оператора сравнения
     override operator fun equals(other: Any?): Boolean
     {
@@ -524,10 +561,8 @@ open class Matrix private constructor(
         return res
     }
 
-    fun solve(): Matrix
+    fun gauseMethod(): Matrix
     {
-        //todo::add solving non square matrix (multiple solutions) with better
-        if (width - 1 != height) throw MatrixNotSquareException()
         val betterMatrixRepresentation = MatrixLine.createArrayOfMatrixLines(this)
 
         for (majorLine in betterMatrixRepresentation.indices)
@@ -545,9 +580,21 @@ open class Matrix private constructor(
             }
         }
 
-        val resultMatrix = Array(height){pos -> Array(1){betterMatrixRepresentation[pos].last()} }
+        val resultArray =
+            Array(betterMatrixRepresentation.size) { i -> Array(betterMatrixRepresentation[i].length) { j -> betterMatrixRepresentation[i][j] } }
+        return Matrix(width = width,height = height,m=resultArray)
+    }
 
-        return Matrix(width = 1,height = height, m = resultMatrix)
+    fun solve(): Matrix
+    {
+        //todo::add solving non square matrix (multiple solutions) with better
+        if (width - 1 != height) throw MatrixNotSquareException()
+        val gauseForm = gauseMethod()
+
+        val resultMatrix =
+            Array(height) { pos -> Array(1) { gauseForm[pos].last() } }
+
+        return Matrix(width = 1, height = height, m = resultMatrix)
     }
 
 

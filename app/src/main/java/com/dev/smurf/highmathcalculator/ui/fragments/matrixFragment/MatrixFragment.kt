@@ -508,7 +508,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun btnRankClicked()
     {
-        mMatrixPresenter.btnRankClicked()
+        mMatrixPresenter.btnRankClicked(firstMatrix.text.toString())
     }
 
     override fun btnSolveSystemClicked()

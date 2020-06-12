@@ -41,7 +41,7 @@
     </style>
 
     <style name="SubBtnStyle" parent="MainTheme">
-        <item name="android:background">@drawable/button_shape</item>
+        <item name="android:background">@drawable/button_click</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_columnWeight">1</item>

@@ -131,11 +131,6 @@ class Fraction(_upper : Int = 0, _lower : Int = 1)
 
     override fun toString(): String
     {
-        /*
-        if(isDecimal())
-        {
-            var str = upper.toString().substring(0,lower.toString().length)
-        }*/
         if (lower == 1)return upper.toString()
         else
         {

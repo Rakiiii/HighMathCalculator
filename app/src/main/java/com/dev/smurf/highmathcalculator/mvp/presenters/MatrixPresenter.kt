@@ -252,9 +252,10 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         viewState.showToast("WIP")
     }
 
-    fun btnRankClicked()
+    fun btnRankClicked(matrix : String)
     {
-        viewState.showToast("WIP")
+        if (matrix.isEmpty())return
+        doCancelableJob { mMatrixModel.MatrixRank(presenterScope,matrix) }
     }
 
 
