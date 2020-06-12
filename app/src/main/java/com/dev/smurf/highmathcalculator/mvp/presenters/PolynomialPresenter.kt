@@ -8,14 +8,19 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.*
+import com.dev.smurf.highmathcalculator.Exceptions.TimeableException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.R
+import com.dev.smurf.highmathcalculator.StringsExtension.numbersToDegreeForm
+import com.dev.smurf.highmathcalculator.StringsExtension.toDegree
 import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialDataBaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
+import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.withTime
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import kotlinx.coroutines.*
@@ -73,9 +78,9 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     //corutine scope для работы с памятью
     private val ioScope = CoroutineScope(Dispatchers.IO + supJob)
 
-    private val jobMap = HashMap<Long,Job>()
+    private val jobMap = HashMap<Long, Job>()
 
-    fun calculationCanceled(time : GregorianCalendar)
+    fun calculationCanceled(time: GregorianCalendar)
     {
         (jobMap[time.timeInMillis] ?: return).cancel()
         jobMap.remove(time.timeInMillis)
@@ -85,8 +90,27 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     //todo:: move to two render types and choosing extra line only, by adding extra layer to error hierarchy
     //обработчик ошибок
     private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
+
+        if (error is TimeableException && error.time != TimeableException.zeroTime)
+        {
+            uiScope.launch {
+                viewState.calculationFailed(
+                    PolynomialGroup(
+                        PolynomialBase.EmptyPolynomial,
+                        PolynomialBase.EmptyPolynomial,
+                        PolynomialGroup.CALCULATION,
+                        PolynomialBase.EmptyPolynomial,
+                        PolynomialBase.EmptyPolynomial,
+                        null,
+                        error.time
+                    )
+                )
+            }
+        }
+
         when (error)
         {
+
             is WrongAmountOfBracketsInPolynomialException ->
             {
                 uiScope.launch {
@@ -215,6 +239,8 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
                         error.unrecognizablePart
                     )
 
+                    Log.d("error@","unrec ${error.unrecognizablePart}")
+
                     viewState.showErrorDialog(
                         errorBitmap,
                         mExceptionRenderModel.getErrorDialogWidth(),
@@ -266,7 +292,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     //нажатие кнопки плюс
     fun onPlusClick(left: String, right: String)
     {
-        if(left.isEmpty() || right.isEmpty())return
+        if (left.isEmpty() || right.isEmpty()) return
         doCancelableJob { mPolynomialModel.PolynomialPlus(presenterScope, left, right) }
     }
 
@@ -275,7 +301,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     //@SuppressLint("StaticFieldLeak")
     fun onMinusClick(left: String, right: String)
     {
-        if(left.isEmpty() || right.isEmpty())return
+        if (left.isEmpty() || right.isEmpty()) return
         doCancelableJob { mPolynomialModel.PolynomialMinus(presenterScope, left, right) }
     }
 
@@ -283,15 +309,21 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     //@SuppressLint("StaticFieldLeak")
     fun onTimesClick(left: String, right: String)
     {
-        if(left.isEmpty() || right.isEmpty())return
-        doCancelableJob { mPolynomialModel.PolynomialTimes(presenterScope, left, right) }
+        if (left.isEmpty() || right.isEmpty()) return
+        doCancelableJob {
+            delay(4000); mPolynomialModel.PolynomialTimes(
+            presenterScope,
+            left,
+            right
+        )
+        }
     }
 
     //нажатие на кнопку деления
     //@SuppressLint("StaticFieldLeak")
     fun onDivisionClick(left: String, right: String)
     {
-        if(left.isEmpty() || right.isEmpty())return
+        if (left.isEmpty() || right.isEmpty()) return
         doCancelableJob { mPolynomialModel.PolynomialDivision(presenterScope, left, right) }
     }
 
@@ -306,7 +338,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         viewState.showToast("Work in progress")
     }
 
-    private fun doUncancelableJob(calculation : suspend ()->PolynomialGroup)
+    private fun doUncancelableJob(calculation: suspend () -> PolynomialGroup)
     {
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
@@ -327,7 +359,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         }
     }
 
-    private fun doCancelableJob(calculation : suspend ()->PolynomialGroup)
+    private fun doCancelableJob(calculation: suspend () -> PolynomialGroup)
     {
         val time = GregorianCalendar()
         time.timeInMillis = System.currentTimeMillis()
@@ -350,10 +382,10 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
             val mPolynomialGroup = withTime(
                 presenterScope.coroutineContext + Dispatchers.Default,
                 time
-            ) {  calculation() }
+            ) { calculation() }
 
             //if calculation canceled do not do any thing
-            if((jobMap[time.timeInMillis] ?: return@launch).isCancelled)return@launch
+            if ((jobMap[time.timeInMillis] ?: return@launch).isCancelled) return@launch
 
             mPolynomialGroup.time.timeInMillis = time.timeInMillis
 
@@ -458,7 +490,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
 
     fun restoreInDb(polynomialGroup: PolynomialGroup)
     {
-        presenterScope.launch(Dispatchers.IO){
+        presenterScope.launch(Dispatchers.IO) {
             mPolynomialDataBaseModel.insert(polynomialGroup)
             mPolynomialDataBaseModel.addToCache(polynomialGroup)
         }
@@ -468,8 +500,14 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     fun onLoadSavedInstance()
     {
         presenterScope.launch(Dispatchers.IO + errorHandler) {
-            uiScope.launch { viewState.startLoadingInRecyclerView();Log.d("loading","after loading call") }
-            val result = mPolynomialDataBaseModel.selectAll().sortedBy { s -> s.time }.reversed().toMutableList()
+            uiScope.launch {
+                viewState.startLoadingInRecyclerView();Log.d(
+                "loading",
+                "after loading call"
+            )
+            }
+            val result = mPolynomialDataBaseModel.selectAll().sortedBy { s -> s.time }.reversed()
+                .toMutableList()
             delay(1000)
             uiScope.launch {
                 viewState.stopLoadingInRecyclerView()

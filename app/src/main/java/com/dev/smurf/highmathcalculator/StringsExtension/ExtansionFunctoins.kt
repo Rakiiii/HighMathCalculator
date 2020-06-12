@@ -67,6 +67,7 @@ fun Int.equals(other: Fraction): Boolean
     else return false
 }
 
+//use numberToDergeeForm if you need to translate only numbers
 fun String.toDegree(): String
 {
     var res = ""
@@ -85,6 +86,30 @@ fun String.toDegree(): String
             '8' -> res += '⁸'
             '9' -> res += '⁹'
             else -> throw Exception("UnknownSymbolInDegree")
+        }
+    }
+
+    return res
+}
+
+fun String.numbersToDegreeForm(): String
+{
+    var res = ""
+    for (i in this)
+    {
+        when (i)
+        {
+            '0' -> res += '⁰'
+            '1' -> res += '¹'
+            '2' -> res += '²'
+            '3' -> res += '³'
+            '4' -> res += '⁴'
+            '5' -> res += '⁵'
+            '6' -> res += '⁶'
+            '7' -> res += '⁷'
+            '8' -> res += '⁸'
+            '9' -> res += '⁹'
+            else -> res += i
         }
     }
 
