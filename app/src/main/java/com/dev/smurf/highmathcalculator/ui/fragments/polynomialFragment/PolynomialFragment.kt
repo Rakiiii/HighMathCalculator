@@ -500,6 +500,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         errorText: String
     )
     {
+        dismissErrorDialog()
         Log.d("errorDialog@", "show dialog")
         errorDialogFragment =
             DefaultInputExceptionDialogFragment(errorBitmap, this, width, height, errorText)

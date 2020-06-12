@@ -555,6 +555,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     )
     {
         Log.d("errorDialog@", "show dialog")
+        dismissErrorDialog()
         errorDialogFragment =
             DefaultInputExceptionDialogFragment(errorBitmap, this, width, height, errorText)
         errorDialogFragment.show(childFragmentManager, "ERROR_DIALOG")
