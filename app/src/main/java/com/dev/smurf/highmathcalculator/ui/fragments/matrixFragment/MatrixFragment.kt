@@ -14,6 +14,8 @@ import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CalculatorApplication
@@ -29,6 +31,7 @@ import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPa
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapterImageView
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.OnMatrixCalculationGoingViewHolder
+import com.dev.smurf.highmathcalculator.ui.fragments.ExtraInformationFragments.FullMatrixDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.InputExceptionsDialogFragments.DefaultInputExceptionDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
@@ -46,7 +49,8 @@ import org.jetbrains.anko.toast
 class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     MatrixButtonGridFragmentFirstPage.onFragmentInteractionListener,
     MatrixButtonGridFragmentSecondPage.onFragmentInteractionListener,
-    DefaultInputExceptionDialogFragment.onFragmentInteractionListener
+    DefaultInputExceptionDialogFragment.onFragmentInteractionListener,
+    FullMatrixDialogFragment.onClickListener
 {
 
     @InjectPresenter
@@ -60,6 +64,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     private lateinit var mBtnMatrixViewPagerAdapter: BtnViewPagerFragmentStateAdapter
 
     private lateinit var errorDialogFragment: DefaultInputExceptionDialogFragment
+    private lateinit var fullMatrixDialogFragment: FullMatrixDialogFragment
 
     private val mMatrixRecyclerViewModel by viewModels<MatrixRecyclerViewModel>()
 
@@ -71,6 +76,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     private val matrixListenerViewModel: MatrixListenerViewModel<MatrixFragment> by activityViewModels()
 
+    private val onClickMatrixLiveData = MutableLiveData<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -142,6 +148,9 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
         //matrixRecycler.addOnScrollListener(ToScroller.createToScroller(this)!!)
         scroll.setOnScrollChangeListener(ExtraScroller(this))
+
+        onClickMatrixLiveData.observe(this,
+            { matrixString -> mMatrixPresenter.matrixInViewHolderClicked(matrixString) })
 
     }
 
@@ -237,7 +246,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
                 requireContext(),
                 firstMatrix,
                 secondMatrix,
-                point.x.toFloat() - margin
+                point.x.toFloat() - margin,
+                onClickMatrixLiveData
             )
 
         mMatrixRecyclerView = requireView().findViewById(R.id.matrixRecycler)
@@ -336,7 +346,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
                         val dropSnackbar = DropSnackbar.make(matrixFrame)
                         dropSnackbar.setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_with_outline)!!)
-                            .setMessage("Calculation stopped").setProgressBar().setDuration(3000).show()
+                            .setMessage("Calculation stopped").setProgressBar().setDuration(3000)
+                            .show()
 
                     }
                     else
@@ -548,6 +559,34 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
             DefaultInputExceptionDialogFragment(errorBitmap, this, width, height, errorText)
         errorDialogFragment.show(childFragmentManager, "ERROR_DIALOG")
     }
+
+    override fun showMatrixDialog(matrix: String, width: Float, height: Float, matrixBitmap: Bitmap)
+    {
+        fullMatrixDialogFragment = FullMatrixDialogFragment(
+            matrix,
+            matrixBitmap,
+            width,
+            height,
+            this,
+            firstMatrix,
+            secondMatrix
+        )
+        fullMatrixDialogFragment.show(
+            childFragmentManager,
+            "MATRIX_DIALOG"
+        )
+    }
+
+    override fun btnMatrixDialogOkClicked()
+    {
+        mMatrixPresenter.onMatrixDialogBtnOkClicked()
+    }
+
+    override fun dismissMatrixDialog()
+    {
+        if (::fullMatrixDialogFragment.isInitialized && fullMatrixDialogFragment.isVisible) fullMatrixDialogFragment.dismiss()
+    }
+
 
     override fun btnOkPressed()
     {

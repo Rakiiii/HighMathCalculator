@@ -15,7 +15,7 @@ import java.util.*
 class MatrixModel
 {
     //инициализация матрицы
-    private fun createMatrix(obj: String): Matrix
+    fun createMatrix(obj: String): Matrix
     {
         val ret = Matrix.createMatrix(obj)
         return ret

@@ -407,6 +407,8 @@ class ExponentialPolynomial private constructor(
         return new
     }
 
+
+    //todo::fix it
     override fun div(obj: Any): Pair<PolynomialBase, PolynomialBase>
     {
         val result = ExponentialPolynomial()
@@ -426,7 +428,11 @@ class ExponentialPolynomial private constructor(
             is ExponentialPolynomial ->
             {
                 //division function
-                val subRes = exponensialRecursiveDivison(this.Copy().polynomial, obj.polynomial)
+                val subThis = this.Copy().polynomial
+                val subRight = obj.polynomial
+                subThis.reverse()
+                subRight.reverse()
+                val subRes = exponensialRecursiveDivison(subThis,subRight)
 
                 //set polynomial's with result arrays
                 result.polynomial = subRes.first

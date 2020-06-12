@@ -1,10 +1,15 @@
 package com.dev.smurf.highmathcalculator.mvp.presenters
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.util.Log
+import androidx.core.graphics.createBitmap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.dev.smurf.highmathcalculator.CalculatorApplication
+import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInBrackets
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.DifferentAmountOfElementsInMatrixLineException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongAmountOfBracketsInMatrixException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongElemntAtMatrixInputException
@@ -12,6 +17,8 @@ import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.Wro
 import com.dev.smurf.highmathcalculator.Exceptions.TimeableException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
+import com.dev.smurf.highmathcalculator.PaintExtension.getMatrixInBracketsSize
+import com.dev.smurf.highmathcalculator.PaintExtension.getMatrixSize
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
@@ -256,6 +263,44 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         if (matrix.isEmpty())return
         doCancelableJob { mMatrixModel.MatrixRank(presenterScope,matrix) }
+    }
+
+    //todo:: move logic to model
+    fun matrixInViewHolderClicked(matrix : String)
+    {
+        presenterScope.launch(Dispatchers.Default){
+            val initedMatrix = mMatrixModel.createMatrix(matrix)
+
+            val width = mExceptionRenderModel.getErrorDialogWidth()
+            val height = mExceptionRenderModel.getErrorDialogHeight()
+
+            val mPaint = CanvasRenderSpecification.createBlackPainter()
+
+            var matrixSize = mPaint.getMatrixInBracketsSize(initedMatrix)
+            while (matrixSize.first >= width || matrixSize.second >= height)
+            {
+                mPaint.textSize -= 5f
+                matrixSize = mPaint.getMatrixInBracketsSize(initedMatrix)
+            }
+
+            val horizontalOffset = (width - matrixSize.first)/2
+            val verticalOffset = (height - matrixSize.second)/2
+
+            val matrixBitmap = createBitmap(width = width.toInt(),height = height.toInt(),config = Bitmap.Config.ARGB_8888)
+
+            val canvas = Canvas(matrixBitmap)
+
+            canvas.drawMatrixInBrackets(initedMatrix,horizontalOffset,verticalOffset,mPaint)
+
+            uiScope.launch {
+                viewState.showMatrixDialog(matrix,width, height, matrixBitmap)
+            }
+        }
+    }
+
+    fun onMatrixDialogBtnOkClicked()
+    {
+        viewState.dismissMatrixDialog()
     }
 
 

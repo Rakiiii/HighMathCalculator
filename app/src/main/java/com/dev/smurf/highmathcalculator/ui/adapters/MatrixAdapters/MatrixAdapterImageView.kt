@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.R
@@ -21,7 +22,8 @@ class MatrixAdapterImageView(
     val context: Context,
     val firstMatrix: EditText,
     val secondMatrix: EditText,
-    val width: Float
+    val width: Float,
+    val onMatrixClickedListener : MutableLiveData<String>
 ) :
     RecyclerView.Adapter<MatrixBindableViewHolder>()
 {
@@ -225,6 +227,18 @@ class MatrixAdapterImageView(
                     holderMatrix.rightMatrixValue
                 )
             )
+
+            holderMatrix.leftMatrix.setOnClickListener {
+                if(holderMatrix.leftMatrixValue.isNotEmpty())onMatrixClickedListener.value = holderMatrix.leftMatrixValue
+            }
+
+            holderMatrix.rightMatrix.setOnClickListener {
+                if(holderMatrix.rightMatrixValue.isNotEmpty())onMatrixClickedListener.value = holderMatrix.rightMatrixValue
+            }
+
+            holderMatrix.resMatrix.setOnClickListener {
+                if(holderMatrix.resMatrixValue.isNotEmpty())onMatrixClickedListener.value = holderMatrix.resMatrixValue
+            }
 
         }
     }

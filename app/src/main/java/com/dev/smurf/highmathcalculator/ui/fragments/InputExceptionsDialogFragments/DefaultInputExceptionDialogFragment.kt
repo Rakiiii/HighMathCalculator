@@ -40,7 +40,7 @@ class DefaultInputExceptionDialogFragment(
         layout.errorDialogRoot.minWidth = width.toInt()
         layout.errorDialogRoot.minHeight = height.toInt()
 
-        return layout//super.onCreateView(inflater, container, savedInstanceState)
+        return layout
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)

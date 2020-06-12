@@ -79,5 +79,11 @@ interface MatrixViewInterface : MvpView
     fun setTopPosition()
 
     @StateStrategyType(SkipStrategy::class)
-    fun displayError(message : String)
+    fun displayError(message: String)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun showMatrixDialog(matrix : String,width: Float, height: Float, matrixBitmap: Bitmap)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun dismissMatrixDialog()
 }
