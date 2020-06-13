@@ -55,7 +55,7 @@ PolynomialBindableViewHolder(itemView,maxWidth)
         val bitmapSet = PolynomialRenderInHolder.renderWithStrategy(
             polynomialGroup,
             width,
-            width * 2,
+            width*2,
             blackPainter
         )
 

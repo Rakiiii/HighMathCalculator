@@ -269,6 +269,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     fun matrixInViewHolderClicked(matrix : String)
     {
         presenterScope.launch(Dispatchers.Default){
+            if (matrix.isEmpty())return@launch
             val initedMatrix = mMatrixModel.createMatrix(matrix)
 
             val width = mExceptionRenderModel.getErrorDialogWidth()

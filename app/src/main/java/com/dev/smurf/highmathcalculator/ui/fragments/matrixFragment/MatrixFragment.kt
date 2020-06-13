@@ -95,6 +95,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(mMatrixPresenter)
 
+
         Log.d("lifecycle@", "onCreate")
     }
 
@@ -149,9 +150,6 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         //matrixRecycler.addOnScrollListener(ToScroller.createToScroller(this)!!)
         scroll.setOnScrollChangeListener(ExtraScroller(this))
 
-        onClickMatrixLiveData.observe(this,
-            { matrixString -> mMatrixPresenter.matrixInViewHolderClicked(matrixString) })
-
     }
 
     private class ExtraScroller(val matrixFragment: MatrixFragment) :
@@ -192,6 +190,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         isPaused = false
         Log.d("lifecycle@", "onResume")
+        onClickMatrixLiveData.observe(this,
+            { matrixString -> mMatrixPresenter.matrixInViewHolderClicked(matrixString) })
         super.onResume()
     }
 
@@ -202,7 +202,8 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         Log.d("lifecycle@", "onPause")
         mMatrixEdittextViewModel.firstValue = firstMatrix.text.toString()
         mMatrixEdittextViewModel.secondValue = secondMatrix.text.toString()
-
+        onClickMatrixLiveData.removeObservers(this)
+        onClickMatrixLiveData.value = ""
         super.onPause()
     }
 
