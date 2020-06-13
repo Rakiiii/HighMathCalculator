@@ -9,9 +9,23 @@ import moxy.viewstate.strategy.*
 @StateStrategyType(value = AddToEndStrategy::class)
 interface MatrixViewInterface : MvpView
 {
+    /*
+     * recycler view commands
+     */
+
     //добавить в recycler view новый элемент obj
     @StateStrategyType(SkipStrategy::class)
     fun addToRecyclerView(obj: MatrixGroup)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun clearRecyclerView()
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun setTopPosition()
+
+    /*
+     * misc commands
+     */
 
     //вывести что-то в тост
     @StateStrategyType(SkipStrategy::class)
@@ -24,8 +38,9 @@ interface MatrixViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun setBtnFragment(position: Int)
 
-    /* @StateStrategyType(SkipStrategy::class)
-     fun updateSettings()*/
+    /*
+     * adapters commands
+     */
 
     //установить Image адаптер
     @StateStrategyType(SkipStrategy::class)
@@ -34,6 +49,10 @@ interface MatrixViewInterface : MvpView
     //установить Text адаптер
     @StateStrategyType(SkipStrategy::class)
     fun setTextAdapter()
+
+    /*
+     *  view model commands
+     */
 
     @StateStrategyType(SkipStrategy::class)
     fun saveListRecyclerViewViewModel()
@@ -44,6 +63,10 @@ interface MatrixViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun setObservable()
 
+    /*
+     * input error dialog commands
+     */
+
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float, errorText: String)
 
@@ -53,12 +76,20 @@ interface MatrixViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun getMaxSizeOfErrorDialog()
 
+    /*
+     * loading animations in recycler view
+     */
+
 
     @StateStrategyType(SkipStrategy::class)
     fun startLoadingInRecyclerView()
 
     @StateStrategyType(SkipStrategy::class)
     fun stopLoadingInRecyclerView()
+
+    /*
+     * commands for calculation of cancelabel job
+     */
 
     @StateStrategyType(SkipStrategy::class)
     fun startCalculation(matrixGroup: MatrixGroup)
@@ -72,17 +103,20 @@ interface MatrixViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun stopAllCalculations()
 
-    @StateStrategyType(SkipStrategy::class)
-    fun clearRecyclerView()
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
-    fun setTopPosition()
+    /*
+     * displaying errors
+     */
 
     @StateStrategyType(SkipStrategy::class)
     fun displayError(message: String)
 
+    /*
+     * Extra matrix information dialog commands
+     */
+
     @StateStrategyType(SkipStrategy::class)
-    fun showMatrixDialog(matrix : String,width: Float, height: Float, matrixBitmap: Bitmap)
+    fun showMatrixDialog(matrix: String, width: Float, height: Float, matrixBitmap: Bitmap)
 
     @StateStrategyType(SkipStrategy::class)
     fun dismissMatrixDialog()

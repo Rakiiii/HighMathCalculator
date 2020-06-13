@@ -11,13 +11,12 @@ import androidx.fragment.app.DialogFragment
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
-import kotlinx.android.synthetic.main.error_dialog_layout.view.*
 import kotlinx.android.synthetic.main.full_matrix_dialog_layout.view.*
 import org.jetbrains.anko.imageBitmap
 
-class FullMatrixDialogFragment(
-    private val matrix : String,
-    private val matrixBitmap: Bitmap,
+class FullEquationDialogFragment(
+    private val equation : String,
+    private val equationBitmap: Bitmap,
     private val width: Float,
     private val height: Float,
     private val listener : onClickListener,
@@ -46,13 +45,13 @@ class FullMatrixDialogFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        view.fullMatrixIV.imageBitmap = matrixBitmap
+        view.fullMatrixIV.imageBitmap = equationBitmap
         view.btnMatrixDialogOk.setOnClickListener {
             listener.btnMatrixDialogOkClicked()
         }
 
         view.fullMatrixIV.setOnCreateContextMenuListener(
-            ContextMenuListener(CalculatorApplication.context,firstMatrix,secondMatrix,matrix)
+            ContextMenuListener(CalculatorApplication.context,firstMatrix,secondMatrix,equation)
         )
 
         val animator = view.animate()

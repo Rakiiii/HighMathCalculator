@@ -1,15 +1,13 @@
 package com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.ViewHolder.OnPolynomialCalculationGoingViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.ViewHolder.PolynomialBindableViewHolder
@@ -23,7 +21,8 @@ class PolynomialImageAdapter(
     val context: Context,
     val polFirstPolynomial: EditText,
     val polSecPolynomial: EditText,
-    val width: Float
+    val width: Float,
+    val onPolynomialClickedListener : MutableLiveData<String>
 ) :
     RecyclerView.Adapter<PolynomialBindableViewHolder>()
 {
@@ -251,6 +250,22 @@ class PolynomialImageAdapter(
                     holder.remainderPolynomialValue
                 )
             )
+
+            holder.leftPolynomialImageView.setOnClickListener {
+                if(holder.leftPolynomialValue.isNotEmpty())onPolynomialClickedListener.value = holder.leftPolynomialValue
+            }
+
+            holder.remainderPolynomialImageView.setOnClickListener {
+                if(holder.remainderPolynomialValue.isNotEmpty())onPolynomialClickedListener.value = holder.remainderPolynomialValue
+            }
+
+            holder.resultPolynomialImageView.setOnClickListener {
+                if(holder.resultPolynomialValue.isNotEmpty())onPolynomialClickedListener.value = holder.resultPolynomialValue
+            }
+
+            holder.rightPolynomialImageView.setOnClickListener {
+                if(holder.rightPolynomialValue.isNotEmpty())onPolynomialClickedListener.value = holder.rightPolynomialValue
+            }
         }
 
     }

@@ -22,7 +22,7 @@ class PolynomialModel
     }
 
     //сложить два полинома
-    fun plus(left: String, right: String): PolynomialGroup
+    private fun plus(left: String, right: String): PolynomialGroup
     {
         val lp = mPolinomFactory.createPolynomial(left)
         val rp = mPolinomFactory.createPolynomial(right)
@@ -43,7 +43,7 @@ class PolynomialModel
 
 
     //выситание полиномов
-    fun minus(left: String, right: String): PolynomialGroup
+    private fun minus(left: String, right: String): PolynomialGroup
     {
         val lp = mPolinomFactory.createPolynomial(left)
         val rp = mPolinomFactory.createPolynomial(right)
@@ -59,7 +59,7 @@ class PolynomialModel
 
     }
 
-    fun times(left: String, right: String): PolynomialGroup
+    private fun times(left: String, right: String): PolynomialGroup
     {
         val lp = mPolinomFactory.createPolynomial(left)
         val rp = mPolinomFactory.createPolynomial(right)
@@ -74,7 +74,7 @@ class PolynomialModel
         )
     }
 
-    fun division(left: String, right: String): PolynomialGroup
+    private fun division(left: String, right: String): PolynomialGroup
     {
         val lp = mPolinomFactory.createPolynomial(left)
         val rp = mPolinomFactory.createPolynomial(right)

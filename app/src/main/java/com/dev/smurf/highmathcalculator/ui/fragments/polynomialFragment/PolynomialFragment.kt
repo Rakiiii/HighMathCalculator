@@ -14,6 +14,8 @@ import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,6 +32,7 @@ import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.O
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialImageAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.ViewHolder.OnPolynomialCalculationGoingViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
+import com.dev.smurf.highmathcalculator.ui.fragments.ExtraInformationFragments.FullEquationDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.InputExceptionsDialogFragments.DefaultInputExceptionDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
 import com.example.smurf.mtarixcalc.PolynomialGroup
@@ -48,7 +51,8 @@ import org.jetbrains.anko.toast
 @ExperimentalCoroutinesApi
 class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Settingable,
     PolynomialButtonsGridFirstPageFragment.OnFragmentInteractionListener,
-    DefaultInputExceptionDialogFragment.onFragmentInteractionListener
+    DefaultInputExceptionDialogFragment.onFragmentInteractionListener,
+    FullEquationDialogFragment.onClickListener
 {
 
     //вставляем презентер
@@ -81,6 +85,10 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     private var isPaused = false
 
     private lateinit var errorDialogFragment: DefaultInputExceptionDialogFragment
+
+    private val onClickPolynomialLiveData = MutableLiveData<String>()
+
+    private lateinit var fullEquationDialogFragment: FullEquationDialogFragment
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -180,7 +188,6 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
                     false
 
             }
-
         }
     }
 
@@ -189,6 +196,10 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     {
         Log.d("lifecycle@", "onResume")
         isPaused = false
+
+        onClickPolynomialLiveData.observe(this, { polynomial ->
+            mPolynomialPresenter.onClickPolynomial(polynomial)
+        })
         super.onResume()
     }
 
@@ -198,6 +209,8 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         isPaused = true
         mPolynomialEditTextViewModel.firstValue = firstPolinom.text.toString()
         mPolynomialEditTextViewModel.secondValue = secondPolinom.text.toString()
+
+        onClickPolynomialLiveData.removeObservers(this)
         super.onPause()
     }
 
@@ -219,7 +232,8 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
                 this.requireContext(),
                 firstPolinom,
                 secondPolinom,
-                point.x.toFloat() - margin
+                point.x.toFloat() - margin,
+                onClickPolynomialLiveData
             )
 
         mPolynomialRecyclerView = requireView().findViewById(R.id.polinomRecycler)
@@ -280,7 +294,8 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
                         val dropSnackbar = DropSnackbar.make(polinomFrame)
                         dropSnackbar.setBackground(CalculatorApplication.context.getDrawable(R.drawable.rectangle_with_outline)!!)
-                            .setMessage("Calculation stopped").setProgressBar().setDuration(3000).show()
+                            .setMessage("Calculation stopped").setProgressBar().setDuration(3000)
+                            .show()
 
                     }
                     else
@@ -482,9 +497,14 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     override fun getMaxSizeOfErrorDialog()
     {
+        val point = Point()
+        requireActivity().windowManager.defaultDisplay.getSize(point)
+
         mPolynomialPresenter.setMaxDialogSize(
             ltPolynomialInput.measuredWidth.toFloat(),
-            ltPolynomialInput.measuredHeight.toFloat()
+            ltPolynomialInput.measuredHeight.toFloat(),
+            point.x.toFloat(),
+            point.y.toFloat()
         )
     }
 
@@ -552,7 +572,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     override fun startCalculation(polynomialGroup: PolynomialGroup)
     {
-        if(polinomRecycler.adapter is PolynomialImageAdapter)
+        if (polinomRecycler.adapter is PolynomialImageAdapter)
         {
             mPolynomialImageAdapter.addElement(polynomialGroup)
             mPolynomialRecyclerViewLayoutManager.scrollToPosition(0)
@@ -561,7 +581,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     override fun stopAllCalculations()
     {
-        if(polinomRecycler.adapter is PolynomialImageAdapter)
+        if (polinomRecycler.adapter is PolynomialImageAdapter)
         {
             mPolynomialImageAdapter.removeAllCalculation()
         }
@@ -569,7 +589,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     override fun calculationFailed(polynomialGroup: PolynomialGroup)
     {
-        if(polinomRecycler.adapter is PolynomialImageAdapter)
+        if (polinomRecycler.adapter is PolynomialImageAdapter)
         {
             mPolynomialImageAdapter.removeCalculation(polynomialGroup)
         }
@@ -577,12 +597,46 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
     override fun calculationCompleted(polynomialGroup: PolynomialGroup)
     {
-        if(polinomRecycler.adapter is PolynomialImageAdapter)
+        if (polinomRecycler.adapter is PolynomialImageAdapter)
         {
             mPolynomialImageAdapter.stopCalculation(polynomialGroup)
         }
     }
+
+
+    override fun btnMatrixDialogOkClicked()
+    {
+        mPolynomialPresenter.onEquationDialogBtnOkClick()
+    }
+
+    override fun showPolynomialDialog(
+        polynomial: String,
+        width: Float,
+        height: Float,
+        matrixBitmap: Bitmap
+    )
+    {
+        fullEquationDialogFragment = FullEquationDialogFragment(
+            polynomial,
+            matrixBitmap,
+            width,
+            height,
+            this,
+            firstPolinom,
+            secondPolinom
+        )
+        fullEquationDialogFragment.show(
+            childFragmentManager,
+            "MATRIX_DIALOG"
+        )
+    }
+
+    override fun dismissPolynomialDialog()
+    {
+        if (::fullEquationDialogFragment.isInitialized && fullEquationDialogFragment.isVisible) fullEquationDialogFragment.dismiss()
+    }
 }
+
 
 
 

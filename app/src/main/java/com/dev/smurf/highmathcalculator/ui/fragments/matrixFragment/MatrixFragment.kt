@@ -31,7 +31,7 @@ import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPa
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.MatrixAdapterImageView
 import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.OnMatrixCalculationGoingViewHolder
-import com.dev.smurf.highmathcalculator.ui.fragments.ExtraInformationFragments.FullMatrixDialogFragment
+import com.dev.smurf.highmathcalculator.ui.fragments.ExtraInformationFragments.FullEquationDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.InputExceptionsDialogFragments.DefaultInputExceptionDialogFragment
 import com.dev.smurf.highmathcalculator.ui.fragments.fragmentInterfaces.Settingable
 import com.example.smurf.mtarixcalc.MatrixRecyclerViewModel
@@ -50,7 +50,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     MatrixButtonGridFragmentFirstPage.onFragmentInteractionListener,
     MatrixButtonGridFragmentSecondPage.onFragmentInteractionListener,
     DefaultInputExceptionDialogFragment.onFragmentInteractionListener,
-    FullMatrixDialogFragment.onClickListener
+    FullEquationDialogFragment.onClickListener
 {
 
     @InjectPresenter
@@ -64,7 +64,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     private lateinit var mBtnMatrixViewPagerAdapter: BtnViewPagerFragmentStateAdapter
 
     private lateinit var errorDialogFragment: DefaultInputExceptionDialogFragment
-    private lateinit var fullMatrixDialogFragment: FullMatrixDialogFragment
+    private lateinit var fullEquationDialogFragment: FullEquationDialogFragment
 
     private val mMatrixRecyclerViewModel by viewModels<MatrixRecyclerViewModel>()
 
@@ -564,7 +564,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun showMatrixDialog(matrix: String, width: Float, height: Float, matrixBitmap: Bitmap)
     {
-        fullMatrixDialogFragment = FullMatrixDialogFragment(
+        fullEquationDialogFragment = FullEquationDialogFragment(
             matrix,
             matrixBitmap,
             width,
@@ -573,7 +573,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
             firstMatrix,
             secondMatrix
         )
-        fullMatrixDialogFragment.show(
+        fullEquationDialogFragment.show(
             childFragmentManager,
             "MATRIX_DIALOG"
         )
@@ -586,7 +586,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun dismissMatrixDialog()
     {
-        if (::fullMatrixDialogFragment.isInitialized && fullMatrixDialogFragment.isVisible) fullMatrixDialogFragment.dismiss()
+        if (::fullEquationDialogFragment.isInitialized && fullEquationDialogFragment.isVisible) fullEquationDialogFragment.dismiss()
     }
 
 

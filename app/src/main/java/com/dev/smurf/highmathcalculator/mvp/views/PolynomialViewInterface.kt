@@ -84,4 +84,14 @@ interface PolynomialViewInterface : MvpView
 
     @StateStrategyType(SkipStrategy::class)
     fun stopAllCalculations()
+
+    /*
+     * extra info dialog
+     */
+
+    @StateStrategyType(SkipStrategy::class)
+    fun showPolynomialDialog(polynomial: String, width: Float, height: Float, matrixBitmap: Bitmap)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun dismissPolynomialDialog()
 }

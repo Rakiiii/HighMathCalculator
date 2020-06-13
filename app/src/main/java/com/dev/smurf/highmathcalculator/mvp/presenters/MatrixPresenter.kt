@@ -18,7 +18,6 @@ import com.dev.smurf.highmathcalculator.Exceptions.TimeableException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.PaintExtension.getMatrixInBracketsSize
-import com.dev.smurf.highmathcalculator.PaintExtension.getMatrixSize
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
 import com.dev.smurf.highmathcalculator.mvp.models.MatrixDatabaseModel
@@ -374,8 +373,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     fun setMaxDialogSize(width: Float, height: Float)
     {
         presenterScope.launch(Dispatchers.IO + supJob) {
-            mExceptionRenderModel.screenWidth = width
-            mExceptionRenderModel.screenHeight = height
+            mExceptionRenderModel.inputFormWidth = width
+            mExceptionRenderModel.inputFromHeight = height
         }
     }
 

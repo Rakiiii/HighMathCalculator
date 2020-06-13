@@ -19,14 +19,19 @@ import kotlinx.coroutines.flow.flowOn
 class InputFormatExceptionsRenderModel
 {
 
-    var screenWidth = 0.0f
-    var screenHeight = 0.0f
+    var screenWidth = 0f
+    var screenHeight = 0f
+
+    var inputFormWidth = 0.0f
+    var inputFromHeight = 0.0f
+
+
     private val otherElemsHeight = 100
 
-    fun getErrorDialogWidth() = screenWidth - getWidthMargin()
-    fun getErrorDialogHeight() = screenHeight
-    private fun getHeightMargin() = screenHeight / 20
-    private fun getWidthMargin() = screenWidth / 20
+    fun getErrorDialogWidth() = inputFormWidth - getWidthMargin()
+    fun getErrorDialogHeight() = inputFromHeight
+    private fun getHeightMargin() = inputFromHeight / 20
+    private fun getWidthMargin() = inputFormWidth / 20
     private fun getMaxBitmapWidth() = getErrorDialogWidth() - 2 * getWidthMargin()
     private fun getMaxBitmapHeight() = getErrorDialogHeight() - 2 * getHeightMargin() - otherElemsHeight
 
@@ -597,24 +602,24 @@ class InputFormatExceptionsRenderModel
                 wrongPart,
                 defaultPainter,
                 errorPainter
-            ) < screenWidth
+            ) < inputFormWidth
         ) return@withContext arrayListOf(input)
         var subString = input
 
         while (subString.isNotEmpty())
         {
             val subWidth = getSize(subString, wrongPart, defaultPainter, errorPainter)
-            if (subWidth < screenWidth)
+            if (subWidth < inputFormWidth)
             {
                 separation.add(subString)
                 return@withContext separation
             }
 
-            val maxSymbolsLength = (subString.length * (screenWidth / subWidth)).toInt()
+            val maxSymbolsLength = (subString.length * (inputFormWidth / subWidth)).toInt()
             var line = subString.substring(0, maxSymbolsLength)
             var lineWidth = getSize(line, wrongPart, defaultPainter, errorPainter)
 
-            while (lineWidth >= screenWidth)
+            while (lineWidth >= inputFormWidth)
             {
                 line = line.substring(0, line.length - stepSize)
                 lineWidth = getSize(line, wrongPart, defaultPainter, errorPainter)

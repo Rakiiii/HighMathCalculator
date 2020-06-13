@@ -1,26 +1,27 @@
 package com.dev.smurf.highmathcalculator.mvp.presenters
 
-import android.annotation.SuppressLint
-import android.os.AsyncTask
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.util.Log
+import androidx.core.graphics.createBitmap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.dev.smurf.highmathcalculator.CalculatorApplication
+import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawMultiLinePolynomial
 import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.*
 import com.dev.smurf.highmathcalculator.Exceptions.TimeableException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
-import com.dev.smurf.highmathcalculator.Matrix.Matrix
+import com.dev.smurf.highmathcalculator.PaintExtension.getMultiLinePolynomialSize
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
+import com.dev.smurf.highmathcalculator.Polynomials.Render.RenderStrategyConstracter
 import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.StringsExtension.numbersToDegreeForm
-import com.dev.smurf.highmathcalculator.StringsExtension.toDegree
 import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialDataBaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
-import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.withTime
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import kotlinx.coroutines.*
@@ -239,7 +240,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
                         error.unrecognizablePart
                     )
 
-                    Log.d("error@","unrec ${error.unrecognizablePart}")
+                    Log.d("error@", "unrec ${error.unrecognizablePart}")
 
                     viewState.showErrorDialog(
                         errorBitmap,
@@ -359,6 +360,71 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         }
     }
 
+    fun onClickPolynomial(polynomial: String)
+    {
+        presenterScope.launch(Dispatchers.Default) {
+            if (polynomial.isEmpty()) return@launch
+
+            val initedPolynomial = mPolynomialModel.createPolinom(polynomial)
+
+            val width = mExceptionRenderModel.getErrorDialogWidth()
+            val height = mExceptionRenderModel.screenHeight - 300f
+
+            val mPaint = CanvasRenderSpecification.createBlackPainter()
+
+            var range = RenderStrategyConstracter.constructRangeArrayForPolynomial(
+                initedPolynomial,
+                width,
+                mPaint
+            )
+
+            var polynomialSize = mPaint.getMultiLinePolynomialSize(initedPolynomial, range)
+
+            while (polynomialSize.first >= width || polynomialSize.second >= height)
+            {
+                mPaint.textSize -= 3f
+
+                range = RenderStrategyConstracter.constructRangeArrayForPolynomial(
+                    initedPolynomial,
+                    width,
+                    mPaint
+                )
+
+                polynomialSize = mPaint.getMultiLinePolynomialSize(initedPolynomial, range)
+            }
+
+            val polynomialBitmap =
+                createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
+
+            val horizontalOffset = (width - polynomialSize.first) / 2
+            val verticalOffset = (height - polynomialSize.second) / 2
+
+            val canvas = Canvas(polynomialBitmap)
+
+            canvas.drawMultiLinePolynomial(
+                initedPolynomial,
+                horizontalOffset,
+                verticalOffset,
+                mPaint,
+                range
+            )
+
+            uiScope.launch {
+                viewState.showPolynomialDialog(
+                    polynomial = polynomial,
+                    width = width,
+                    height = height,
+                    matrixBitmap = polynomialBitmap
+                )
+            }
+        }
+    }
+
+    fun onEquationDialogBtnOkClick()
+    {
+        viewState.dismissPolynomialDialog()
+    }
+
     private fun doCancelableJob(calculation: suspend () -> PolynomialGroup)
     {
         val time = GregorianCalendar()
@@ -463,11 +529,14 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     }
 
 
-    fun setMaxDialogSize(width: Float, height: Float)
+    fun setMaxDialogSize(width: Float, height: Float,screenWidth : Float,screenHeight : Float)
     {
         presenterScope.launch(Dispatchers.IO + supJob) {
-            mExceptionRenderModel.screenWidth = width
-            mExceptionRenderModel.screenHeight = height
+            mExceptionRenderModel.inputFormWidth = width
+            mExceptionRenderModel.inputFromHeight = height
+
+            mExceptionRenderModel.screenWidth = screenWidth
+            mExceptionRenderModel.screenHeight = screenHeight
         }
     }
 
