@@ -1,5 +1,6 @@
 package com.dev.smurf.highmathcalculator.Matrix
 
+import android.util.Log
 import com.dev.smurf.highmathcalculator.Exceptions.*
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.DifferentAmountOfElementsInMatrixLineException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongAmountOfBracketsInMatrixException
@@ -207,6 +208,7 @@ open class Matrix private constructor(
         if (width == height && width > 0)
         {
             //если матрица 2х2 то считаем по формуле
+            Log.d("matrix@","first ${(matrices[0][0] * matrices[1][1])} second ${matrices[0][1] * matrices[1][0]}")
             if (width == 2) return matrices[0][0] * matrices[1][1] - matrices[0][1] * matrices[1][0]
             else
             {

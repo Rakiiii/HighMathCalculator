@@ -45,8 +45,8 @@ class ComplexNumber(_re: Fraction = Fraction(), _im: Fraction = Fraction())
             is ComplexNumber ->
             {
                 val newNum = ComplexNumber(
-                    (this.re * secNumber.re - this.im * secNumber.im),
-                    (this.re * secNumber.im - secNumber.re * this.im)
+                    ((this.re * secNumber.re) - (this.im * secNumber.im)),
+                    ((this.re * secNumber.im) + (secNumber.re * this.im))
                 )
                 return newNum
             }
