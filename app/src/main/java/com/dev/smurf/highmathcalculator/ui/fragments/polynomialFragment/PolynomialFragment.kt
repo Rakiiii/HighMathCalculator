@@ -211,6 +211,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         mPolynomialEditTextViewModel.secondValue = secondPolinom.text.toString()
 
         onClickPolynomialLiveData.removeObservers(this)
+        onClickPolynomialLiveData.value = ""
         super.onPause()
     }
 

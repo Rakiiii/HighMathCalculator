@@ -469,6 +469,9 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         viewState.stopAllCalculations()
         viewState.saveListRecyclerViewViewModel()
         viewState.clearRecyclerView()
+
+        //todo:: add saving state of dialog in fragment to reshow it after recreation
+        viewState.dismissMatrixDialog()
         isLoaded = !isLoaded
     }
 

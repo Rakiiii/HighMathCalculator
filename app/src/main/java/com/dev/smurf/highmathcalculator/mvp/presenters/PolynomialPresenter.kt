@@ -507,6 +507,9 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         viewState.stopAllCalculations()
         viewState.saveRecyclerViewToViewModel()
         viewState.clearRecyclerView()
+
+        //todo:: add saving state of dialog in fragment to reshow it after recreation
+        viewState.dismissPolynomialDialog()
         isLoaded = !isLoaded
     }
 
