@@ -210,18 +210,29 @@ fun Canvas.drawMatrixInLinesAsDots(matrix: Matrix, x: Float, y: Float, mPaint: P
     drawProporsionalDotsInLines(3, x, y, mPaint.getProportionalDotsRadius(), mPaint)
 }
 
+//draw each matrix column as independent vector [@x;@y] is left upper corner
 fun Canvas.drawMatrixAsSetOfVectors(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 {
     if (matrix.isEmpty()) return
+    //space between vectors
     val horizontalVectorSpacing = mPaint.getVectorsHorizontalSpacing()
+
+    //vector representaion of matrix as array of matrix
     val vectors = matrix.asVectors()
+
+    //horiaontal draw size
     var horizontalOffset = x
 
+    //count each vector size
     val vectorsSizes = Array(vectors.size) { s -> mPaint.getMatrixInBracketsSize(vectors[s]) }
+
+    //max height of vectors
     val maxHeight = (vectorsSizes.maxBy { s -> s.second } ?: Pair(0.0f, 0.0f)).second
 
-    var verticalOffset = Array(vectors.size) { s -> (maxHeight - vectorsSizes[s].second) / 2 }
+    //vertical offset of each vector
+    val verticalOffset = Array(vectors.size) { s -> (maxHeight - vectorsSizes[s].second) / 2 }
 
+    //draw each vector as matrix in brackets
     for (i in vectors.indices)
     {
         drawMatrixInBrackets(
@@ -231,6 +242,7 @@ fun Canvas.drawMatrixAsSetOfVectors(matrix: Matrix, x: Float, y: Float, mPaint: 
             mPaint = mPaint
         )
 
+        //move horizontal draw position
         horizontalOffset += vectorsSizes[i].first + horizontalVectorSpacing
     }
 }

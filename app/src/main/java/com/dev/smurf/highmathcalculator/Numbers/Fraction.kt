@@ -196,6 +196,7 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
     }
 
 
+    //try to make fraction simple
     private fun cut(): Fraction
     {
         val intPart = this.upper.absoluteValue / this.lower.absoluteValue
@@ -239,6 +240,10 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
         return test == 1L
     }
 
+
+    /*
+     * checks for number overflow
+     */
     private fun checkAdditionOverflow(right: Long, left: Long): Boolean
     {
         try
@@ -250,6 +255,7 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
             return true
         }
     }
+
 
     private fun checkSubstrinctionOverflow(right: Long, left: Long): Boolean
     {

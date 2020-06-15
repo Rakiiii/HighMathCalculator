@@ -33,7 +33,8 @@ class InputFormatExceptionsRenderModel
     private fun getHeightMargin() = inputFromHeight / 20
     private fun getWidthMargin() = inputFormWidth / 20
     private fun getMaxBitmapWidth() = getErrorDialogWidth() - 2 * getWidthMargin()
-    private fun getMaxBitmapHeight() = getErrorDialogHeight() - 2 * getHeightMargin() - otherElemsHeight
+    private fun getMaxBitmapHeight() =
+        getErrorDialogHeight() - 2 * getHeightMargin() - otherElemsHeight
 
 
     private val bitmapConfig = Bitmap.Config.ARGB_8888
@@ -211,6 +212,7 @@ class InputFormatExceptionsRenderModel
     }
 
 
+    //draw line with wrong substring
     suspend fun drawLineWithWrongSubstring(
         coroutineScope: CoroutineScope,
         defaultPainter: Paint,
@@ -220,12 +222,17 @@ class InputFormatExceptionsRenderModel
     ): Bitmap
     {
         return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
+
+            //if empty act like empty
             if (line == "") return@withContext drawEmptyLine(errorPainter)
+
+            //if no wrong substring draw like notmal line
             if (!line.contains(wrongLine, true)) return@withContext drawLine(
                 line,
                 defaultPainter
             )
 
+            //get size for bitmap
             val size: Pair<Float, Float> = getSizeOfLineWithWrongSubstring(
                 coroutineScope,
                 defaultPainter,
@@ -234,14 +241,17 @@ class InputFormatExceptionsRenderModel
                 wrongLine
             )
 
-
+            //spread start line on 3 substrings : before wrong, wrong, after wrong
             val wrongLineStart = line.indexOf(wrongLine, 0, true)
 
+            //before wrong
             val firstPart = line.substring(0, wrongLineStart)
 
+
+            //after wrong
             val secondPart = line.substring(wrongLineStart + wrongLine.length)
 
-
+            //bitmap with error line
             val errorBitmap =
                 Bitmap.createBitmap(size.first.toInt(), size.second.toInt(), bitmapConfig)
 
@@ -249,6 +259,7 @@ class InputFormatExceptionsRenderModel
 
             var horizontalOffset = 0.0f
 
+            //draw non wrong
             if (firstPart.isNotEmpty())
             {
                 val rect = Rect()
@@ -265,6 +276,7 @@ class InputFormatExceptionsRenderModel
                 horizontalOffset += defaultPainter.measureText(firstPart)
             }
 
+            //draw wrong
             if (wrongLine.isNotEmpty())
             {
                 val rect = Rect()
@@ -283,6 +295,7 @@ class InputFormatExceptionsRenderModel
 
             }
 
+            //draw non wrong
             if (secondPart.isNotEmpty())
             {
                 val rect = Rect()
@@ -315,6 +328,7 @@ class InputFormatExceptionsRenderModel
     }
 
 
+    //returns size  of line which can containt wrong part
     private suspend fun getSizeOfLineWithWrongSubstring(
         coroutineScope: CoroutineScope,
         defaultPainter: Paint,
@@ -324,21 +338,31 @@ class InputFormatExceptionsRenderModel
     ): Pair<Float, Float>
     {
         return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
+
+            //if empty act like with empty line
             if (line == "") return@withContext getSizeOfEmptyMatrix(errorPainter)
+
+            //if line does not contain wrong substring calc it like normal line
+            //needed for better performance
             if (!line.contains(wrongLine, true)) return@withContext getSizeOfLine(
                 defaultPainter = defaultPainter,
                 input = line
             )
+
+            //spread start line on 3 substrings : before wrong, wrong, after wrong
             val wrongLineStart = line.indexOf(wrongLine, 0, true)
 
+            //before wrong
             val firstPart = line.substring(0, wrongLineStart)
 
+            //after wrong
             val secondPart = line.substring(wrongLineStart + wrongLine.length)
 
             var overallWidth = 0.0f
 
             var maxHeight = 0.0f
 
+            //calc non wrong part
             if (firstPart.isNotEmpty())
             {
                 val rectSize = Rect()
@@ -353,6 +377,7 @@ class InputFormatExceptionsRenderModel
                 overallWidth += width
             }
 
+            //calc wrong part
             if (wrongLine.isNotEmpty())
             {
                 val rectSize = Rect()
@@ -367,6 +392,7 @@ class InputFormatExceptionsRenderModel
                 overallWidth += width
             }
 
+            //calc non wrong part
             if (secondPart.isNotEmpty())
             {
                 val rectSize = Rect()
@@ -385,6 +411,7 @@ class InputFormatExceptionsRenderModel
         }
     }
 
+    //returns size of default line
     private fun getSizeOfLine(defaultPainter: Paint, input: String): Pair<Float, Float>
     {
         val rect = Rect()
@@ -395,10 +422,15 @@ class InputFormatExceptionsRenderModel
         return Pair(width, rect.height().toFloat() + defaultPainter.getVerticalSpacing())
     }
 
-    private fun spreadMatrixOnLines(input: String) : MutableList<String>
+    //spread matrix on line
+    private fun spreadMatrixOnLines(input: String): MutableList<String>
     {
         val subRes = input.fields("\n")
-        val finalRes = MutableList(subRes.size){ pos -> subRes[pos].trim{s -> s == ' ' || s == '\n'}}
+
+        //need this for better ux
+        val finalRes =
+            MutableList(subRes.size) { pos -> subRes[pos].trim { s -> s == ' ' || s == '\n' } }
+
         return finalRes
     }
 
@@ -421,6 +453,8 @@ class InputFormatExceptionsRenderModel
         }
     }
 
+    //draw line that can be wrong
+    //line is wrong when it is same as wrong
     private suspend fun drawProbablyWrongLine(
         coroutineScope: CoroutineScope,
         line: String,
@@ -442,6 +476,7 @@ class InputFormatExceptionsRenderModel
         }
     }
 
+    //lets draw empty line as oval
     private fun drawEmptyLine(errorPainter: Paint): Bitmap
     {
         val rect = Rect()
@@ -449,11 +484,18 @@ class InputFormatExceptionsRenderModel
 
         val bitmap = Bitmap.createBitmap(widthOfEmptyMatrix, rect.height(), bitmapConfig)
 
-        Canvas(bitmap).drawOval(0.0f,0.0f,bitmap.width.toFloat(),bitmap.height.toFloat(),errorPainter)
+        Canvas(bitmap).drawOval(
+            0.0f,
+            0.0f,
+            bitmap.width.toFloat(),
+            bitmap.height.toFloat(),
+            errorPainter
+        )
 
         return bitmap
     }
 
+    //lets draw empty line as oval
     private fun getSizeOfEmptyMatrix(errorPainter: Paint): Pair<Float, Float>
     {
         val rect = Rect()
@@ -462,6 +504,7 @@ class InputFormatExceptionsRenderModel
         return Pair(widthOfEmptyMatrix.toFloat(), rect.height().toFloat())
     }
 
+    //returns size of line with wrongs chars
     private suspend fun getSizeOfLineWithWrongChars(
         coroutineScope: CoroutineScope,
         line: String,
@@ -471,7 +514,12 @@ class InputFormatExceptionsRenderModel
     ): Pair<Float, Float>
     {
         return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
+
+            //if line is empty must have size of empty line
             if (line == "") return@withContext getSizeOfEmptyMatrix(errorPainter)
+
+            //if matrix does  not contain wrong chars draw as regular line
+            //needed for bbetter perfomance
             if (line.filter { s -> wrongChars.contains(s) } == "") return@withContext getSizeOfLine(
                 defaultPainter = defaultPainter,
                 input = line
@@ -479,6 +527,7 @@ class InputFormatExceptionsRenderModel
             var width = 0.0f
             var height = 0.0f
 
+            //count each symbol size
             for (i in line)
             {
                 if (wrongChars.contains(i, true))
@@ -506,6 +555,7 @@ class InputFormatExceptionsRenderModel
         }
     }
 
+    //draw line when some chars are wrong
     private suspend fun drawLineWithWrongChars(
         coroutineScope: CoroutineScope,
         line: String,
@@ -515,12 +565,17 @@ class InputFormatExceptionsRenderModel
     ): Bitmap
     {
         return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
+            //if line is emty draw vertical line
             if (line == "") return@withContext drawEmptyLine(errorPainter)
+
+            //if linw does not contain wrong chars draw it like normal line
+            //needed for better performance
             if (line.filter { s -> wrongChars.contains(s) } == "") return@withContext drawLine(
                 line,
                 defaultPainter
             )
 
+            //size of line
             val size = getSizeOfLineWithWrongChars(
                 coroutineScope,
                 line,
@@ -529,14 +584,17 @@ class InputFormatExceptionsRenderModel
                 errorPainter
             )
 
+            //creates bitmap for line
             val bitmap = Bitmap.createBitmap(size.first.toInt(), size.second.toInt(), bitmapConfig)
 
             val canvas = Canvas(bitmap)
 
             var horizontalOffset = 0.0f
 
+            //draw each symbol
             for (i in line)
             {
+                //if we draw wrong chars
                 if (wrongChars.contains(i))
                 {
                     val rect = Rect()
@@ -555,6 +613,7 @@ class InputFormatExceptionsRenderModel
                 }
                 else
                 {
+                    //if we draw non wrong chars
                     val rect = Rect()
                     defaultPainter.getTextBounds(i.toString(), 0, 1, rect)
 
@@ -585,8 +644,11 @@ class InputFormatExceptionsRenderModel
      *
      */
 
+    //amount of symbols that will be removed from line
+    //bigger for faster render smaller for smoother render
     private val stepSize = 10
 
+    //return line separation that fit screen size
     private suspend fun getPossibleLineSeparationsForPolynomial(
         input: String,
         wrongPart: String,
@@ -597,6 +659,7 @@ class InputFormatExceptionsRenderModel
 
         val separation = ArrayList<String>()
 
+        //if polynomial can be render in one line return as one line
         if (getSize(
                 input,
                 wrongPart,
@@ -604,33 +667,45 @@ class InputFormatExceptionsRenderModel
                 errorPainter
             ) < inputFormWidth
         ) return@withContext arrayListOf(input)
+
+        //in other case recursively break line
         var subString = input
 
         while (subString.isNotEmpty())
         {
+            //width of substring
             val subWidth = getSize(subString, wrongPart, defaultPainter, errorPainter)
+
+            //if substring is fited screen then stop
             if (subWidth < inputFormWidth)
             {
                 separation.add(subString)
                 return@withContext separation
             }
 
+            //count max length of possible line
             val maxSymbolsLength = (subString.length * (inputFormWidth / subWidth)).toInt()
+
+            //get line from substring
             var line = subString.substring(0, maxSymbolsLength)
+            //count line width
             var lineWidth = getSize(line, wrongPart, defaultPainter, errorPainter)
 
+            //while line is not fiting the screen recursively remove symbols
             while (lineWidth >= inputFormWidth)
             {
                 line = line.substring(0, line.length - stepSize)
                 lineWidth = getSize(line, wrongPart, defaultPainter, errorPainter)
             }
 
+            //remove line from substring
             subString = subString.substring(line.length)
             separation.add(line)
         }
         return@withContext separation
     }
 
+    //return flow of bitmap with drawed line
     private suspend fun drawLines(
         coroutineScope: CoroutineScope,
         lines: MutableList<String>,
@@ -644,6 +719,8 @@ class InputFormatExceptionsRenderModel
         }
     }.flowOn(Dispatchers.Default)
 
+
+    //returns flow of sizes of lines
     private suspend fun getSizeOfLines(
         lines: MutableList<String>,
         wrongPart: String,
@@ -657,6 +734,13 @@ class InputFormatExceptionsRenderModel
     }.flowOn(Dispatchers.Default)
 
 
+    /*
+     * abstract render strategy algorithm
+     * 1.find text size which can fit window
+     * 2.separate text on lines with this painter
+     * 3.count offsets etc...
+     * 4.draw each line async and concat each line bitmap to one ultraMegaMultyLine bitmap
+*/
     private suspend fun drawErroredText(
         coroutineScope: CoroutineScope,
         input: String,
@@ -665,68 +749,76 @@ class InputFormatExceptionsRenderModel
         separate: suspend (String, String, Paint, Paint, suspend (String, String, Paint, Paint) -> Float) -> MutableList<String>,
         getSeparatedSize: suspend (MutableList<String>, String, Paint, Paint, suspend (String, String, Paint, Paint) -> Pair<Float, Float>) -> Flow<Pair<Float, Float>>,
         drawLines: suspend (MutableList<String>, String, Paint, Paint) -> Flow<Bitmap>
-    ): Bitmap = withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
-        val defaultPainter = CanvasRenderSpecification.createBlackPainter()
-        val errorPainter = CanvasRenderSpecification.createRedPainterWithUnderline()
+    ): Bitmap
+    {
+        return withContext(coroutineScope.coroutineContext + Dispatchers.Default) {
+            val defaultPainter = CanvasRenderSpecification.createBlackPainter()
+            val errorPainter = CanvasRenderSpecification.createRedPainterWithUnderline()
 
-        defaultPainter.textSize += 20
-        errorPainter.textSize += 20
+            defaultPainter.textSize += 20
+            errorPainter.textSize += 20
 
 
-        var size: Pair<Float, Float>
-        var lines: MutableList<String>
+            var size: Pair<Float, Float>
+            var lines: MutableList<String>
 
-        do
-        {
-            defaultPainter.textSize -= 5
-            errorPainter.textSize -= 5
-            lines = separate(
-                input,
-                wrongLine,
-                defaultPainter,
-                errorPainter
-            ) { str1, str2, p1, p2 -> getSize(str1, str2, p1, p2).first }
+            //finde fited text size
+            do
+            {
+                defaultPainter.textSize -= 5
+                errorPainter.textSize -= 5
+                //separate last one
+                lines = separate(
+                    input,
+                    wrongLine,
+                    defaultPainter,
+                    errorPainter
+                ) { str1, str2, p1, p2 -> getSize(str1, str2, p1, p2).first }
 
-            var width = 0.0f
-            var height = 0.0f
+                var width = 0.0f
+                var height = 0.0f
 
-            val sizeFlow = getSeparatedSize(
-                lines,
-                wrongLine,
-                defaultPainter,
-                errorPainter
-            ) { str1, str2, p1, p2 -> getSize(str1, str2, p1, p2) }
+                val sizeFlow = getSeparatedSize(
+                    lines,
+                    wrongLine,
+                    defaultPainter,
+                    errorPainter
+                ) { str1, str2, p1, p2 -> getSize(str1, str2, p1, p2) }
 
-            sizeFlow.collect { s ->
-                width = if (s.first > width) s.first else width; height += s.second
+                sizeFlow.collect { s ->
+                    width = if (s.first > width) s.first else width; height += s.second
+                }
+
+                size = Pair(width, height)
+            } while (size.first > getMaxBitmapWidth() || size.second > getMaxBitmapHeight())
+
+            //count all offset
+            val leftFloat = getWidthMargin()
+            var topFloat = getHeightMargin()
+
+            //ultraMegaMultyLine bitmap
+            val finalBitmap = Bitmap.createBitmap(
+                (size.first + leftFloat * 2).toInt(),
+                (size.second + topFloat * 2).toInt(),
+                bitmapConfig
+            )
+
+            val canvas = Canvas(finalBitmap)
+
+            val lineFlow = drawLines(lines, wrongLine, defaultPainter, errorPainter)
+
+            //concat each line bitmap to one
+            lineFlow.collect { lineBitmap ->
+                canvas.drawBitmap(
+                    lineBitmap,
+                    leftFloat,
+                    topFloat,
+                    defaultPainter
+                );topFloat += lineBitmap.height
             }
 
-            size = Pair(width, height)
-        } while (size.first > getMaxBitmapWidth() || size.second > getMaxBitmapHeight())
-
-        val leftFloat = getWidthMargin()
-        var topFloat = getHeightMargin()
-
-        val finalBitmap = Bitmap.createBitmap(
-            (size.first + leftFloat * 2).toInt(),
-            (size.second + topFloat * 2).toInt(),
-            bitmapConfig
-        )
-
-        val canvas = Canvas(finalBitmap)
-
-        val lineFlow = drawLines(lines, wrongLine, defaultPainter, errorPainter)
-
-        lineFlow.collect { lineBitmap ->
-            canvas.drawBitmap(
-                lineBitmap,
-                leftFloat,
-                topFloat,
-                defaultPainter
-            );topFloat += lineBitmap.height
+            return@withContext finalBitmap
         }
-
-        return@withContext finalBitmap
     }
 
 

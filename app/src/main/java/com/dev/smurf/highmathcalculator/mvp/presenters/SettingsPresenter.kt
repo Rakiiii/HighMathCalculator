@@ -178,12 +178,14 @@ class SettingsPresenter : MvpPresenter<SettingsViewInterface>()
         }
     }
 
+    //todo::use map that looks like {paramName:paramValue} intead
     private data class settingsState(
         var matrixMode: Boolean = false,
         var polynomialMode: Boolean = false,
         var holderImageMode: Boolean = false
     )
 
+    //saving this state of settings
     private fun saveState()
     {
         if (startState.matrixMode != state.matrixMode)

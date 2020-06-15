@@ -10,9 +10,14 @@ import com.dev.smurf.highmathcalculator.PaintExtension.getProportionalDotsRadius
 
 fun Canvas.drawDots(amount: Int, x: Float, y: Float, radius: Float, mPaint: Paint)
 {
+    //space size between dots
     val spaceSize = mPaint.getDotsSpaceSize(radius)
+
+    //dots central  position
     val verticalOffset = y + radius
     var horizontalOffset = x + radius
+
+    //draw dots
     for (i in 0 until amount)
     {
         drawCircle(horizontalOffset, verticalOffset, radius, mPaint)
@@ -58,7 +63,7 @@ fun Canvas.drawProporsionalDotsInLines(
     val spaceSize = mPaint.getDotsSpaceSize(radius)
     var horizontalOffset = x
     val verticalOffset = y + mPaint.getDotsLineOverflow(radius)
-    //draw left line of matrix
+    //draw left line
     drawLine(horizontalOffset, y, horizontalOffset, y + lineLength, mPaint)
 
     horizontalOffset += spaceSize
@@ -67,5 +72,6 @@ fun Canvas.drawProporsionalDotsInLines(
 
     horizontalOffset += spaceSize + mPaint.getDotsSize(amount, radius).first
 
+    //draw right line
     drawLine(horizontalOffset, y, horizontalOffset, y + lineLength, mPaint)
 }

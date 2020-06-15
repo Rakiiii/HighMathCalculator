@@ -3,6 +3,7 @@ package com.dev.smurf.highmathcalculator.DataBase
 import androidx.room.*
 import com.example.smurf.mtarixcalc.PolynomialGroup
 
+//todo::move to suspend functions
 @Dao
 interface PolynomialDao
 {

@@ -187,6 +187,7 @@ fun Canvas.drawFractions(fraction: Fraction, x: Float, y: Float, mPaint: Paint)
     mPaint.textAlign = align
 }
 
+//draw minus sign  as line
 fun Canvas.drawMinus(x: Float, y: Float, mPaint: Paint)
 {
     val rect = Rect()
@@ -195,6 +196,7 @@ fun Canvas.drawMinus(x: Float, y: Float, mPaint: Paint)
     drawLine(x, y, x + rect.width(), y, mPaint)
 }
 
+//draw plus sign as line compose
 fun Canvas.drawPlus(x: Float, y: Float, mPaint: Paint)
 {
     val size = mPaint.getPlusSize()

@@ -3,7 +3,7 @@ package com.dev.smurf.highmathcalculator.Numbers
 import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.StringsExtension.toComplexNumber
 
-
+//todo::add sqrt functions
 class ComplexNumber(_re: Fraction = Fraction(), _im: Fraction = Fraction())
 {
 
@@ -172,5 +172,9 @@ class ComplexNumber(_re: Fraction = Fraction(), _im: Fraction = Fraction())
 
     fun containsFractions() = (!re.isInt() || !im.isInt())
 
+    override fun hashCode(): Int
+    {
+        return toString().hashCode()
+    }
 }
 

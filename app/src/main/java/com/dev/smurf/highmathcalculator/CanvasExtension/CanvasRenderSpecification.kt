@@ -16,16 +16,22 @@ class CanvasRenderSpecification
         //Space vertical thickness between separating line and number in fraction
         const val letterVerticalSpacing = 5.0f
 
+        //def text size
         const val textSize = 40.0f
 
+        //def errored text size
         const val biggerTextSize = 60.0f
 
+        //def width of stroke in fraction
         const val strokeWidth = 2.0f
 
+        @Deprecated("Use Paint.get*Spacing() instead")
         const val defspaceSize = 5.0f
 
+        @Deprecated("")
         const val PolynomialTopMargin = 6.0f
         const val PolynomialBottomMargin = 6.0f
+
 
         fun createRedPainterWithUnderline() : Paint
         {
@@ -60,6 +66,7 @@ class CanvasRenderSpecification
             return blackPainter
         }
 
+        @Deprecated("Use Paint.getVerticalSpacing() instead")
         fun getVerticalSpaceSize(mPaint : Paint) : Float
         {
             return getLetterHigh(
@@ -67,6 +74,7 @@ class CanvasRenderSpecification
             ) /2
         }
 
+        @Deprecated("Use Paint.getHorizontalSpacing() instead")
         fun getHorizontalSpaceSize(mPaint: Paint) : Float
         {
             //spaces size between columns
@@ -77,6 +85,7 @@ class CanvasRenderSpecification
             return horizontalSpaceSize
         }
 
+        @Deprecated("Use Paint.getBaseHeight() instead")
         fun getLetterHigh(mPaint: Paint):Float
         {
             //font metrics
@@ -89,6 +98,7 @@ class CanvasRenderSpecification
         }
 
 
+        @Deprecated("")
         fun getLineWidth(mPaint: Paint) : Float
         {
             return mPaint.strokeWidth * 3

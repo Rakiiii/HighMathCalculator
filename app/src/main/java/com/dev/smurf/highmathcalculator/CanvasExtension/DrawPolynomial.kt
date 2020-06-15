@@ -378,7 +378,7 @@ fun Canvas.drawEquation(polynomial: PolynomialBase, x: Float, y: Float, mPaint: 
     )
 }
 
-
+//todo:: rewrite to smoother render[ probalby mast adapte polynomial roots to polynomial render format]
 fun Canvas.drawPolynomialRoots(roots: PolynomialRoots, x: Float, y: Float, mPaint: Paint)
 {
     var verticalOffset = y

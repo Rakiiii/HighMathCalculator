@@ -13,27 +13,42 @@ import moxy.viewstate.strategy.StateStrategyType
 @StateStrategyType(value = SkipStrategy::class)
 interface PolynomialViewInterface : MvpView
 {
-    //добавить в recycler view с полиномами новый элемент
-    @StateStrategyType(SkipStrategy::class)
-    fun addToPolynomialRecyclerView(obj: PolynomialGroup)
-
     //вывести что-то в тост
     @StateStrategyType(SkipStrategy::class)
     fun showToast(obj: String)
 
-    //установить новый список элементов RecyclerView
-    @StateStrategyType(OneExecutionStateStrategy::class)
-    fun setRecyclerViewList(ar: MutableList<PolynomialGroup>)
-
     //set @position btn fragment
     @StateStrategyType(SkipStrategy::class)
     fun setBtnFragment(position: Int)
+
+    /*
+     * recycler view commands
+     */
+
+    //добавить в recycler view с полиномами новый элемент
+    @StateStrategyType(SkipStrategy::class)
+    fun addToPolynomialRecyclerView(obj: PolynomialGroup)
+
+    //установить новый список элементов RecyclerView
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun setRecyclerViewList(ar: MutableList<PolynomialGroup>)
 
     @StateStrategyType(SkipStrategy::class)
     fun setImageAdapter()
 
     @StateStrategyType(SkipStrategy::class)
     fun setTxtAdapter()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun clearRecyclerView()
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun setTopPosition()
+
+
+    /*
+     *  view model commands
+     */
 
     @StateStrategyType(SkipStrategy::class)
     fun restoreFromViewModel()
@@ -45,6 +60,11 @@ interface PolynomialViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun setObserver()
 
+
+    /*
+     * input error dialog commands
+     */
+
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showErrorDialog(errorBitmap: Bitmap, width: Float, height: Float, errorText: String)
 
@@ -54,20 +74,19 @@ interface PolynomialViewInterface : MvpView
     @StateStrategyType(SkipStrategy::class)
     fun getMaxSizeOfErrorDialog()
 
+
+    @StateStrategyType(SkipStrategy::class)
+    fun displayError(message: String)
+
+    /*
+     * loading animations in recycler view
+     */
+
     @StateStrategyType(SkipStrategy::class)
     fun startLoadingInRecyclerView()
 
     @StateStrategyType(SkipStrategy::class)
     fun stopLoadingInRecyclerView()
-
-    @StateStrategyType(SkipStrategy::class)
-    fun clearRecyclerView()
-
-    @StateStrategyType(AddToEndSingleStrategy::class)
-    fun setTopPosition()
-
-    @StateStrategyType(SkipStrategy::class)
-    fun displayError(message : String)
 
     /*
     *   Calculation animation

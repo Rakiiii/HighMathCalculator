@@ -69,6 +69,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         CalculatorApplication.graph.inject(this)
     }
 
+    //todo:: move to model injection
     @ExperimentalCoroutinesApi
     private val mExceptionRenderModel = InputFormatExceptionsRenderModel()
 
@@ -79,9 +80,9 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     //корутин скоп для ui
     private val uiScope = CoroutineScope(Dispatchers.Main + supJob)
 
-    private val jobMap = HashMap<Long,Job>()
+    private val jobMap = HashMap<Long, Job>()
 
-    fun calculationCanceled(time : GregorianCalendar)
+    fun calculationCanceled(time: GregorianCalendar)
     {
         (jobMap[time.timeInMillis] ?: return).cancel()
         jobMap.remove(time.timeInMillis)
@@ -108,79 +109,92 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         {
             is WrongElemntAtMatrixInputException ->
             {
-                uiScope.launch {
+                presenterScope.launch(Dispatchers.Default) {
+
                     val errorBitmap =
                         mExceptionRenderModel.drawErroredMatrixWhenPartOfLineIsWrong(
                             presenterScope,
                             error.input,
                             error.unrecognizedPart
                         )
-                    viewState.showErrorDialog(
-                        errorBitmap,
-                        mExceptionRenderModel.getErrorDialogWidth(),
-                        mExceptionRenderModel.getErrorDialogHeight(),
-                        CalculatorApplication.context.getString(R.string.wrongCofFormat)
-                    )
+                    uiScope.launch {
+                        viewState.showErrorDialog(
+                            errorBitmap,
+                            mExceptionRenderModel.getErrorDialogWidth(),
+                            mExceptionRenderModel.getErrorDialogHeight(),
+                            CalculatorApplication.context.getString(R.string.wrongCofFormat)
+                        )
+                    }
                 }
             }
             is DifferentAmountOfElementsInMatrixLineException ->
             {
-                uiScope.launch {
+                presenterScope.launch(Dispatchers.Default) {
+
                     val errorBitmap =
                         mExceptionRenderModel.drawErroredMatrixWhenFullLineIsWrong(
                             presenterScope,
                             error.input,
                             error.unrecognizedPart
                         )
-                    viewState.showErrorDialog(
-                        errorBitmap,
-                        mExceptionRenderModel.getErrorDialogWidth(),
-                        mExceptionRenderModel.getErrorDialogHeight(),
-                        if (error.unrecognizedPart == "") CalculatorApplication.context.getString(
-                            R.string.emptyLineInMatrix
+                    uiScope.launch {
+                        viewState.showErrorDialog(
+                            errorBitmap,
+                            mExceptionRenderModel.getErrorDialogWidth(),
+                            mExceptionRenderModel.getErrorDialogHeight(),
+                            if (error.unrecognizedPart == "") CalculatorApplication.context.getString(
+                                R.string.emptyLineInMatrix
+                            )
+                            else CalculatorApplication.context.getString(R.string.diffLineLength)
                         )
-                        else CalculatorApplication.context.getString(R.string.diffLineLength)
-                    )
+                    }
                 }
             }
             is WrongSymbolAtMatrixInputException ->
             {
-                uiScope.launch {
-                    val errorBitmap =
-                        mExceptionRenderModel.drawErroredMatrixWithWrongChars(
-                            presenterScope,
-                            error.input,
-                            error.unrecognizedPart
-                        )
-                    viewState.showErrorDialog(
-                        errorBitmap,
-                        mExceptionRenderModel.getErrorDialogWidth(),
-                        mExceptionRenderModel.getErrorDialogHeight(),
-                        CalculatorApplication.context.getString(R.string.wrongSymbols)
-                    )
+                presenterScope.launch(Dispatchers.Default) {
+                    uiScope.launch {
+                        val errorBitmap =
+                            mExceptionRenderModel.drawErroredMatrixWithWrongChars(
+                                presenterScope,
+                                error.input,
+                                error.unrecognizedPart
+                            )
+                        uiScope.launch {
+                            viewState.showErrorDialog(
+                                errorBitmap,
+                                mExceptionRenderModel.getErrorDialogWidth(),
+                                mExceptionRenderModel.getErrorDialogHeight(),
+                                CalculatorApplication.context.getString(R.string.wrongSymbols)
+                            )
+                        }
+                    }
                 }
             }
             is WrongAmountOfBracketsInMatrixException ->
             {
-                uiScope.launch {
+                presenterScope.launch(Dispatchers.Default) {
+
                     val errorBitmap =
                         mExceptionRenderModel.drawErroredMatrixWithWrongChars(
                             presenterScope,
                             error.input,
                             error.unrecognizedPart
                         )
-                    viewState.showErrorDialog(
-                        errorBitmap,
-                        mExceptionRenderModel.getErrorDialogWidth(),
-                        mExceptionRenderModel.getErrorDialogHeight(),
-                        CalculatorApplication.context.getString(
-                            if (error.unrecognizedPart.contains(
-                                    '('
-                                )
-                            ) R.string.moreLeftBrackets
-                            else R.string.moreRightBrackets
+                    uiScope.launch {
+                        viewState.showErrorDialog(
+                            errorBitmap,
+                            mExceptionRenderModel.getErrorDialogWidth(),
+                            mExceptionRenderModel.getErrorDialogHeight(),
+                            CalculatorApplication.context.getString(
+                                if (error.unrecognizedPart.contains(
+                                        '('
+                                    )
+                                ) R.string.moreLeftBrackets
+                                else R.string.moreRightBrackets
+                            )
                         )
-                    )
+                    }
                 }
             }
             is WrongDataException ->
@@ -193,7 +207,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
                 Log.d("ExceptionHandler@", "StackTrace@", error)
             }
         }
-    })
+    }
+    )
 
 
     /*
@@ -203,21 +218,39 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     fun onPlusClick(firstMatrix: String, secondMatrix: String)
     {
         if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
-        doCancelableJob { mMatrixModel.MatrixPlus(presenterScope, firstMatrix, secondMatrix) }
+        doCancelableJob {
+            mMatrixModel.MatrixPlus(
+                presenterScope,
+                firstMatrix,
+                secondMatrix
+            )
+        }
     }
 
 
     fun onMinusClick(firstMatrix: String, secondMatrix: String)
     {
         if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
-        doCancelableJob { mMatrixModel.MatrixMinus(presenterScope, firstMatrix, secondMatrix) }
+        doCancelableJob {
+            mMatrixModel.MatrixMinus(
+                presenterScope,
+                firstMatrix,
+                secondMatrix
+            )
+        }
     }
 
 
     fun onTimesClick(firstMatrix: String, secondMatrix: String)
     {
         if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
-        doCancelableJob { mMatrixModel.MatrixTimes(presenterScope, firstMatrix, secondMatrix) }
+        doCancelableJob {
+            mMatrixModel.MatrixTimes(
+                presenterScope,
+                firstMatrix,
+                secondMatrix
+            )
+        }
     }
 
 
@@ -231,7 +264,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     fun onDeterminantClick(firstMatrix: String)
     {
         if (firstMatrix.isEmpty()) return
-        doCancelableJob { mMatrixModel.MatrixDeterminant(presenterScope,firstMatrix) }
+        doCancelableJob { mMatrixModel.MatrixDeterminant(presenterScope, firstMatrix) }
     }
 
     fun btnSwitchClicked(position: Int)
@@ -243,7 +276,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         if (matrix.isEmpty()) return
         doCancelableJob {
-            mMatrixModel.MatrixEigenValue(presenterScope,matrix)
+            mMatrixModel.MatrixEigenValue(presenterScope, matrix)
         }
     }
 
@@ -251,7 +284,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         if (matrix.isEmpty()) return
         doCancelableJob {
-            mMatrixModel.MatrixNegative(presenterScope,matrix)
+            mMatrixModel.MatrixNegative(presenterScope, matrix)
         }
     }
 
@@ -259,7 +292,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         if (matrix.isEmpty()) return
         doCancelableJob {
-            mMatrixModel.MatrixEigenVector(presenterScope,matrix)
+            mMatrixModel.MatrixEigenVector(presenterScope, matrix)
         }
     }
 
@@ -267,23 +300,28 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         if (matrix.isEmpty()) return
         doCancelableJob {
-            mMatrixModel.MatrixPositive(presenterScope,matrix)
+            mMatrixModel.MatrixPositive(presenterScope, matrix)
         }
     }
 
-    fun btnRankClicked(matrix : String)
+    fun btnRankClicked(matrix: String)
     {
-        if (matrix.isEmpty())return
-        doCancelableJob { mMatrixModel.MatrixRank(presenterScope,matrix) }
+        if (matrix.isEmpty()) return
+        doCancelableJob { mMatrixModel.MatrixRank(presenterScope, matrix) }
     }
 
     //todo:: move logic to model
-    fun matrixInViewHolderClicked(matrixPair : Pair<String,String>)
+    //todo::add loading animation
+    fun matrixInViewHolderClicked(
+        matrixPair: Pair<String
+                , String>
+    )
     {
-        presenterScope.launch(Dispatchers.Default){
+        presenterScope.launch(Dispatchers.Default) {
+            //draw matrix for zoom
             val matrix = matrixPair.first
             val sign = matrixPair.second
-            if (matrix.isEmpty() || sign.isEmpty())return@launch
+            if (matrix.isEmpty() || sign.isEmpty()) return@launch
             val initedMatrix = mMatrixModel.createMatrix(matrix)
 
             val width = mExceptionRenderModel.getErrorDialogWidth()
@@ -291,32 +329,45 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
             val mPaint = CanvasRenderSpecification.createBlackPainter()
 
-            val strategy = when(sign)
+            val strategy = when (sign)
             {
-                MatrixGroup.EIGENVECTOR-> MatrixRenderStrategy.getMatrixAsVectorsStrategy ()
+                MatrixGroup.EIGENVECTOR -> MatrixRenderStrategy.getMatrixAsVectorsStrategy()
                 MatrixGroup.DET -> MatrixRenderStrategy.getFullRenderStrategyInLines()
-                else ->MatrixRenderStrategy.getFullRenderStrategyInBrackets()
+                else -> MatrixRenderStrategy.getFullRenderStrategyInBrackets()
             }
 
-            var matrixSize = strategy.matrixSize(mPaint,initedMatrix)//mPaint.getMatrixInBracketsSize(initedMatrix)
+            var matrixSize = strategy.matrixSize(
+                mPaint,
+                initedMatrix
+            )//mPaint.getMatrixInBracketsSize(initedMatrix)
             while (matrixSize.first >= width || matrixSize.second >= height)
             {
                 mPaint.textSize -= 5f
-                matrixSize = strategy.matrixSize(mPaint,initedMatrix)
+                matrixSize = strategy.matrixSize(mPaint, initedMatrix)
             }
 
-            val horizontalOffset = (width - matrixSize.first)/2
-            val verticalOffset = (height - matrixSize.second)/2
+            val horizontalOffset = (width - matrixSize.first) / 2
+            val verticalOffset = (height - matrixSize.second) / 2
 
-            val matrixBitmap = createBitmap(width = width.toInt(),height = height.toInt(),config = Bitmap.Config.ARGB_8888)
+            val matrixBitmap = createBitmap(
+                width = width.toInt(),
+                height = height.toInt(),
+                config = Bitmap.Config.ARGB_8888
+            )
 
             val canvas = Canvas(matrixBitmap)
 
-            strategy.renderMatrix(canvas,initedMatrix,horizontalOffset,verticalOffset,mPaint)
+            strategy.renderMatrix(
+                canvas,
+                initedMatrix,
+                horizontalOffset,
+                verticalOffset,
+                mPaint
+            )
             //canvas.drawMatrixInBrackets(initedMatrix,horizontalOffset,verticalOffset,mPaint)
 
             uiScope.launch {
-                viewState.showMatrixDialog(matrix,width, height, matrixBitmap)
+                viewState.showMatrixDialog(matrix, width, height, matrixBitmap)
             }
         }
     }
@@ -333,10 +384,13 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     fun btnSolveSystemClicked(matrix: String)
     {
         if (matrix.isEmpty()) return
-        doCancelableJob {mMatrixModel.MatrixSolve(presenterScope, matrix) }
+        doCancelableJob { mMatrixModel.MatrixSolve(presenterScope, matrix) }
     }
 
-    private fun doUncancelableJob(calculation : suspend ()->MatrixGroup)
+    private fun doUncancelableJob(
+        calculation: suspend ()
+        -> MatrixGroup
+    )
     {
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
@@ -355,7 +409,10 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         }
     }
 
-    private fun doCancelableJob(calculation : suspend ()->MatrixGroup)
+    private fun doCancelableJob(
+        calculation: suspend ()
+        -> MatrixGroup
+    )
     {
         val time = GregorianCalendar()
         time.timeInMillis = System.currentTimeMillis()
@@ -376,10 +433,10 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
             val mMatrixGroup = withTime(
                 presenterScope.coroutineContext + Dispatchers.Default,
                 time
-            ) {  calculation() }
+            ) { calculation() }
 
             //if calculation canceled do not do any thing
-            if((jobMap[time.timeInMillis] ?: return@launch).isCancelled)return@launch
+            if ((jobMap[time.timeInMillis] ?: return@launch).isCancelled) return@launch
 
             mMatrixGroup.time.timeInMillis = time.timeInMillis
 
@@ -400,8 +457,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
             mExceptionRenderModel.inputFromHeight = height
         }
     }
-
-
 
 
     /*
@@ -528,7 +583,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
             uiScope.launch { viewState.startLoadingInRecyclerView() }
             delay(1000)
             val result =
-                mMatrixDataBaseModel.selectAll().sortedBy { s -> s.time }.reversed().toMutableList()
+                mMatrixDataBaseModel.selectAll().sortedBy { s -> s.time }.reversed()
+                    .toMutableList()
             uiScope.launch {
                 viewState.stopLoadingInRecyclerView()
                 viewState.setRecyclerViewList(result)

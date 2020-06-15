@@ -12,7 +12,7 @@ import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import java.text.SimpleDateFormat
 
-
+//todo:: remove as leagacy
 class MatrixAdapter(val context: Context, val firstMatrix : EditText, val secondMatrix : EditText ) : RecyclerView.Adapter<MatrixAdapter.matrixViewHolder>()
 {
 

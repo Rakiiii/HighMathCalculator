@@ -81,8 +81,6 @@ class POJOConverter
         fun toPolynomial(polynomial: String): PolynomialBase
         {
             return PolynomialFactory().createPolynomial(polynomial)
-            /*return try { PolynomialFactory().createPolynomial(polynomial) }
-            catch (e: Exception) { PolynomialBase.EmptyPolynomial }*/
         }
 
 

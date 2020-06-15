@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.R
 import java.text.SimpleDateFormat
 
+//todo:: remove as leagacy
 class PolynomialTxtAdapter(val context: Context, val polFirstPolynomial: EditText, val polSecPolynomial: EditText) :
     RecyclerView.Adapter<PolynomialTxtAdapter.PolynomialViewHolder>()
 {

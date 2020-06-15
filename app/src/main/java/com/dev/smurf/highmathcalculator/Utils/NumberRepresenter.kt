@@ -2,6 +2,10 @@ package com.dev.smurf.highmathcalculator.Utils
 
 import android.graphics.Color
 
+
+//fast render of number in RunnableMatrixView
+//set pixels alot faster then any other way
+//todo:: remove as unnessasery legacy
 class NumberRepresenter
 {
     companion object
