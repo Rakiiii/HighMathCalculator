@@ -247,7 +247,7 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
             return false
         } catch (e: ArithmeticException)
         {
-            return false
+            return true
         }
     }
 
@@ -259,7 +259,7 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
             return false
         } catch (e: ArithmeticException)
         {
-            return false
+            return true
         }
     }
 
@@ -271,7 +271,7 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
             return false
         } catch (e: ArithmeticException)
         {
-            return false
+            return true
         }
     }
 }
