@@ -213,6 +213,7 @@ fun Canvas.drawMatrixInLinesAsDots(matrix: Matrix, x: Float, y: Float, mPaint: P
 fun Canvas.drawMatrixAsSetOfVectors(matrix: Matrix, x: Float, y: Float, mPaint: Paint)
 {
     if (matrix.isEmpty()) return
+    val horizontalVectorSpacing = mPaint.getVectorsHorizontalSpacing()
     val vectors = matrix.asVectors()
     var horizontalOffset = x
 
@@ -230,6 +231,6 @@ fun Canvas.drawMatrixAsSetOfVectors(matrix: Matrix, x: Float, y: Float, mPaint: 
             mPaint = mPaint
         )
 
-        horizontalOffset += vectorsSizes[i].first
+        horizontalOffset += vectorsSizes[i].first + horizontalVectorSpacing
     }
 }

@@ -1,10 +1,13 @@
 package com.dev.smurf.highmathcalculator.Numbers
 
+import android.R.attr
 import com.dev.smurf.highmathcalculator.Exceptions.DivisionFractionByZeroException
+import com.dev.smurf.highmathcalculator.Exceptions.OverflowExceptions
 import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
-import com.dev.smurf.highmathcalculator.StringsExtension.gcd
 import com.dev.smurf.highmathcalculator.StringsExtension.gcdLong
+import java.lang.ArithmeticException
 import kotlin.math.absoluteValue
+
 
 const val zero = 0L
 
@@ -25,6 +28,14 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
             {
                 if (right.upper == zero) return this
                 if (this.upper == zero) return right
+                if (checkMultyplyOveflow(
+                        this.upper,
+                        right.lower
+                    ) || checkMultyplyOveflow(this.lower, right.lower) || checkMultyplyOveflow(
+                        this.lower,
+                        right.upper
+                    ) || checkAdditionOverflow(this.upper * right.lower ,this.lower * right.upper)
+                ) throw OverflowExceptions()
                 val res = Fraction(
                     this.upper * right.lower + this.lower * right.upper,
                     this.lower * right.lower
@@ -53,6 +64,14 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
                 if (right.upper == zero) return this
                 if (this.upper == zero)
                     return Fraction(_upper = -right.upper, _lower = right.lower)
+                if (checkMultyplyOveflow(
+                        this.upper,
+                        right.lower
+                    ) || checkMultyplyOveflow(this.lower, right.lower) || checkMultyplyOveflow(
+                        this.lower,
+                        right.upper
+                    ) || checkSubstrinctionOverflow(this.upper * right.lower ,this.lower * right.upper)
+                ) throw OverflowExceptions()
                 val res = Fraction(
                     this.upper * right.lower - this.lower * right.upper,
                     this.lower * right.lower
@@ -78,6 +97,11 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
 
                 if (this.upper == zero) return Fraction()
                 if (right.upper == zero) throw DivisionFractionByZeroException()
+                if (checkMultyplyOveflow(
+                        this.upper,
+                        right.lower
+                    ) || checkMultyplyOveflow(this.lower, right.upper)
+                ) throw OverflowExceptions()
                 val res = Fraction(this.upper * right.lower, this.lower * right.upper)
                 if (res.lower < zero)
                 {
@@ -97,7 +121,13 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
         {
             is Fraction ->
             {
+
                 if (this.upper == zero || right.upper == zero) return Fraction()
+                if (checkMultyplyOveflow(
+                        this.upper,
+                        right.upper
+                    ) || checkMultyplyOveflow(this.lower, right.lower)
+                ) throw OverflowExceptions()
                 val res = Fraction(this.upper * right.upper, this.lower * right.lower)
                 if (res.lower < zero)
                 {
@@ -177,7 +207,7 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
         this.upper /= _gcd
         this.lower /= _gcd
 
-        this.upper += intPart*this.lower.absoluteValue
+        this.upper += intPart * this.lower.absoluteValue
         return this
     }
 
@@ -207,6 +237,42 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
             test /= 10
         }
         return test == 1L
+    }
+
+    private fun checkAdditionOverflow(right: Long, left: Long): Boolean
+    {
+        try
+        {
+            Math.addExact(right, left)
+            return false
+        } catch (e: ArithmeticException)
+        {
+            return true
+        }
+    }
+
+    private fun checkSubstrinctionOverflow(right: Long, left: Long): Boolean
+    {
+        try
+        {
+            Math.subtractExact(right, left)
+            return false
+        } catch (e: ArithmeticException)
+        {
+            return true
+        }
+    }
+
+    private fun checkMultyplyOveflow(right: Long, left: Long): Boolean
+    {
+        try
+        {
+            Math.multiplyExact(right, left)
+            return false
+        } catch (e: ArithmeticException)
+        {
+            return true
+        }
     }
 }
 

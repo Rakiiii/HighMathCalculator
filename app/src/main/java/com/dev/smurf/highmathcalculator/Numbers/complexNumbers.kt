@@ -109,9 +109,10 @@ class ComplexNumber(_re: Fraction = Fraction(), _im: Fraction = Fraction())
 
     fun pow(Pow: Int): ComplexNumber
     {
-        var newNum: ComplexNumber = this
+        var newNum: ComplexNumber = this.Copy()
         if (Pow == 0) return ComplexNumber(Fraction(1))
-        for (i in 1..Pow)
+        if (Pow == 1) return newNum
+        for (i in 1 until Pow)
         {
             newNum *= this
         }

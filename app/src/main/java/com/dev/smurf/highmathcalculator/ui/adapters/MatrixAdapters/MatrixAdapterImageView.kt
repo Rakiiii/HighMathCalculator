@@ -23,7 +23,7 @@ class MatrixAdapterImageView(
     val firstMatrix: EditText,
     val secondMatrix: EditText,
     val width: Float,
-    val onMatrixClickedListener : MutableLiveData<String>
+    val onMatrixClickedListener : MutableLiveData<Pair<String,String>>
 ) :
     RecyclerView.Adapter<MatrixBindableViewHolder>()
 {
@@ -229,15 +229,15 @@ class MatrixAdapterImageView(
             )
 
             holderMatrix.leftMatrix.setOnClickListener {
-                if(holderMatrix.leftMatrixValue.isNotEmpty())onMatrixClickedListener.value = holderMatrix.leftMatrixValue
+                if(holderMatrix.leftMatrixValue.isNotEmpty())onMatrixClickedListener.value = Pair(holderMatrix.leftMatrixValue,holderMatrix.signValue)
             }
 
             holderMatrix.rightMatrix.setOnClickListener {
-                if(holderMatrix.rightMatrixValue.isNotEmpty())onMatrixClickedListener.value = holderMatrix.rightMatrixValue
+                if(holderMatrix.rightMatrixValue.isNotEmpty())onMatrixClickedListener.value = Pair(holderMatrix.rightMatrixValue,holderMatrix.signValue)
             }
 
             holderMatrix.resMatrix.setOnClickListener {
-                if(holderMatrix.resMatrixValue.isNotEmpty())onMatrixClickedListener.value = holderMatrix.resMatrixValue
+                if(holderMatrix.resMatrixValue.isNotEmpty())onMatrixClickedListener.value = Pair( holderMatrix.resMatrixValue,holderMatrix.signValue)
             }
 
         }

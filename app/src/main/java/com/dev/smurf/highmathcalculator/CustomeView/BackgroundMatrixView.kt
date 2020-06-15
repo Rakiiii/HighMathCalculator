@@ -9,14 +9,22 @@ import com.dev.smurf.highmathcalculator.Numbers.isOdd
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.Utils.NumberRepresenter
 
-open class BackgroundMatrixView : View
+//todo:: rewrite this shit
+open class BackgroundMatrixView(context: Context, attributeSet: AttributeSet?) :
+    View(context, attributeSet)
 {
     protected val range = 2
     protected var viewWidth = 0
     protected var viewHigh = 0
     protected val scale = 3
+
+    protected var xCord = 0
+    protected var yCord = 0
+
     val numberbHigh = NumberRepresenter.numberHigh
     val numberWidth = NumberRepresenter.numberWidth
+
+    protected val mPaint = CanvasRenderSpecification.createBlackPainter()
 
     val rand = java.util.Random()
 
@@ -32,7 +40,7 @@ open class BackgroundMatrixView : View
 
     protected lateinit var numberMatrix : Array<IntArray>
 
-    constructor(context : Context , attributeSet: AttributeSet?) : super(context,attributeSet)
+    init
     {
         for(i in 0..range)
         {
@@ -61,8 +69,8 @@ open class BackgroundMatrixView : View
 
     private fun drawMatrix(canvas: Canvas?)
     {
-        var xCord = leftOffset
-        var yCord = upperOffset
+        xCord = leftOffset
+        yCord = upperOffset
         for(y in numberMatrix)
         {
             for(x in y)
@@ -75,7 +83,12 @@ open class BackgroundMatrixView : View
         }
 
         canvas?.scale(scale.toFloat(),scale.toFloat())
-        canvas?.drawBitmap(matrixBitmap,0.0f, 0.0f, CanvasRenderSpecification.createBlackPainter())
+        canvas?.drawBitmap(matrixBitmap,0.0f, 0.0f,mPaint )
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int)
+    {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     override fun onDraw(canvas: Canvas?)

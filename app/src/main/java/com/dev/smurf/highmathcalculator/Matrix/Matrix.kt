@@ -729,7 +729,8 @@ open class Matrix private constructor(
         if(width > 2) throw NonpermanentException("Matrix is too big for normal solving")
         val fronbeusMatrix = getFronbeusMatrixByDanilevskiMethod()
 
-        val polString = "x^2+"+fronbeusMatrix[0,0].toString()+"x"+fronbeusMatrix[0,1].toString()
+        val polString = "x^2+"+(fronbeusMatrix[0,0]*-1).toString()+"x+"+(fronbeusMatrix[0,1]*-1).toString()
+        Log.d("polynomial@","polynomial $polString")
 
         val polynomail = ExponentialPolynomial.createExponentialPolynomial(polString)
 
@@ -744,9 +745,11 @@ open class Matrix private constructor(
     {
         val number = eigenValue()
 
-        val resultArray = Array(height){ i -> Array(width){ j -> number[j,0].pow(i)} }
+        val resultArray = Array(height){ i -> Array(width){ j -> number[j,0].pow(height-i-1)} }
+        val trueMatrix = Matrix(width = width,height = height,m = resultArray)//.trans()
+        val B = getMoveToFronbeusMatrix()
 
-        return Matrix(width = width,height = height,m = resultArray)
+        return B*trueMatrix
     }
 
     fun asVectors():ArrayList<Matrix>

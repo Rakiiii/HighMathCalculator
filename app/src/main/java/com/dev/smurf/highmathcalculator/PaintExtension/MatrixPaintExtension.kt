@@ -119,15 +119,18 @@ fun Paint.getMatrixInLinesAsDotsSize(matrix: Matrix): Pair<Float, Float>
     else getProportionalDotsInLineSize(3, getProportionalDotsRadius())
 }
 
+fun Paint.getVectorsHorizontalSpacing() = getHorizontalSpacing()*2
+
 fun Paint.getMatrixSizeAsVectors(matrix: Matrix) : Pair<Float,Float>
 {
      if (matrix.isEmpty())return Pair(0.0f, 0.0f)
 
     val vectors = matrix.asVectors()
+    val horizontalVectorSpacing = getVectorsHorizontalSpacing()
 
     val vectorsSizes = Array(vectors.size) { s -> this.getMatrixInBracketsSize(vectors[s]) }
     val maxHeight = (vectorsSizes.maxBy { s -> s.second } ?: Pair(0.0f, 0.0f)).second
-    val overallWidth = vectorsSizes.sumByDouble { s -> s.first.toDouble() }
+    val overallWidth = vectorsSizes.sumByDouble { s -> s.first.toDouble() } + horizontalVectorSpacing.toDouble()*vectorsSizes.size
 
     return Pair(overallWidth.toFloat(),maxHeight)
 }
