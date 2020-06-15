@@ -1,14 +1,11 @@
 package com.dev.smurf.highmathcalculator.mvp.models
 
-import com.dev.smurf.highmathcalculator.Exceptions.TimeableException
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
+import com.dev.smurf.highmathcalculator.Numbers.Fraction
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
-import com.dev.smurf.highmathcalculator.withTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import java.util.*
 
 
 //класс работы с матрицами
@@ -26,7 +23,7 @@ class MatrixModel
     private fun plus(left: Matrix, right: Matrix): MatrixGroup
     {
         val res = left + right
-        val obj = MatrixGroup(leftMatrix = left, rightMatrix = right, resMatrix = res, sign = "+")
+        val obj = MatrixGroup(leftMatrix = left, rightMatrix = right, resMatrix = res, sign = MatrixGroup.PLUS)
         return obj
     }
 
@@ -34,7 +31,7 @@ class MatrixModel
     private fun minus(left: Matrix, right: Matrix): MatrixGroup
     {
         val res = left - right
-        val obj = MatrixGroup(leftMatrix = left, rightMatrix = right, resMatrix = res, sign = "-")
+        val obj = MatrixGroup(leftMatrix = left, rightMatrix = right, resMatrix = res, sign = MatrixGroup.MINUS)
         return obj
     }
 
@@ -45,7 +42,7 @@ class MatrixModel
             leftMatrix = matrix,
             rightMatrix = Matrix.EmptyMatrix,
             resMatrix = res,
-            sign = "solve"
+            sign = MatrixGroup.SOLVE
         )
     }
 
@@ -58,7 +55,7 @@ class MatrixModel
             leftMatrix = left,
             rightMatrix = Matrix.EmptyMatrix,
             resMatrix = Matrix.createMatrixAsNumber(res),
-            sign = "det"
+            sign = MatrixGroup.DET
         )
         return obj
     }
@@ -68,7 +65,7 @@ class MatrixModel
     private fun times(left: Matrix, right: Matrix): MatrixGroup
     {
         val res = left * right
-        val obj = MatrixGroup(leftMatrix = left, rightMatrix = right, resMatrix = res, sign = "*")
+        val obj = MatrixGroup(leftMatrix = left, rightMatrix = right, resMatrix = res, sign = MatrixGroup.TIMES)
         return obj
     }
 
@@ -81,7 +78,7 @@ class MatrixModel
             leftMatrix = left,
             rightMatrix = Matrix.EmptyMatrix,
             resMatrix = res,
-            sign = "inv"
+            sign = MatrixGroup.INV
         )
         return obj
     }
@@ -93,9 +90,108 @@ class MatrixModel
             leftMatrix = leftMatrix,
             rightMatrix = Matrix.EmptyMatrix,
             resMatrix = res,
-            sign = "inv"
+            sign = MatrixGroup.RANK
         )
         return obj
+    }
+
+    private fun positive(leftMatrix: Matrix) : MatrixGroup
+    {
+        val res = leftMatrix.eigenValue()
+        res.matrices.map { s -> if(s[0].re <= Fraction() ) return MatrixGroup(
+            leftMatrix = leftMatrix,
+            rightMatrix = Matrix.EmptyMatrix,
+            resMatrix = Matrix.EmptyMatrix,
+            sign = MatrixGroup.POSITIVE+" False"
+        ) }
+        val obj = MatrixGroup(
+            leftMatrix = leftMatrix,
+            rightMatrix = Matrix.EmptyMatrix,
+            resMatrix = Matrix.EmptyMatrix,
+            sign = MatrixGroup.POSITIVE+" True"
+        )
+        return obj
+    }
+    private fun negative(leftMatrix: Matrix) : MatrixGroup
+    {
+        val res = leftMatrix.eigenValue()
+        if((res[0,0]*res[1,0]).re >= Fraction()) return MatrixGroup(
+            leftMatrix = leftMatrix,
+            rightMatrix = Matrix.EmptyMatrix,
+            resMatrix = Matrix.EmptyMatrix,
+            sign = MatrixGroup.NEGATIVE+" True"
+        )
+        val obj = MatrixGroup(
+            leftMatrix = leftMatrix,
+            rightMatrix = Matrix.EmptyMatrix,
+            resMatrix = Matrix.EmptyMatrix,
+            sign = MatrixGroup.NEGATIVE+" False"
+        )
+        return obj
+    }
+
+    private fun eigenVectors(leftMatrix: Matrix) : MatrixGroup
+    {
+        val res = leftMatrix.eigenVectors()
+        val obj = MatrixGroup(
+            leftMatrix = leftMatrix,
+            rightMatrix = Matrix.EmptyMatrix,
+            resMatrix = res,
+            sign = MatrixGroup.EIGENVECTOR
+        )
+        return obj
+    }
+
+    private fun eigenValue(leftMatrix: Matrix) : MatrixGroup
+    {
+        val res = leftMatrix.eigenValue()
+        val obj = MatrixGroup(
+            leftMatrix = leftMatrix,
+            rightMatrix = Matrix.EmptyMatrix,
+            resMatrix = res,
+            sign = MatrixGroup.EIGENVELUE
+        )
+        return obj
+    }
+
+    suspend fun MatrixPositive(
+        scope: CoroutineScope,
+        leftMatrix: String
+    ): MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
+            positive(createMatrix(leftMatrix))
+        }
+    }
+
+    suspend fun MatrixNegative(
+        scope: CoroutineScope,
+        leftMatrix: String
+    ): MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
+            negative(createMatrix(leftMatrix))
+        }
+    }
+
+    suspend fun MatrixEigenVector(
+        scope: CoroutineScope,
+        leftMatrix: String
+    ): MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
+            eigenVectors(createMatrix(leftMatrix))
+        }
+    }
+
+    suspend fun MatrixEigenValue(
+        scope: CoroutineScope,
+        leftMatrix: String
+    ): MatrixGroup
+    {
+        return withContext(scope.coroutineContext + Dispatchers.Default) {
+            eigenValue(createMatrix(leftMatrix))
+        }
     }
 
     suspend fun MatrixRank(

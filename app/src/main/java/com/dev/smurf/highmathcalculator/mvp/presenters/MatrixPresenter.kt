@@ -238,24 +238,36 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         viewState.setBtnFragment(position)
     }
 
-    fun btnEighnvalueClicked()
+    fun btnEighnvalueClicked(matrix: String)
     {
-        viewState.showToast("WIP")
+        if (matrix.isEmpty()) return
+        doCancelableJob {
+            mMatrixModel.MatrixEigenValue(presenterScope,matrix)
+        }
     }
 
-    fun btnNegativeClicked()
+    fun btnNegativeClicked(matrix: String)
     {
-        viewState.showToast("WIP")
+        if (matrix.isEmpty()) return
+        doCancelableJob {
+            mMatrixModel.MatrixNegative(presenterScope,matrix)
+        }
     }
 
-    fun btnEighnvectorClicked()
+    fun btnEighnvectorClicked(matrix: String)
     {
-        viewState.showToast("WIP")
+        if (matrix.isEmpty()) return
+        doCancelableJob {
+            mMatrixModel.MatrixEigenVector(presenterScope,matrix)
+        }
     }
 
-    fun btnPositiveClicked()
+    fun btnPositiveClicked(matrix: String)
     {
-        viewState.showToast("WIP")
+        if (matrix.isEmpty()) return
+        doCancelableJob {
+            mMatrixModel.MatrixPositive(presenterScope,matrix)
+        }
     }
 
     fun btnRankClicked(matrix : String)

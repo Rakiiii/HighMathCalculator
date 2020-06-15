@@ -23,7 +23,7 @@ class LinearDiofantPolynomial private constructor(private val polynomial: Mutabl
             val polynomial: MutableMap<String, ComplexNumber> = mutableMapOf()
 
             var polynomialString =
-                str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofs()
+                str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofForPolynomail()
 
             var pos = polynomialString.getFirstCofSeparatorPosition()
             while (pos != -1)
@@ -66,7 +66,7 @@ class LinearDiofantPolynomial private constructor(private val polynomial: Mutabl
             )
 
             var polynomial =
-                str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofs()
+                str.filterNot { s -> (s == ' ') || (s == '\n') }.toLowerCase().fulfilCofForPolynomail()
             val wrongSymbolString = polynomial.filterNot { s -> isGoodSymbol(s) }
             if (wrongSymbolString != "") throw WrongSymbolInPolynomialInputException(
                 str,

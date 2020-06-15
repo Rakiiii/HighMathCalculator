@@ -255,6 +255,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
             }
             is WrongPolynomialCofFormatException ->
             {
+                Log.d("div@","${error.input} |${error.unrecognizablePart}|")
                 uiScope.launch {
                     val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
                         presenterScope,

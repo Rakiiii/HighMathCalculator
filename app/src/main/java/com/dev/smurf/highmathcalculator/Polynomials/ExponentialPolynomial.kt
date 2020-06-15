@@ -1,11 +1,14 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
 import android.util.Log
+import com.dev.smurf.highmathcalculator.Exceptions.NonpermanentException
 import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.*
 import com.dev.smurf.highmathcalculator.Exceptions.WrongTypeForOperationException
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
+import com.dev.smurf.highmathcalculator.Numbers.Fraction
 import com.dev.smurf.highmathcalculator.StringsExtension.*
 import com.dev.smurf.highmathcalculator.Utils.*
+import kotlin.math.sqrt
 
 class ExponentialPolynomial private constructor(
     //contains polynomial in form degree : cof where degree is int and cof is complex number
@@ -83,6 +86,7 @@ class ExponentialPolynomial private constructor(
 
             var polynomialString =
                 str.filterNot { s -> (s == ' ') || (s == '\n') }.degreesToNormalForm().toLowerCase()
+                    .fulfilCofForPolynomail()
             var pos = polynomialString.getFirstCofSeparatorPosition()
 
             var symbol = defaultSymbol
@@ -143,7 +147,7 @@ class ExponentialPolynomial private constructor(
 
             if (variable != "")
             {
-                degree = variable.substringAfter('^').toInt()
+                degree = variable.substringAfter('^').toIntOrNull() ?: 1
             }
 
             return Triple(degree, cof, if (variable != "") variable[0] else defaultSymbol)
@@ -160,6 +164,7 @@ class ExponentialPolynomial private constructor(
 
             var polynomial =
                 str.filterNot { s -> (s == ' ') || (s == '\n') }.degreesToNormalForm().toLowerCase()
+                    .fulfilCofForPolynomail()
             val wrongSymbolsString = polynomial.filterNot { s -> isGoodSymbol(s) }
 
             if (wrongSymbolsString != "") throw WrongSymbolInPolynomialInputException(
@@ -175,7 +180,7 @@ class ExponentialPolynomial private constructor(
             {
                 val partForCheck = polynomial.substring(0, pos)
 
-                val cof = partForCheck.substringBeforeSymbol('i')
+                val cof = partForCheck.substringBeforeSymbol('i').fulfilCofs()
                 if (cof.isNotComplexNumber()) throw WrongPolynomialCofFormatException(str, cof)
 
                 val variable = partForCheck.substringAfterSymbolIncluded('i')
@@ -191,7 +196,7 @@ class ExponentialPolynomial private constructor(
 
             if (polynomial != "")
             {
-                val cof = polynomial.substringBeforeSymbol('i')
+                val cof = polynomial.substringBeforeSymbol('i').fulfilCofForPolynomail()
                 if (cof.isNotComplexNumber()) throw WrongPolynomialCofFormatException(str, cof)
 
                 val variable = polynomial.substringAfterSymbolIncluded('i')
@@ -213,7 +218,9 @@ class ExponentialPolynomial private constructor(
             var returnChar: Char = variableChar
             when
             {
-                variable == "" -> { }
+                variable == "" ->
+                {
+                }
                 variable.contains('^') ->
                 {
                     if (variable.filterNot { s -> (s == '^') || (s in '0'..'9') || (s in 'a'..'z') } != "")
@@ -378,7 +385,14 @@ class ExponentialPolynomial private constructor(
                 //multiple all cofs by right operand
                 for (i in polynomial)
                 {
-                    new.polynomial.plusToCof(i.first, i.second / obj)
+                    new.polynomial.plusToCof(i.first, i.second * obj)
+                }
+            }
+            is Int ->
+            {
+                for (i in polynomial)
+                {
+                    new.polynomial.plusToCof(i.first, i.second * obj)
                 }
             }
 
@@ -408,7 +422,6 @@ class ExponentialPolynomial private constructor(
     }
 
 
-    //todo::fix it
     override fun div(obj: Any): Pair<PolynomialBase, PolynomialBase>
     {
         val result = ExponentialPolynomial()
@@ -425,18 +438,25 @@ class ExponentialPolynomial private constructor(
                     result.polynomial.plusToCof(i.first, i.second / obj)
                 }
             }
+            is Int ->
+            {
+                for (i in polynomial)
+                {
+                    result.polynomial.plusToCof(i.first, i.second / obj)
+                }
+            }
             is ExponentialPolynomial ->
             {
                 //division function
-                val subThis = this.Copy().polynomial
-                val subRight = obj.polynomial
-                subThis.reverse()
-                subRight.reverse()
-                val subRes = exponensialRecursiveDivison(subThis,subRight)
+                val subThis = this.Copy().polynomial.filter { cof -> cof.second != ComplexNumber() }
+                    .toMutableList()
+                val subRight =
+                    obj.polynomial.filter { cof -> cof.second != ComplexNumber() }.toMutableList()
+                val subRes = exponensialRecursiveDivison(subThis, subRight)
 
                 //set polynomial's with result arrays
-                result.polynomial = subRes.first
-                remainder.polynomial = subRes.second
+                result.polynomial = ArrayList(subRes.first)
+                remainder.polynomial = ArrayList(subRes.second)
 
             }
             else ->
@@ -495,6 +515,33 @@ class ExponentialPolynomial private constructor(
 
         if (renderFormat.isEmpty()) return arrayListOf(Pair("", ComplexNumber()))
         return renderFormat
+    }
+
+    fun solveInNumbers(): MutableList<ComplexNumber>
+    {
+        polynomial.map { s ->
+            if (!s.second.isReal()) throw NonpermanentException("Complex polynomials are unsuported right now")
+        }
+        val resulrArray = MutableList(polynomial.first().first) { ComplexNumber() }
+        when (polynomial.first().first)
+        {
+            1 ->
+            {
+                resulrArray[0] = (polynomial.last().second * -1) / polynomial.first().second
+            }
+            2 ->
+            {
+                val D =
+                    polynomial[1].second.pow(2) - polynomial[0].second * polynomial[2].second * 4
+                if (D.re < Fraction()) throw NonpermanentException("Polynomial does not have any real roots")
+                val sqrtD = sqrt(D.re.upper.toDouble() / D.re.lower.toDouble())
+
+                resulrArray[0] = (polynomial[1].second*-1 + sqrtD.toString().toFraction())/(polynomial[0].second*2)
+                resulrArray[1] = (polynomial[1].second*-1 - sqrtD.toString().toFraction())/(polynomial[0].second*2)
+            }
+            else -> throw NonpermanentException("Only supported polynomials with degree lover then 3")
+        }
+        return resulrArray
     }
 
 }

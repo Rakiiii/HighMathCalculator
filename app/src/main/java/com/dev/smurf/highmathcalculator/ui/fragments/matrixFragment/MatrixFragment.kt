@@ -500,22 +500,22 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     override fun btnEighnvalueClicked()
     {
-        mMatrixPresenter.btnEighnvalueClicked()
+        mMatrixPresenter.btnEighnvalueClicked(firstMatrix.text.toString())
     }
 
     override fun btnEighnvectorClicked()
     {
-        mMatrixPresenter.btnEighnvectorClicked()
+        mMatrixPresenter.btnEighnvectorClicked(firstMatrix.text.toString())
     }
 
     override fun btnNegativeClicked()
     {
-        mMatrixPresenter.btnNegativeClicked()
+        mMatrixPresenter.btnNegativeClicked(firstMatrix.text.toString())
     }
 
     override fun btnPositiveClicked()
     {
-        mMatrixPresenter.btnPositiveClicked()
+        mMatrixPresenter.btnPositiveClicked(firstMatrix.text.toString())
     }
 
     override fun btnRankClicked()
