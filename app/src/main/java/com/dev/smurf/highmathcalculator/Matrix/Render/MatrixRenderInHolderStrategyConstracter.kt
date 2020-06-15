@@ -61,7 +61,10 @@ open class MatrixRenderInHolderStrategyConstracter
             val rect = Rect()
             mPaint.getTextBounds(sign, 0, sign.length, rect)
 
-            return Pair(rect.width().toFloat(), rect.height().toFloat())
+            return Pair(
+                rect.width().toFloat(),
+                rect.height().toFloat() + mPaint.fontMetrics.descent
+            )
         }
 
 
@@ -74,8 +77,9 @@ open class MatrixRenderInHolderStrategyConstracter
         {
             var amountOfDots = 0
             val isLines = matrixSet.sign == MatrixGroup.DET
+            val isVectors = matrixSet.sign == MatrixGroup.EIGENVECTOR
             while (!checkStrategyGroup(
-                    constructStrategy(amountOfDots, isLines),
+                    constructStrategy(amountOfDots, isLines,isVectors),
                     matrixSet,
                     maxWidth,
                     mPaint
@@ -85,7 +89,7 @@ open class MatrixRenderInHolderStrategyConstracter
             {
                 amountOfDots++
             }
-            return constructStrategy(amountOfDots, isLines)
+            return constructStrategy(amountOfDots, isLines,isVectors)
         }
 
         //checks is sum of rendered matrix size is ok for veiw holder
@@ -103,7 +107,8 @@ open class MatrixRenderInHolderStrategyConstracter
         //@isLines is flag for render left matrix as determinant in lines
         fun constructStrategy(
             amountOfDots: Int,
-            isLines: Boolean
+            isLines: Boolean,
+            isVectors: Boolean
         ): MatrixRenderStrategyGroup
         {
             val lftStrat =
@@ -113,7 +118,8 @@ open class MatrixRenderInHolderStrategyConstracter
                 if (amountOfDots > 1) MatrixRenderStrategy.getMatrixInBracketsAsDotsStrategy() else MatrixRenderStrategy.getFullRenderStrategyInBrackets()
 
             val resStrat =
-                if (amountOfDots > 2) MatrixRenderStrategy.getMatrixInBracketsAsDotsStrategy() else MatrixRenderStrategy.getFullRenderStrategyInBrackets()
+                if (isVectors)if (amountOfDots > 2) MatrixRenderStrategy.getMatrixInBracketsAsDotsStrategy() else MatrixRenderStrategy.getMatrixAsVectorsStrategy()
+                else  if (amountOfDots > 2) MatrixRenderStrategy.getMatrixInBracketsAsDotsStrategy() else MatrixRenderStrategy.getFullRenderStrategyInBrackets()
 
             return MatrixRenderStrategyGroup(
                 leftMatrixStrategy = lftStrat,
@@ -124,9 +130,6 @@ open class MatrixRenderInHolderStrategyConstracter
 
 
     }
-
-
-
 
 
 }

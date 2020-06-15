@@ -749,6 +749,19 @@ open class Matrix private constructor(
         return Matrix(width = width,height = height,m = resultArray)
     }
 
+    fun asVectors():ArrayList<Matrix>
+    {
+        val vectors = arrayListOf<Matrix>()
+
+        for(i in columnIndices())
+        {
+            val vector = Array(height){p -> Array(1){this[p][i]} }
+            vectors.add(Matrix(height = height,width = 1, m =vector))
+        }
+
+        return vectors
+    }
+
     private fun switchColumns(k: Int, m: Int): Matrix
     {
         val newMatrix = createMatrixCopy(this)

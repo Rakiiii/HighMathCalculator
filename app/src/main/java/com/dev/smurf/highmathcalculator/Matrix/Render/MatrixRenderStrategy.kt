@@ -3,15 +3,9 @@ package com.dev.smurf.highmathcalculator.Matrix.Render
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInBrackets
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInBracketsAsDots
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInLines
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawMatrixInLinesAsDots
+import com.dev.smurf.highmathcalculator.CanvasExtension.*
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
-import com.dev.smurf.highmathcalculator.PaintExtension.getMatrixInBracketsAsDotsSize
-import com.dev.smurf.highmathcalculator.PaintExtension.getMatrixInBracketsSize
-import com.dev.smurf.highmathcalculator.PaintExtension.getMatrixInLinesAsDotsSize
-import com.dev.smurf.highmathcalculator.PaintExtension.getMatrixInLinesSize
+import com.dev.smurf.highmathcalculator.PaintExtension.*
 
 //implementation of strategy pattern for matrix render
 class MatrixRenderStrategy(
@@ -106,5 +100,15 @@ class MatrixRenderStrategy(
                     paint
                 )
             }, matrixSize = { matrix -> this.getMatrixInLinesAsDotsSize(matrix) })
+
+        fun getMatrixAsVectorsStrategy() =
+            MatrixRenderStrategy(renderMatrix = { matrix, fl, fl2, paint ->
+                this.drawMatrixAsSetOfVectors(
+                    matrix,
+                    fl,
+                    fl2,
+                    paint
+                )
+            }, matrixSize = { matrix -> this.getMatrixSizeAsVectors(matrix) })
     }
 }
