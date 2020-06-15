@@ -28,13 +28,13 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
             {
                 if (right.upper == zero) return this
                 if (this.upper == zero) return right
-                if (!checkMultyplyOveflow(
+                if (checkMultyplyOveflow(
                         this.upper,
                         right.lower
-                    ) || !checkMultyplyOveflow(this.lower, right.lower) || !checkMultyplyOveflow(
+                    ) || checkMultyplyOveflow(this.lower, right.lower) || checkMultyplyOveflow(
                         this.lower,
                         right.upper
-                    ) || !checkAdditionOverflow(this.upper * right.lower ,this.lower * right.upper)
+                    ) || checkAdditionOverflow(this.upper * right.lower ,this.lower * right.upper)
                 ) throw OverflowExceptions()
                 val res = Fraction(
                     this.upper * right.lower + this.lower * right.upper,
@@ -64,13 +64,13 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
                 if (right.upper == zero) return this
                 if (this.upper == zero)
                     return Fraction(_upper = -right.upper, _lower = right.lower)
-                if (!checkMultyplyOveflow(
+                if (checkMultyplyOveflow(
                         this.upper,
                         right.lower
-                    ) || !checkMultyplyOveflow(this.lower, right.lower) || !checkMultyplyOveflow(
+                    ) || checkMultyplyOveflow(this.lower, right.lower) || checkMultyplyOveflow(
                         this.lower,
                         right.upper
-                    ) || !checkSubstrinctionOverflow(this.upper * right.lower ,this.lower * right.upper)
+                    ) || checkSubstrinctionOverflow(this.upper * right.lower ,this.lower * right.upper)
                 ) throw OverflowExceptions()
                 val res = Fraction(
                     this.upper * right.lower - this.lower * right.upper,
@@ -97,10 +97,10 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
 
                 if (this.upper == zero) return Fraction()
                 if (right.upper == zero) throw DivisionFractionByZeroException()
-                if (!checkMultyplyOveflow(
+                if (checkMultyplyOveflow(
                         this.upper,
                         right.lower
-                    ) || !checkMultyplyOveflow(this.lower, right.upper)
+                    ) || checkMultyplyOveflow(this.lower, right.upper)
                 ) throw OverflowExceptions()
                 val res = Fraction(this.upper * right.lower, this.lower * right.upper)
                 if (res.lower < zero)
@@ -123,10 +123,10 @@ class Fraction(_upper: Long = 0, _lower: Long = 1)
             {
 
                 if (this.upper == zero || right.upper == zero) return Fraction()
-                if (!checkMultyplyOveflow(
+                if (checkMultyplyOveflow(
                         this.upper,
                         right.upper
-                    ) || !checkMultyplyOveflow(this.lower, right.lower)
+                    ) || checkMultyplyOveflow(this.lower, right.lower)
                 ) throw OverflowExceptions()
                 val res = Fraction(this.upper * right.upper, this.lower * right.lower)
                 if (res.lower < zero)
