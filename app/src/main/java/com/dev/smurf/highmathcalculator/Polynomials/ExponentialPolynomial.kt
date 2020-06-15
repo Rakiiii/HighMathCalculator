@@ -532,7 +532,9 @@ class ExponentialPolynomial private constructor(
             2 ->
             {
                 val D =
-                    polynomial[1].second.pow(2) - polynomial[0].second * polynomial[2].second * 4
+                    polynomial[1].second.pow(2) - (polynomial[0].second * polynomial[2].second * 4)
+                Log.d("polynomial@","b ${polynomial[1].second} b^2 ${polynomial[1].second.pow(2)} a ${polynomial[0].second} c ${polynomial[2].second}")
+                Log.d("polynomial@","disc ${D}")
                 if (D.re < Fraction()) throw NonpermanentException("Polynomial does not have any real roots")
                 val sqrtD = sqrt(D.re.upper.toDouble() / D.re.lower.toDouble())
 
