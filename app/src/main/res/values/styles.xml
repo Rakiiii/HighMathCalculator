@@ -10,6 +10,11 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="android:fontFamily">bold</item>
+
+
+        <!--item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">true</item-->
     </style>
 
     <style name="MainActivityBtn" parent="MainTheme">
@@ -23,7 +28,7 @@
         <item name="android:layout_width">wrap_content</item>
     </style>
     <style name="btnStyle" parent="MainTheme">
-        <item name="android:background">@drawable/button_shape</item>
+        <item name="android:background">@drawable/button_click</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_columnWeight">1</item>
@@ -36,7 +41,7 @@
     </style>
 
     <style name="SubBtnStyle" parent="MainTheme">
-        <item name="android:background">@drawable/button_shape</item>
+        <item name="android:background">@drawable/button_click</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_columnWeight">1</item>
@@ -101,7 +106,15 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
         <item name="cardCornerRadius">4dp</item>
-        <item name="cardElevation">3dp</item>
+        <item name="cardElevation">8dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+    </style>
+
+    <style name="loadingCardStyle" parent="MainTheme">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="cardCornerRadius">4dp</item>
+        <item name="cardElevation">0dp</item>
         <item name="android:layout_marginTop">5dp</item>
     </style>
 
@@ -131,6 +144,19 @@
     <style name="BackgroundMatrixViewStyle" parent="MainTheme">
         <item name="android:alpha">0.1</item>
         <item name="android:scaleType">fitXY</item>
+    </style>
+
+    <style name="NewDialog" parent="MainTheme">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@drawable/button_shape</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:elevation">25dp</item>
     </style>
 
 </resources>

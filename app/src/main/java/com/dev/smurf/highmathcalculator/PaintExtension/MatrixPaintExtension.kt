@@ -4,62 +4,6 @@ import android.graphics.Paint
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
 
-/*
-fun Paint.getMatrixSize(matrix: Matrix): Pair<Float, Float>
-{
-    //high of the letter of the setted font
-    val high = CanvasRenderSpecification.getLetterHigh(this)
-
-    //spaces size between columns
-    val horizontalSpaceSize = CanvasRenderSpecification.getHorizontalSpaceSize(this)
-
-    val verticalSpaceSize = CanvasRenderSpecification.getVerticalSpaceSize(this)
-
-    //array that contains max width of elem in every column
-    val maxLengthArray = FloatArray(matrix.width)
-
-    //finding longest elem in every column
-    for (i in 0 until matrix.width)
-    {
-        for (j in 0 until matrix.height)
-        {
-            if (maxLengthArray[i] < this.getComplexNumberWidth(matrix.matrices[j][i]))
-            {
-                maxLengthArray[i] = this.getComplexNumberWidth(matrix.matrices[j][i])
-            }
-        }
-    }
-
-    //calculate max vertical length of matrix
-    var overallHigh = 0.0f
-
-    for (i in matrix.matrices.indices)
-    {
-        var rowFlag = false
-        for (j in matrix.matrices[i].indices)
-        {
-            if (!matrix.matrices[i][j].re.isInt() || !matrix.matrices[i][j].im.isInt())
-            {
-                rowFlag = true
-            }
-        }
-
-        if (rowFlag)
-        {
-            overallHigh += 2 * high + 2 * CanvasRenderSpecification.letterVerticalSpacing + this.strokeWidth
-        }
-        else
-        {
-            overallHigh += high
-        }
-    }
-
-    return Pair(
-        maxLengthArray.sum() + horizontalSpaceSize * (matrix.width - 1),
-        overallHigh + verticalSpaceSize * (matrix.height - 1)
-    )
-}*/
-
 fun Paint.getMatrixHorizontalSpaceSize() = measureText(" ") * 4
 fun Paint.getMatrixVerticalSpaceSize() = measureText(" ") / 2
 
@@ -175,3 +119,15 @@ fun Paint.getMatrixInLinesAsDotsSize(matrix: Matrix): Pair<Float, Float>
     else getProportionalDotsInLineSize(3, getProportionalDotsRadius())
 }
 
+fun Paint.getMatrixSizeAsVectors(matrix: Matrix) : Pair<Float,Float>
+{
+     if (matrix.isEmpty())return Pair(0.0f, 0.0f)
+
+    val vectors = matrix.asVectors()
+
+    val vectorsSizes = Array(vectors.size) { s -> this.getMatrixInBracketsSize(vectors[s]) }
+    val maxHeight = (vectorsSizes.maxBy { s -> s.second } ?: Pair(0.0f, 0.0f)).second
+    val overallWidth = vectorsSizes.sumByDouble { s -> s.first.toDouble() }
+
+    return Pair(overallWidth.toFloat(),maxHeight)
+}

@@ -2,6 +2,9 @@ package com.dev.smurf.highmathcalculator.mvp.models
 
 import android.content.Context
 import androidx.room.Room
+import com.dev.smurf.highmathcalculator.DataBase.Migration.PolynomialDataBaseMigration_2_3
+import com.dev.smurf.highmathcalculator.DataBase.Migration.PolynomialDataBaseMigration_3_4
+import com.dev.smurf.highmathcalculator.DataBase.Migration.PolynomialDataBaseMigration_4_5
 import com.dev.smurf.highmathcalculator.DataBase.PolynomialDataBase
 import com.example.smurf.mtarixcalc.PolynomialGroup
 
@@ -15,8 +18,10 @@ class PolynomialDataBaseModel(val context: Context)
 
     //объект базы данных
     private val mPolynomialDataBase: PolynomialDataBase =
-        Room.databaseBuilder(context, PolynomialDataBase::class.java, "polinom_db").fallbackToDestructiveMigration()
-            .build()
+        Room.databaseBuilder(context, PolynomialDataBase::class.java, "polinom_db").addMigrations(
+            PolynomialDataBaseMigration_2_3,PolynomialDataBaseMigration_3_4,PolynomialDataBaseMigration_4_5
+        ).build()
+
 
 
     //вставить в базу данных

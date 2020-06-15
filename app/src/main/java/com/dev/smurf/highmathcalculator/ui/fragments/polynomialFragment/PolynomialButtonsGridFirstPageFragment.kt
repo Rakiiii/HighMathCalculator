@@ -1,19 +1,26 @@
 package com.dev.smurf.highmathcalculator.ui.fragments.polynomialFragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 
 import com.dev.smurf.highmathcalculator.R
-import kotlinx.android.synthetic.main.fragment_matrix_button_grid_first_page.*
+import com.dev.smurf.highmathcalculator.ui.ViewModels.MatrixListenerViewModel
+import com.dev.smurf.highmathcalculator.ui.ViewModels.PolynomialListenerViewModel
+import kotlinx.android.synthetic.main.fragment_matrix.*
+import kotlinx.android.synthetic.main.fragment_polinom.*
 import kotlinx.android.synthetic.main.fragment_polynomial_buttons_grid_first_page.*
 
 
 class PolynomialButtonsGridFirstPageFragment : Fragment()
 {
 
+    private val listenerViewModel : PolynomialListenerViewModel<PolynomialFragment> by activityViewModels()
     private lateinit var listener: OnFragmentInteractionListener
 
     override fun onCreateView(
@@ -27,6 +34,12 @@ class PolynomialButtonsGridFirstPageFragment : Fragment()
             container,
             false
         )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+        listenerViewModel.listener.observe(viewLifecycleOwner, Observer { f -> listener = f })
     }
 
     override fun onStart()
@@ -62,6 +75,16 @@ class PolynomialButtonsGridFirstPageFragment : Fragment()
         }
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+    }
+
     interface OnFragmentInteractionListener
     {
         fun onBtnDivisionClick()
@@ -71,12 +94,6 @@ class PolynomialButtonsGridFirstPageFragment : Fragment()
         fun onBtnPlusClick()
         fun onBtnMinusClick()
         fun onBtnTimesClick()
-    }
-
-    fun setListener( l : OnFragmentInteractionListener) : PolynomialButtonsGridFirstPageFragment
-    {
-        listener = l
-        return this
     }
 
 }

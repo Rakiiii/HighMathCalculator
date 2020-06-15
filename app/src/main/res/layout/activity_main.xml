@@ -13,11 +13,9 @@
                 android:id="@+id/navLinearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="18dp"
+                android:layout_marginEnd="6dp"
                 android:layout_marginTop="18dp"
-                android:layout_marginRight="18dp"
-                android:layout_marginEnd="18dp"
-                android:layout_marginStart="18dp"
+                android:layout_marginStart="6dp"
                 android:layout_marginBottom="18dp"
                 android:background="@drawable/rect_white"
                 android:elevation="8dp"
@@ -44,7 +42,7 @@
                         app:bt_colorActive="@color/white"
                         app:bt_colorInactive="@color/dark"
                         app:bt_shape="@drawable/transition_nav"
-                        app:bt_duration="1000"
+                        app:bt_duration="100"
                         app:bt_title="@string/matrixFragmentNavigation"
                         app:bt_icon="@drawable/ic_grid_on_black_24dp"/>
                 <com.gauravk.bubblenavigation.BubbleToggleView
@@ -55,7 +53,7 @@
                         app:bt_colorActive="@color/white"
                         app:bt_colorInactive="@color/dark"
                         app:bt_shape="@drawable/transition_nav"
-                        app:bt_duration="1000"
+                        app:bt_duration="100"
                         app:bt_title="@string/polynomialFragmentNavigation"
                         app:bt_icon="@drawable/ic_expand_less_black_24dp"/>
 

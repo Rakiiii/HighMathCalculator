@@ -3,6 +3,7 @@ package com.dev.smurf.highmathcalculator.StringsExtension
 import android.util.Log
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
+import com.dev.smurf.highmathcalculator.Numbers.zero
 
 fun gcd(a: Int, b: Int): Int
 {
@@ -10,11 +11,26 @@ fun gcd(a: Int, b: Int): Int
     else return gcd(b, a % b)
 }
 
+fun gcdLong(a: Long, b: Long): Long
+{
+    if (b == zero) return a
+    else return gcdLong(b, a % b)
+}
+
 
 fun Int.pow(x: Int): Int
 {
     if (x == 0) return 1
     var res: Int = 1
+    for (i in 1..x)
+        res *= this
+    return res
+}
+
+fun Long.pow(x: Long): Long
+{
+    if (x == 0L) return 1
+    var res = 1L
     for (i in 1..x)
         res *= this
     return res
@@ -63,10 +79,17 @@ fun Int.comb(leng: Int): Int
 
 fun Int.equals(other: Fraction): Boolean
 {
-    if ((other.upper % other.lower) == 0) return ((other.upper / other.lower) == this)
-    else return false
+    return if ((other.upper % other.lower) == zero) ((other.upper / other.lower) == this.toLong())
+    else false
 }
 
+fun Long.equals(other : Fraction): Boolean
+{
+    return if ((other.upper % other.lower) == zero) ((other.upper / other.lower) == this)
+    else false
+}
+
+//use numberToDergeeForm if you need to translate only numbers
 fun String.toDegree(): String
 {
     var res = ""
@@ -85,6 +108,30 @@ fun String.toDegree(): String
             '8' -> res += '⁸'
             '9' -> res += '⁹'
             else -> throw Exception("UnknownSymbolInDegree")
+        }
+    }
+
+    return res
+}
+
+fun String.numbersToDegreeForm(): String
+{
+    var res = ""
+    for (i in this)
+    {
+        when (i)
+        {
+            '0' -> res += '⁰'
+            '1' -> res += '¹'
+            '2' -> res += '²'
+            '3' -> res += '³'
+            '4' -> res += '⁴'
+            '5' -> res += '⁵'
+            '6' -> res += '⁶'
+            '7' -> res += '⁷'
+            '8' -> res += '⁸'
+            '9' -> res += '⁹'
+            else -> res += i
         }
     }
 

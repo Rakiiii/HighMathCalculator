@@ -27,7 +27,7 @@ android {
     }
 
     dexOptions {
-        javaMaxHeapSize "2048M"
+        javaMaxHeapSize "4096M"
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -38,11 +38,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
-        }
-    }
+
 }
 
 dependencies {
@@ -72,6 +68,9 @@ dependencies {
 
     //recycler view
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha03'
+    //animator for recycler view
+    implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
+
 
     //tests
     testImplementation 'junit:junit:4.12'
@@ -80,7 +79,7 @@ dependencies {
 
     //lifecycle
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.3.0-alpha02'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.3.0-alpha03'
 
     //anko
     implementation 'org.jetbrains.anko:anko:0.10.8'
@@ -115,6 +114,9 @@ dependencies {
     // For Kotlin use lifecycle-viewmodel-ktx
     // alternatively - just LiveData
     //implementation 'androidx.lifecycle:lifecycle-livedata:2.0.0'
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
+    implementation "androidx.fragment:fragment-ktx:1.2.4"
+    //noinspection LifecycleAnnotationProcessorWithJava8
     kapt 'androidx.lifecycle:lifecycle-compiler:2.2.0'
 
     implementation 'android.arch.navigation:navigation-fragment:1.0.0'

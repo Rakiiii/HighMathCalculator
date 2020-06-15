@@ -17,7 +17,7 @@ class PolynomialTxtAdapter(val context: Context, val polFirstPolynomial: EditTex
 
 
     //список элементов
-    private var listOfPolynomials: ArrayList<PolynomialGroup> = ArrayList()
+    private var listOfPolynomials: MutableList<PolynomialGroup> = ArrayList()
 
 
     //получить количество элементов в списке
@@ -37,7 +37,7 @@ class PolynomialTxtAdapter(val context: Context, val polFirstPolynomial: EditTex
     //очиститть список элементов
     fun clear()
     {
-        listOfPolynomials.clear()
+        listOfPolynomials = ArrayList()
         notifyDataSetChanged()
     }
 
@@ -62,10 +62,10 @@ class PolynomialTxtAdapter(val context: Context, val polFirstPolynomial: EditTex
 
 
     //получить список элементов
-    fun getList(): ArrayList<PolynomialGroup> = listOfPolynomials
+    fun getList(): MutableList<PolynomialGroup> = listOfPolynomials
 
     //заменить список элементов
-    fun setList(newArrayList: ArrayList<PolynomialGroup>)
+    fun setList(newArrayList: MutableList<PolynomialGroup>)
     {
         listOfPolynomials = newArrayList
         notifyDataSetChanged()

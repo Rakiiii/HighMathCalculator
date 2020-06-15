@@ -2,59 +2,112 @@ package com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters
 
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawComplex
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawComplexx
-import com.dev.smurf.highmathcalculator.CanvasExtension.drawFractions
-import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRender
-import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
-import com.dev.smurf.highmathcalculator.Numbers.Fraction
-import com.dev.smurf.highmathcalculator.PaintExtension.getComplexNumberSize
-import com.dev.smurf.highmathcalculator.PaintExtension.getFractionSize
+import com.dev.smurf.highmathcalculator.Matrix.Matrix
 import com.dev.smurf.highmathcalculator.R
-import com.dev.smurf.highmathcalculator.Utils.*
 import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.adapters.ContextMenuListener
-import org.jetbrains.anko.imageBitmap
-import java.text.SimpleDateFormat
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.MatrixBindableViewHolder
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.MatrixViewHolderMatrix
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.OnMatrixCalculationGoingViewHolder
+import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.RoundingProgressBarViewHolderMatrix
 
 
 class MatrixAdapterImageView(
     val context: Context,
     val firstMatrix: EditText,
     val secondMatrix: EditText,
-    val width: Float
+    val width: Float,
+    val onMatrixClickedListener : MutableLiveData<String>
 ) :
-    RecyclerView.Adapter<MatrixAdapterImageView.MatrixViewHolder>()
+    RecyclerView.Adapter<MatrixBindableViewHolder>()
 {
 
+    private var loading = false
+    private var dropAnimations = false
+
+    fun startLoading()
+    {
+        if (!loading)
+        {
+            dropAnimations = false
+            loading = true
+            listOfMatrices.add(
+                0,
+                MatrixGroup(
+                    leftMatrix = Matrix.EmptyMatrix,
+                    resMatrix = Matrix.EmptyMatrix,
+                    rightMatrix = Matrix.EmptyMatrix,
+                    sign = MatrixGroup.LOADING,
+                    time = java.util.GregorianCalendar()
+                )
+            )
+            notifyItemInserted(0)
+        }
+    }
+
+    fun stopLoading()
+    {
+        if (loading)
+        {
+            loading = false
+            listOfMatrices.removeAt(0)
+            notifyItemRemoved(0)
+        }
+    }
+
     //списое элементов
-    private var listOfMatrices: ArrayList<MatrixGroup> = ArrayList()
+    private var listOfMatrices: MutableList<MatrixGroup> = ArrayList()
 
     //добавление нового элеменат
     fun addNewElem(group: MatrixGroup)
     {
         listOfMatrices.add(0, group)
+        dropAnimations = true
         notifyItemInserted(0)
+    }
 
+    fun stopCalculation(group: MatrixGroup)
+    {
+        for (i in listOfMatrices.indices)
+        {
+            if (listOfMatrices[i].time.timeInMillis == group.time.timeInMillis)
+            {
+                Log.d("solved@","stoped time ${listOfMatrices[i].time.timeInMillis}")
+                listOfMatrices[i] = group
+                notifyItemChanged(i)
+                break
+            }
+        }
+    }
+
+    fun removeCalculation(group: MatrixGroup)
+    {
+        for (i in listOfMatrices.indices)
+        {
+            if (listOfMatrices[i].time.timeInMillis == group.time.timeInMillis)
+            {
+                listOfMatrices.removeAt(i)
+                notifyItemRemoved(i)
+                break
+            }
+        }
+    }
+
+    fun removeAllCalculation()
+    {
+        listOfMatrices = listOfMatrices.filterNot { s -> s.sign == MatrixGroup.CALCULATION }.toMutableList()
     }
 
     //очистка списка элементов
     fun clear()
     {
-        listOfMatrices.clear()
+        listOfMatrices = ArrayList()
         notifyDataSetChanged()
     }
 
@@ -63,7 +116,7 @@ class MatrixAdapterImageView(
     fun removeElement(position: Int)
     {
         listOfMatrices.removeAt(position)
-        notifyDataSetChanged()
+        notifyItemRemoved(position)
     }
 
     //получить элемент из позиции position
@@ -80,10 +133,11 @@ class MatrixAdapterImageView(
     }
 
     //установить новый список элементов
-    fun setList(newArray: ArrayList<MatrixGroup>)
+    fun setList(newArray: MutableList<MatrixGroup>)
     {
+        if (loading) newArray.add(0, listOfMatrices[0])
         listOfMatrices = newArray
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, listOfMatrices.size - 1)
     }
 
     //получение всего списка элементов
@@ -95,215 +149,97 @@ class MatrixAdapterImageView(
         return listOfMatrices.size
     }
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatrixViewHolder
+    override fun getItemViewType(position: Int): Int
     {
-        return MatrixViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.matrix_expressions_imageview,
-                parent,
-                false
-            ), width - 140.0f
-        )
-    }
-
-
-    override fun onBindViewHolder(holder: MatrixViewHolder, position: Int)
-    {
-
-        holder.bind(listOfMatrices[position])
-
-        //листенер для контекстного меню на левую матрицу
-        holder.leftMatrix.setOnCreateContextMenuListener(
-            ContextMenuListener(
-                context,
-                firstMatrix,
-                secondMatrix,
-                holder.leftMatrixValue
-            )
-        )
-
-        holder.resMatrix.setOnCreateContextMenuListener(
-            ContextMenuListener(
-                context,
-                firstMatrix,
-                secondMatrix,
-                holder.resMatrixValue
-            )
-        )
-
-        holder.rightMatrix.setOnCreateContextMenuListener(
-            ContextMenuListener(
-                context,
-                firstMatrix,
-                secondMatrix,
-                holder.rightMatrixValue
-            )
-        )
-
-    }
-
-
-    class MatrixViewHolder constructor(itemView: View, val width: Float) :
-        RecyclerView.ViewHolder(itemView)
-    {
-        //val width: Float = 40.0f
-
-        var leftMatrix: ImageView = itemView.findViewById(R.id.leftMatrix)
-            private set
-        var rightMatrix: ImageView = itemView.findViewById(R.id.rightMatrix)
-            private set
-        var resMatrix: ImageView = itemView.findViewById(R.id.resMatrix)
-            private set
-        var sign: ImageView = itemView.findViewById(R.id.operationSignMatrix)
-            private set
-        var equalSign: ImageView = itemView.findViewById(R.id.equalsSignMatrix)
-        var timeMatrix: TextView = itemView.findViewById(R.id.timeMatrix)
-
-        lateinit var leftMatrixValue: String
-            private set
-        lateinit var rightMatrixValue: String
-            private set
-        lateinit var resMatrixValue: String
-            private set
-
-        fun bind(group: MatrixGroup)
+        return when
         {
-
-            save(group)
-
-            val blackPainter = CanvasRenderSpecification.createBlackPainter()
-
-            val bitmapSet = MatrixRender.renderWithStrategy(group,width,blackPainter)
-            // = MatrixRender.renderMatrixSet(group, width, blackPainter)
-            leftMatrix.imageBitmap = bitmapSet.leftMatrixBitmap
-            if (!bitmapSet.rightMatrixBitmap.IsEmpty()) rightMatrix.imageBitmap =
-                bitmapSet.rightMatrixBitmap
-            sign.imageBitmap = bitmapSet.signBitmap
-            resMatrix.imageBitmap = bitmapSet.resultMatrixBitmap
-            equalSign.imageBitmap = bitmapSet.equalsSignBitmap
-
-            //renderTestComplex()
-
-            group.time.let {
-                val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
-                fmt.calendar = it
-                timeMatrix.text = fmt.format(it.time)
-            }
+            (listOfMatrices[position].leftMatrix == Matrix.EmptyMatrix && listOfMatrices[position].sign == MatrixGroup.LOADING) -> 0
+            (listOfMatrices[position].leftMatrix == Matrix.EmptyMatrix && listOfMatrices[position].sign == MatrixGroup.CALCULATION) -> 2
+            else -> 1
         }
+    }
 
-        private fun save(matrixGroup: MatrixGroup)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatrixBindableViewHolder
+    {
+        return when (viewType)
         {
-            leftMatrixValue = matrixGroup.leftMatrix.toString()
-            rightMatrixValue =
-                if (matrixGroup.rightMatrix.isEmpty()) matrixGroup.resMatrix.toString() else matrixGroup.rightMatrix.toString()
-            resMatrixValue = matrixGroup.resMatrix.toString()
+            0 -> RoundingProgressBarViewHolderMatrix(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.rounding_progress_bar_view_holder,
+                    parent,
+                    false
+                ), width
+            )
+            2 -> OnMatrixCalculationGoingViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.calulation_on_going_viewholder,
+                    parent,
+                    false
+                ), width
+            )
+            else -> MatrixViewHolderMatrix(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.matrix_expressions_imageview,
+                    parent,
+                    false
+                ), width
+            )
+        }
+    }
+
+
+    override fun onBindViewHolder(holderMatrix: MatrixBindableViewHolder, position: Int)
+    {
+        holderMatrix.doDropAnimations = dropAnimations
+        if(holderMatrix is OnMatrixCalculationGoingViewHolder)
+        {
+            holderMatrix.bind(listOfMatrices[position])
+        }
+        if (holderMatrix is MatrixViewHolderMatrix)
+        {
+            holderMatrix.bind(listOfMatrices[position])
+
+            //листенер для контекстного меню на левую матрицу
+            holderMatrix.leftMatrix.setOnCreateContextMenuListener(
+                ContextMenuListener(
+                    context,
+                    firstMatrix,
+                    secondMatrix,
+                    holderMatrix.leftMatrixValue
+                )
+            )
+
+            holderMatrix.resMatrix.setOnCreateContextMenuListener(
+                ContextMenuListener(
+                    context,
+                    firstMatrix,
+                    secondMatrix,
+                    holderMatrix.resMatrixValue
+                )
+            )
+
+            holderMatrix.rightMatrix.setOnCreateContextMenuListener(
+                ContextMenuListener(
+                    context,
+                    firstMatrix,
+                    secondMatrix,
+                    holderMatrix.rightMatrixValue
+                )
+            )
+
+            holderMatrix.leftMatrix.setOnClickListener {
+                if(holderMatrix.leftMatrixValue.isNotEmpty())onMatrixClickedListener.value = holderMatrix.leftMatrixValue
+            }
+
+            holderMatrix.rightMatrix.setOnClickListener {
+                if(holderMatrix.rightMatrixValue.isNotEmpty())onMatrixClickedListener.value = holderMatrix.rightMatrixValue
+            }
+
+            holderMatrix.resMatrix.setOnClickListener {
+                if(holderMatrix.resMatrixValue.isNotEmpty())onMatrixClickedListener.value = holderMatrix.resMatrixValue
+            }
+
         }
     }
 }
-
-/*
-        fun renderTestComplex()
-        {
-            val mPaint = CanvasRenderSpecification.createBlackPainter()
-            val f1 = ComplexNumber(Fraction(-15,4))
-            val f1Size = mPaint.getComplexNumberSize(f1)
-            //Log.d("size@",f1Size.first.toString()+ " "+f1Size.second.toString())
-            val f1Bitmap = Bitmap.createBitmap(
-                f1Size.first.toInt(),
-                f1Size.second.toInt(),
-                Bitmap.Config.ARGB_8888
-            )
-            Canvas(f1Bitmap).drawComplex(f1,0.0f,0.0f,mPaint)
-            leftMatrix.imageBitmap = f1Bitmap
-
-
-            val f2 = ComplexNumber(Fraction(),Fraction(345,7))
-            val f2Size = mPaint.getComplexNumberSize(f2)
-            //Log.d("sizef2@",f2Size.first.toString()+ " "+f2Size.second.toString())
-            val f2Bitmap = Bitmap.createBitmap(
-                f2Size.first.toInt(),
-                f2Size.second.toInt(),
-                Bitmap.Config.ARGB_8888
-            )
-            Canvas(f2Bitmap).drawComplex(f2,0.0f,0.0f,mPaint)
-            //f2Bitmap.eraseColor(Color.BLACK)
-            rightMatrix.imageBitmap =f2Bitmap
-
-            val f3 = ComplexNumber(Fraction(12/8), Fraction(1,2))
-            val f3Size = mPaint.getComplexNumberSize(f3)
-            //Log.d("size@",f3Size.first.toString()+ " "+f3Size.second.toString())
-            val f3Bitmap = Bitmap.createBitmap(
-                f3Size.first.toInt(),
-                f3Size.second.toInt(),
-                Bitmap.Config.ARGB_8888
-            )
-            Canvas(f3Bitmap).drawComplex(f3,0.0f,0.0f,mPaint)
-            sign.imageBitmap =f3Bitmap
-
-            val f4 = ComplexNumber(Fraction(199,2), Fraction(57,2))
-            //mPaint.style = Paint.Style.STROKE
-            val f4Size = mPaint.getComplexNumberSize(f4)
-            //Log.d("size@",f4Size.first.toString()+ " "+f4Size.second.toString())
-            val f4Bitmap = Bitmap.createBitmap(
-                f4Size.first.toInt()+20,
-                f4Size.second.toInt()+20,
-                Bitmap.Config.ARGB_8888
-            )
-            Canvas(f4Bitmap).drawComplex(f4,0.0f,0.0f,mPaint)
-            //Canvas(f4Bitmap).drawRect(0.0f,0.0f,f4Size.first,f4Size.second,mPaint)
-            resMatrix.imageBitmap = f4Bitmap
-        }
-
-        fun renderTestFractions()
-        {
-            val mPaint = CanvasRenderSpecification.createBlackPainter()
-            val f1 = Fraction(1565, 1)
-            val f1Size = mPaint.getFractionSize(f1)
-            Log.d("size@",f1Size.first.toString()+ " "+f1Size.second.toString())
-            val f1Bitmap = Bitmap.createBitmap(
-                f1Size.first.toInt(),
-                f1Size.second.toInt(),
-                Bitmap.Config.ARGB_8888
-            )
-            Canvas(f1Bitmap).drawFractions(f1,0.0f,0.0f,mPaint)
-            leftMatrix.imageBitmap = f1Bitmap
-
-
-            val f2 = Fraction(-2, 536)
-            val f2Size = mPaint.getFractionSize(f2)
-            Log.d("sizef2@",f2Size.first.toString()+ " "+f2Size.second.toString())
-            val f2t = Fraction(2, 536)
-            val f2tSize = mPaint.getFractionSize(f2t)
-            Log.d("sizef2@",f2tSize.first.toString()+ " "+f2tSize.second.toString())
-            val f2Bitmap = Bitmap.createBitmap(
-                f2Size.first.toInt(),
-                f2Size.second.toInt(),
-                Bitmap.Config.ARGB_8888
-            )
-            Canvas(f2Bitmap).drawFractions(f2,0.0f,0.0f,mPaint)
-            //f2Bitmap.eraseColor(Color.BLACK)
-            rightMatrix.imageBitmap =f2Bitmap
-
-            val f3 = Fraction(1654, 536)
-            val f3Size = mPaint.getFractionSize(f3)
-            Log.d("size@",f3Size.first.toString()+ " "+f3Size.second.toString())
-            val f3Bitmap = Bitmap.createBitmap(
-                f3Size.first.toInt(),
-                f3Size.second.toInt(),
-                Bitmap.Config.ARGB_8888
-            )
-            Canvas(f3Bitmap).drawFractions(f3,0.0f,0.0f,mPaint)
-            sign.imageBitmap =f3Bitmap
-
-            val f4 = Fraction(1654, 897536)
-            val f4Size = mPaint.getFractionSize(f4)
-            Log.d("size@",f4Size.first.toString()+ " "+f4Size.second.toString())
-            val f4Bitmap = Bitmap.createBitmap(
-                f4Size.first.toInt(),
-                f4Size.second.toInt(),
-                Bitmap.Config.ARGB_8888
-            )
-            Canvas(f4Bitmap).drawFractions(f4,0.0f,0.0f,mPaint)
-            resMatrix.imageBitmap = f4Bitmap
-        }*/

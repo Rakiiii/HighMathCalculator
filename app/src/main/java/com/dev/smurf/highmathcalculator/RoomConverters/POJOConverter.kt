@@ -1,8 +1,8 @@
 package com.dev.smurf.highmathcalculator.RoomConverters
 
+import android.util.Log
 import androidx.room.TypeConverter
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
-import com.dev.smurf.highmathcalculator.Polynomials.DiofantPolynomial
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialFactory
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialRoots
@@ -29,65 +29,77 @@ class POJOConverter
         //конвертация времени в строку
         @TypeConverter
         @JvmStatic
-        fun fromTime(time : java.util.GregorianCalendar? ) : String
+        fun fromTime(time: java.util.GregorianCalendar?): String
         {
-            if(time != null)
+            if (time != null)
             {
-                val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
-                fmt.calendar = time
-                return fmt.format(time.time)
-            }else return ""
+                return time.timeInMillis.toString()
+            }
+            else return ""
         }
 
 
         //конвертация строки во время
         @TypeConverter
         @JvmStatic
-        fun toTime(time : String) : java.util.GregorianCalendar?
+        fun toTime(time: String): java.util.GregorianCalendar?
         {
-            if(time == "")return null
+            if (time == "") return null
             else
             {
-                val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
-                val date = fmt.parse(time)
-                val result = GregorianCalendar()
-                result.time = date
-                return result
+                if (time.toLongOrNull() == null)
+                {
+                    //need this in reason of old part of db
+                    val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
+                    val date = fmt.parse(time)
+                    val result = GregorianCalendar()
+                    result.time = date
+                    return result
+                }
+                else
+                {
+                    val result = GregorianCalendar()
+                    result.timeInMillis = time.toLong()
+                    return result
+                }
             }
         }
+
 
         //конвертация полинома в строку
         @TypeConverter
         @JvmStatic
-        fun fromPolynomial(polynomial : PolynomialBase?) : String
+        fun fromPolynomial(polynomial: PolynomialBase?): String
         {
-            return  if(polynomial != null)polynomial.toString() else ""
+            return polynomial.toString()
         }
 
 
         //конвертация строки к полиному
         @TypeConverter
         @JvmStatic
-        fun toPolynomial(polynomial : String) : PolynomialBase?
+        fun toPolynomial(polynomial: String): PolynomialBase
         {
-                return if(polynomial != "")PolynomialFactory().createPolynomial(polynomial) else null
+            return PolynomialFactory().createPolynomial(polynomial)
+            /*return try { PolynomialFactory().createPolynomial(polynomial) }
+            catch (e: Exception) { PolynomialBase.EmptyPolynomial }*/
         }
 
 
         //конвертация корней полинома к строке
         @TypeConverter
         @JvmStatic
-        fun fromPolynomialRoots(polynomialRoots : PolynomialRoots?) : String
+        fun fromPolynomialRoots(polynomialRoots: PolynomialRoots?): String
         {
-            return if(polynomialRoots != null)polynomialRoots.toString() else ""
+            return polynomialRoots?.toString() ?: ""
         }
 
         //конвертация строки к корням полинома
         @TypeConverter
         @JvmStatic
-        fun toPolynomialRoots(polynomialRoots : String) : PolynomialRoots?
+        fun toPolynomialRoots(polynomialRoots: String): PolynomialRoots?
         {
-            return if(polynomialRoots != "")PolynomialRoots(polynomialRoots) else null
+            return if (polynomialRoots != "") PolynomialRoots(polynomialRoots) else null
         }
 
     }

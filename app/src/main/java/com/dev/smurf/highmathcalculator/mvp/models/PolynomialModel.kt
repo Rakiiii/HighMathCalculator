@@ -3,6 +3,10 @@ package com.dev.smurf.highmathcalculator.mvp.models
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
 import com.dev.smurf.highmathcalculator.Polynomials.PolynomialFactory
 import com.example.smurf.mtarixcalc.PolynomialGroup
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.plus
+import kotlinx.coroutines.withContext
 
 class PolynomialModel
 {
@@ -18,7 +22,7 @@ class PolynomialModel
     }
 
     //сложить два полинома
-    fun plus(left: String, right: String): PolynomialGroup
+    private fun plus(left: String, right: String): PolynomialGroup
     {
         val lp = mPolinomFactory.createPolynomial(left)
         val rp = mPolinomFactory.createPolynomial(right)
@@ -39,7 +43,7 @@ class PolynomialModel
 
 
     //выситание полиномов
-    fun minus(left: String, right: String): PolynomialGroup
+    private fun minus(left: String, right: String): PolynomialGroup
     {
         val lp = mPolinomFactory.createPolynomial(left)
         val rp = mPolinomFactory.createPolynomial(right)
@@ -55,7 +59,7 @@ class PolynomialModel
 
     }
 
-    fun times(left: String, right: String): PolynomialGroup
+    private fun times(left: String, right: String): PolynomialGroup
     {
         val lp = mPolinomFactory.createPolynomial(left)
         val rp = mPolinomFactory.createPolynomial(right)
@@ -70,7 +74,7 @@ class PolynomialModel
         )
     }
 
-    fun division(left: String, right: String): PolynomialGroup
+    private fun division(left: String, right: String): PolynomialGroup
     {
         val lp = mPolinomFactory.createPolynomial(left)
         val rp = mPolinomFactory.createPolynomial(right)
@@ -84,6 +88,38 @@ class PolynomialModel
             polResPolynomial = result.first,
             polOstPolynomial = result.second
         )
+    }
+
+    suspend fun PolynomialPlus(coroutineScope: CoroutineScope,left: String, right: String ) : PolynomialGroup
+    {
+        return withContext(coroutineScope.coroutineContext+Dispatchers.Default)
+        {
+           plus(left,right)
+        }
+    }
+
+    suspend fun PolynomialMinus(coroutineScope: CoroutineScope,left: String, right: String ) : PolynomialGroup
+    {
+        return withContext(coroutineScope.coroutineContext+Dispatchers.Default)
+        {
+            minus(left,right)
+        }
+    }
+
+    suspend fun PolynomialTimes(coroutineScope: CoroutineScope,left: String, right: String ) : PolynomialGroup
+    {
+        return withContext(coroutineScope.coroutineContext+Dispatchers.Default)
+        {
+            times(left,right)
+        }
+    }
+
+    suspend fun PolynomialDivision(coroutineScope: CoroutineScope,left: String, right: String ) : PolynomialGroup
+    {
+        return withContext(coroutineScope.coroutineContext+Dispatchers.Default)
+        {
+            division(left,right)
+        }
     }
 
 

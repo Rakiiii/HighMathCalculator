@@ -25,5 +25,24 @@ data class MatrixGroup(
         val MINUS = "-"
         val PLUS = "+"
         val TIMES = "*"
+        val RANK = "rank"
+        val EIGENVECTOR = "eigenvec"
+        val EIGENVELUE = "eigenvalue"
+        val POSITIVE = "is positive"
+        val NEGATIVE = "is negative"
+        val SOLVE = "solve"
+        val CALCULATION="calculation"
+        val LOADING = "loading"
+    }
+
+    fun Copy() : MatrixGroup
+    {
+        return MatrixGroup(
+            leftMatrix = leftMatrix,
+            rightMatrix = rightMatrix,
+            sign = sign,
+            resMatrix = resMatrix,
+            time = time
+        )
     }
 }

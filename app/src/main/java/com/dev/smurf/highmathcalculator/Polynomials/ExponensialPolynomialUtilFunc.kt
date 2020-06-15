@@ -1,36 +1,54 @@
 package com.dev.smurf.highmathcalculator.Polynomials
 
+import android.util.Log
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
+import com.dev.smurf.highmathcalculator.StringsExtension.toDegree
 import com.dev.smurf.highmathcalculator.Utils.minusToCof
 import com.dev.smurf.highmathcalculator.Utils.plusToCof
+import kotlinx.coroutines.delay
 
 
 fun exponensialRecursiveDivison(
-    division: ArrayList<Pair<Int, ComplexNumber>>,
-    divider: ArrayList<Pair<Int, ComplexNumber>>
+    div: MutableList<Pair<Int, ComplexNumber>>,
+    divider: MutableList<Pair<Int, ComplexNumber>>
 
-): Pair<ArrayList<Pair<Int, ComplexNumber>>, ArrayList<Pair<Int, ComplexNumber>>>
+): Pair<MutableList<Pair<Int, ComplexNumber>>, MutableList<Pair<Int, ComplexNumber>>>
 {
     val result: ArrayList<Pair<Int, ComplexNumber>> = arrayListOf()
+    var division = div
 
-    //if degree of divione is smaller the degree of divider then stop
-    while (division.last().first >= divider.last().first)
+    while (division.first().first >= divider.first().first)
     {
+        Log.d("div@","division ${division.String()} result ${result.String()}")
+        val maxDegree = division.first().first - divider.first().first
 
-        //deferense between max degree of division and divider
-        val degreeCof = division.last().first - division.last().first
-        //cof of elem on this stage of division
-        val cof = division.last().second / divider.last().second
+        val cof = division.first().second / divider.first().second
 
-        //add new result of this part to result
-        result.plusToCof(degreeCof, cof)
+        result.plusToCof(maxDegree, cof)
 
-        //calculate remainder
         for (i in divider)
         {
-            division.minusToCof(i.first + degreeCof, i.second * cof)
+            Log.d("div@"," degree ${i.first + maxDegree} cof ${i.second * cof}")
+            division.minusToCof(i.first + maxDegree, i.second * cof)
         }
 
+        var counter = 0
+        for(i in 0 until 100000000)
+        {
+            counter ++
+        }
+
+        division = division.filter { s -> s.second != ComplexNumber() }.toMutableList()
     }
     return Pair(result, division)
+
+}
+
+fun MutableList<Pair<Int, ComplexNumber>>.String(): String
+{
+    var result = ""
+    this.map {
+        result += it.second.toString() + "x^" + it.first.toString().toDegree() + "+"
+    }
+    return result
 }

@@ -155,26 +155,35 @@ fun Canvas.drawComplexx(complexNumber: ComplexNumber, x: Float, y: Float, mPaint
 
 }
 
-
+//draws complex number @complexNumber on canvas with pos [@x;@y]
 fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint: Paint)
 {
     //error compansation for measuring letter height
     val y = Y - 5.0f
     val align = mPaint.textAlign
     mPaint.textAlign = Paint.Align.LEFT
+
+    //work over some special situations
     when
     {
+        //if it's real just draw fraction
         complexNumber.isReal() ->
         {
             drawFractions(complexNumber.re, x, y, mPaint)
         }
+        //if it's imaginary then draw fraction and 'i' after it
         complexNumber.isImagination() ->
         {
+            //size of fraction
             val imSize = mPaint.getFractionSize(complexNumber.im)
 
+            //vertical offset for 'i' symbol
             val iVerticalOffset = (imSize.second - mPaint.getBaseHeight()) / 2
+
+
             drawFractions(complexNumber.im, x, y, mPaint)
 
+            //draw 'i' symbol after fraction
             drawText(
                 "i",
                 x + imSize.first,
@@ -188,13 +197,19 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint:
              * todo:: move from mutable list to mutable map, for prevention mistakes
              */
 
+            //size of rendered number
             val complexNumberSize = mPaint.getComplexNumberSize(complexNumber)
+
+            //list of size of elements in complex number
             val setSize = mutableListOf<Pair<Float, Float>>()
 
+            //size of left bracket
             setSize.add(Pair(mPaint.measureText("("), mPaint.getBaseHeight()))
 
+            //size of real part
             setSize.add(mPaint.getFractionSize(complexNumber.re))
 
+            //if imaginary part is not containing minus sign than draw plus sign
             setSize.add(
                 if (!complexNumber.im.isBeloweZero()) mPaint.getPlusSize()
                 else Pair(
@@ -203,10 +218,13 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint:
                 )
             )
 
+            //size of imaginary part
             setSize.add(mPaint.getFractionSize(complexNumber.im))
 
+            //size 'i' symbol
             setSize.add(Pair(mPaint.measureText("i"), mPaint.getBaseHeight()))
 
+            //size of right btacket
             setSize.add(
                 Pair(
                     mPaint.measureText(")"),
@@ -214,27 +232,36 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint:
                 )
             )
 
-            val verticalOffsetSet = Array<Float>(setSize.size) { 0.0f }
+            //array of vertical offsets
+            val verticalOffsetSet = Array(setSize.size) { 0.0f }
+
+            //count vertical offset for each element in complex number
             for (element in setSize.indices)
             {
+
                 verticalOffsetSet[element] =
                     (complexNumberSize.second - setSize[element].second) / 2
+
+                //extra offset for fixing error of vertical positioning in reason of fractions and symbol height countinh
                 when
                 {
                     (element != 1 && element != 3) ->
                     {
+
                         if (!complexNumber.im.isInt() || !complexNumber.re.isInt())
-                            verticalOffsetSet[element] -= mPaint.getVerticalSpacing()
+                            verticalOffsetSet[element] -= 2 * mPaint.getVerticalSpacing() +
+                                    if (element == 2 && !complexNumber.im.isBeloweZero()) 0.0f else mPaint.strokeWidth
+
                     }
                     (element == 1) ->
                     {
                         if (!complexNumber.im.isInt() && complexNumber.re.isInt())
-                            verticalOffsetSet[element] -= mPaint.getVerticalSpacing()
+                            verticalOffsetSet[element] -= 2 * mPaint.getVerticalSpacing() + mPaint.strokeWidth
                     }
                     (element == 3) ->
                     {
                         if (complexNumber.im.isInt() && !complexNumber.re.isInt())
-                            verticalOffsetSet[element] -= mPaint.getVerticalSpacing()
+                            verticalOffsetSet[element] -= 2 * mPaint.getVerticalSpacing() + mPaint.strokeWidth
                     }
                 }
             }
@@ -242,6 +269,8 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint:
 
             var horizontalOffset = 0.0f
 
+
+            //draw left bracket
             drawText(
                 "(",
                 x + horizontalOffset,
@@ -251,10 +280,13 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint:
 
             horizontalOffset += setSize[0].first
 
+
+            //draw real part
             drawFractions(complexNumber.re, x + horizontalOffset, y + verticalOffsetSet[1], mPaint)
 
             horizontalOffset += setSize[1].first + mPaint.getVerticalSpacing()
 
+            //draw sign if it's not in im part
             if (!complexNumber.im.isBeloweZero())
             {
                 drawPlus(x + horizontalOffset, y + verticalOffsetSet[2] + setSize[2].second, mPaint)
@@ -264,10 +296,12 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint:
 
             horizontalOffset += setSize[2].first
 
+            //draw im part
             drawFractions(complexNumber.im, x + horizontalOffset, y + verticalOffsetSet[3], mPaint)
 
             horizontalOffset += setSize[3].first
 
+            //draw 'i' symbol
             drawText(
                 "i",
                 x + horizontalOffset,
@@ -277,6 +311,7 @@ fun Canvas.drawComplex(complexNumber: ComplexNumber, x: Float, Y: Float, mPaint:
 
             horizontalOffset += setSize[4].first
 
+            //draw right bracket
             drawText(
                 ")",
                 x + horizontalOffset,

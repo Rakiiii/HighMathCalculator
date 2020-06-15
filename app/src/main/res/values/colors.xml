@@ -11,6 +11,8 @@
     <color name="prime">#F5F5F5</color>
     <color name="doneBtnColor">#03a9f4</color>
 
+    <color name="iconColor">@color/black</color>
+
     <color name="settingsElevationBackground">@android:color/white</color>
     <color name="settingViewBackgrounfColor">#e0e0e0</color>
 

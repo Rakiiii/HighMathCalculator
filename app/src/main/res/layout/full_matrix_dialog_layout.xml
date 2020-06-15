@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fullMatrixDialogRoot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:orientation="vertical">
+
+    <ImageView
+            android:id="@+id/fullMatrixIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    <Button
+            android:id="@+id/btnMatrixDialogOk"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:background="@android:color/transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:text="@string/btnOk"
+            android:textSize="20sp"
+            android:padding="10dp"
+            android:layout_marginBottom="20dp"/>
+
+</LinearLayout>

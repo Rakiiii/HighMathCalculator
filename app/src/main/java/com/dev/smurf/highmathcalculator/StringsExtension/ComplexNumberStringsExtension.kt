@@ -7,6 +7,7 @@ import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 //add 1 before i in string
 fun String.fulfilCofs(): String
 {
+    if (isEmpty()) return this
     var filled = if (first() == 'i') "1$this" else this
     while (filled.indexOf("-i") != -1)
     {
@@ -22,13 +23,32 @@ fun String.fulfilCofs(): String
     return filled
 }
 
+fun String.fulfilCofForPolynomail(): String
+{
+    var filled = if (first() in 'a'..'z') "1$this" else this
+    for (i in 'a'..'z')
+    {
+        while (filled.indexOf("-" + i) != -1)
+        {
+            val pos = filled.indexOf("-" + i)
+            filled = filled.substring(0, pos + 1) + "1" + filled.substring(pos + 1, filled.length)
+        }
+        while (filled.indexOf("+" + i) != -1)
+        {
+            val pos = filled.indexOf("+" + i)
+            filled = filled.substring(0, pos + 1) + "1" + filled.substring(pos + 1, filled.length)
+        }
+    }
+    return filled
+}
+
 fun String.isComplexNumber(): Boolean
 {
     //remove unnecessary symbols
     var trimmed =
         this.filterNot { s -> (s == ' ') || (s == '\n') || (s == '*') }
             .filterNot { s -> (s == '(') || (s == ')') }
-            .trim { s -> s == '+' }
+            .trim { s -> s == '+' }.fulfilCofs()
     //if contains bad symbols then it's not complex number
     if (trimmed.filterNot { s -> (s in '0'..'9') || (s == '-') || (s == '/') || (s == '.') || (s == 'i') || (s == '+') } != "") return false
 

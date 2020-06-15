@@ -1,25 +1,42 @@
 package com.dev.smurf.highmathcalculator.mvp.presenters
 
-import android.annotation.SuppressLint
-import android.os.AsyncTask
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.util.Log
+import androidx.core.graphics.createBitmap
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.dev.smurf.highmathcalculator.CalculatorApplication
+import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
+import com.dev.smurf.highmathcalculator.CanvasExtension.drawMultiLinePolynomial
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.*
+import com.dev.smurf.highmathcalculator.Exceptions.TimeableException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
+import com.dev.smurf.highmathcalculator.PaintExtension.getMultiLinePolynomialSize
+import com.dev.smurf.highmathcalculator.Polynomials.PolynomialBase
+import com.dev.smurf.highmathcalculator.Polynomials.Render.RenderStrategyConstracter
+import com.dev.smurf.highmathcalculator.R
+import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialDataBaseModel
 import com.dev.smurf.highmathcalculator.mvp.models.PolynomialModel
 import com.dev.smurf.highmathcalculator.mvp.models.SettingsModel
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
+import com.dev.smurf.highmathcalculator.withTime
 import com.example.smurf.mtarixcalc.PolynomialGroup
 import kotlinx.coroutines.*
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import moxy.presenterScope
 import org.jetbrains.anko.doAsync
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 
+@ExperimentalCoroutinesApi
 @InjectViewState
-class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
+class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleObserver
 {
     /*
      * вставка зависимостей
@@ -49,6 +66,11 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
         CalculatorApplication.graph.inject(this)
     }
 
+    @ExperimentalCoroutinesApi
+    private val mExceptionRenderModel = InputFormatExceptionsRenderModel()
+
+    private var isLoaded = false
+
     val supJob = SupervisorJob()
 
     //корутин скоп для ui
@@ -57,16 +79,209 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     //corutine scope для работы с памятью
     private val ioScope = CoroutineScope(Dispatchers.IO + supJob)
 
+    private val jobMap = HashMap<Long, Job>()
+
+    fun calculationCanceled(time: GregorianCalendar)
+    {
+        (jobMap[time.timeInMillis] ?: return).cancel()
+        jobMap.remove(time.timeInMillis)
+    }
+
+
+    //todo:: move to two render types and choosing extra line only, by adding extra layer to error hierarchy
     //обработчик ошибок
     private val errorHandler = CoroutineExceptionHandler(handler = { _, error ->
-        when(error)
+
+        if (error is TimeableException && error.time != TimeableException.zeroTime)
         {
-            is WrongDataException ->{
-                viewState.showToast(error.toString().substringAfter(':'))
+            uiScope.launch {
+                viewState.calculationFailed(
+                    PolynomialGroup(
+                        PolynomialBase.EmptyPolynomial,
+                        PolynomialBase.EmptyPolynomial,
+                        PolynomialGroup.CALCULATION,
+                        PolynomialBase.EmptyPolynomial,
+                        PolynomialBase.EmptyPolynomial,
+                        null,
+                        error.time
+                    )
+                )
             }
-            else ->{
+        }
+
+        when (error)
+        {
+
+            is WrongAmountOfBracketsInPolynomialException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongChars(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
+                        CalculatorApplication.context.getString(
+                            if (error.unrecognizablePart.contains(
+                                    '('
+                                )
+                            ) R.string.moreLeftBrackets
+                            else R.string.moreRightBrackets
+                        )
+                    )
+                }
+            }
+            is TooManyDegreeSymbolsInExponentialPolynomialVariableException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongChars(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
+                        CalculatorApplication.context.getString(
+                            R.string.tooManyExpSymbols
+                        )
+                    )
+                }
+            }
+            is WrongSymbolInPolynomialInputException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongChars(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
+                        CalculatorApplication.context.getString(
+                            R.string.wrongSymbolAtPolynomial
+                        ) + " ${error.unrecognizablePart}"
+                    )
+                }
+            }
+            is WrongSymbolAtExponetialPolynomialInputException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
+                        CalculatorApplication.context.getString(
+                            R.string.wrongSymbolAtExpPolynomial
+                        )
+                    )
+                }
+            }
+            is WrongDiofantPolynomialVariableLengthException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
+                        CalculatorApplication.context.getString(
+                            R.string.wrongSymbolInDioPolynomialVariable
+                        )
+                    )
+                }
+            }
+            is WrongExponensialSymbolPositionException ->
+            {
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
+                        CalculatorApplication.context.getString(
+                            R.string.wrongPositionForExpSymbol
+                        )
+                    )
+                }
+            }
+            is WrongExponentialPolynomialVariableFormat ->
+            {
+
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    Log.d("error@", "unrec ${error.unrecognizablePart}")
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
+                        CalculatorApplication.context.getString(
+                            R.string.wrongExpVariableFormat
+                        )
+                    )
+                }
+
+            }
+            is WrongPolynomialCofFormatException ->
+            {
+                Log.d("div@","${error.input} |${error.unrecognizablePart}|")
+                uiScope.launch {
+                    val errorBitmap = mExceptionRenderModel.drawErroredPolynomialWithWrongSubstring(
+                        presenterScope,
+                        error.input,
+                        error.unrecognizablePart
+                    )
+
+                    viewState.showErrorDialog(
+                        errorBitmap,
+                        mExceptionRenderModel.getErrorDialogWidth(),
+                        mExceptionRenderModel.getErrorDialogHeight(),
+                        CalculatorApplication.context.getString(
+                            R.string.wrongPolynomialCofFormat
+                        )
+                    )
+                }
+            }
+            is WrongDataException ->
+            {
+                viewState.displayError(error.toString().substringAfter(':'))
+                //viewState.showToast(error.toString().substringAfter(':'))
+            }
+            else ->
+            {
                 Log.d("ExceptionHandler@", error.toString())
-                Log.d("ExceptionHandler@","StackTrace@", error)
+                Log.d("ExceptionHandler@", "StackTrace@", error)
             }
         }
     })
@@ -77,37 +292,10 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
      */
 
     //нажатие кнопки плюс
-    //@SuppressLint("StaticFieldLeak")
     fun onPlusClick(left: String, right: String)
     {
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-
-            val result = withContext(Dispatchers.IO) {
-
-                //сохранение время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
-
-
-                //складываем полиномы
-                val result = mPolynomialModel.plus(left = left, right = right)
-
-                //устанавливаем время страта операции
-                result.time = time
-
-
-                result
-            }
-
-
-            addToDb(result)
-
-            uiScope.launch {
-                viewState.addToPolynomialRecyclerView(result)
-            }
-
-        }
+        if (left.isEmpty() || right.isEmpty()) return
+        doCancelableJob { mPolynomialModel.PolynomialPlus(presenterScope, left, right) }
     }
 
 
@@ -115,62 +303,21 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     //@SuppressLint("StaticFieldLeak")
     fun onMinusClick(left: String, right: String)
     {
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-            val result = withContext(Dispatchers.IO) {
-
-                //сохранение время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
-
-                //складываем полиномы
-                val result = mPolynomialModel.minus(left = left, right = right)
-
-                //устанавливаем время страта операции
-                result.time = time
-
-                result
-            }
-
-
-            addToDb(result)
-
-            uiScope.launch {
-                viewState.addToPolynomialRecyclerView(result)
-            }
-
-
-        }
+        if (left.isEmpty() || right.isEmpty()) return
+        doCancelableJob { mPolynomialModel.PolynomialMinus(presenterScope, left, right) }
     }
 
     //нажатие на кнопку умножения
     //@SuppressLint("StaticFieldLeak")
     fun onTimesClick(left: String, right: String)
     {
-        presenterScope.launch(Dispatchers.Main + errorHandler)
-        {
-
-            val result = withContext(Dispatchers.IO) {
-
-                //сохранение время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
-
-                //складываем полиномы
-                val result = mPolynomialModel.times(left = left, right = right)
-
-                //устанавливаем время страта операции
-                result.time = time
-
-                result
-            }
-
-            addToDb(result)
-
-            uiScope.launch {
-                viewState.addToPolynomialRecyclerView(result)
-            }
-
+        if (left.isEmpty() || right.isEmpty()) return
+        doCancelableJob {
+            delay(4000); mPolynomialModel.PolynomialTimes(
+            presenterScope,
+            left,
+            right
+        )
         }
     }
 
@@ -178,22 +325,32 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
     //@SuppressLint("StaticFieldLeak")
     fun onDivisionClick(left: String, right: String)
     {
+        if (left.isEmpty() || right.isEmpty()) return
+        doCancelableJob { mPolynomialModel.PolynomialDivision(presenterScope, left, right) }
+    }
+
+    fun onSwitchBtnFragmentClick(position: Int)
+    {
+        viewState.showToast("WIP")
+    }
+
+    //нажатие на кнопку решения
+    fun onRootsOfClick(left: String)
+    {
+        viewState.showToast("Work in progress")
+    }
+
+    private fun doUncancelableJob(calculation: suspend () -> PolynomialGroup)
+    {
         presenterScope.launch(Dispatchers.Main + errorHandler)
         {
-            val result = withContext(Dispatchers.IO) {
 
-                //сохранение время начала операции
-                val time = java.util.GregorianCalendar()
-                time.timeInMillis = System.currentTimeMillis()
+            val time = java.util.GregorianCalendar()
+            time.timeInMillis = System.currentTimeMillis()
+            val result = calculation()
 
-                //складываем полиномы
-                val result = mPolynomialModel.division(left = left, right = right)
-
-                //устанавливаем время страта операции
-                result.time = time
-
-                result
-            }
+            //устанавливаем время страта операции
+            result.time = time
 
             addToDb(result)
 
@@ -204,59 +361,193 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
         }
     }
 
-    fun onSwitchBtnFragmentClick(position : Int)
+    fun onClickPolynomial(polynomial: String)
     {
-        viewState.showToast("WIP")
+        presenterScope.launch(Dispatchers.Default) {
+            if (polynomial.isEmpty()) return@launch
+
+            val initedPolynomial = mPolynomialModel.createPolinom(polynomial)
+
+            val width = mExceptionRenderModel.getErrorDialogWidth()
+            val height = mExceptionRenderModel.screenHeight - 300f
+
+            val mPaint = CanvasRenderSpecification.createBlackPainter()
+
+            var range = RenderStrategyConstracter.constructRangeArrayForPolynomial(
+                initedPolynomial,
+                width,
+                mPaint
+            )
+
+            var polynomialSize = mPaint.getMultiLinePolynomialSize(initedPolynomial, range)
+
+            while (polynomialSize.first >= width || polynomialSize.second >= height)
+            {
+                mPaint.textSize -= 3f
+
+                range = RenderStrategyConstracter.constructRangeArrayForPolynomial(
+                    initedPolynomial,
+                    width,
+                    mPaint
+                )
+
+                polynomialSize = mPaint.getMultiLinePolynomialSize(initedPolynomial, range)
+            }
+
+            val polynomialBitmap =
+                createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
+
+            val horizontalOffset = (width - polynomialSize.first) / 2
+            val verticalOffset = (height - polynomialSize.second) / 2
+
+            val canvas = Canvas(polynomialBitmap)
+
+            canvas.drawMultiLinePolynomial(
+                initedPolynomial,
+                horizontalOffset,
+                verticalOffset,
+                mPaint,
+                range
+            )
+
+            uiScope.launch {
+                viewState.showPolynomialDialog(
+                    polynomial = polynomial,
+                    width = width,
+                    height = height,
+                    matrixBitmap = polynomialBitmap
+                )
+            }
+        }
     }
 
-    //нажатие на кнопку решения
-    //@SuppressLint("StaticFieldLeak")
-    fun onRootsOfClick(left: String)
+    fun onEquationDialogBtnOkClick()
     {
-        viewState.showToast("Work in progress")
-        /*uiScope.launch(Dispatchers.Main + errorHandler)
-                {
-                    val task: Deferred<PolynomialGroup> = async(Dispatchers.IO) {
-
-                        //сохранение время начала операции
-                        val time = java.util.GregorianCalendar()
-                        time.timeInMillis = System.currentTimeMillis()
-
-                        //складываем полиномы
-                        val result = mPolynomialModel.times(left = left, right = right)
-
-                        //устанавливаем время страта операции
-                        result.time = time
-
-                        result
-                    }
-
-                    val result = task.await()
-
-                    doAsync {
-
-                        //если включена запись в бд
-                        if (mSettingsModel.getPolinomConsistens())
-                        {
-
-                            //записываем в бд
-                            mPolynomialDataBaseModel.insert(result)
-
-                        }
-                        else
-                        {
-                            //пишем в сache бд
-                            mPolynomialDataBaseModel.addToCache(result)
-
-                        }
-                    }
-
-                    viewState.addToPolynomialRecyclerView(result)
-
-                }*/
-
+        viewState.dismissPolynomialDialog()
     }
 
+    private fun doCancelableJob(calculation: suspend () -> PolynomialGroup)
+    {
+        val time = GregorianCalendar()
+        time.timeInMillis = System.currentTimeMillis()
+
+        val job = presenterScope.launch(Dispatchers.Main + errorHandler)
+        {
+
+            viewState.startCalculation(
+                PolynomialGroup(
+                    PolynomialBase.EmptyPolynomial,
+                    PolynomialBase.EmptyPolynomial,
+                    PolynomialGroup.CALCULATION,
+                    PolynomialBase.EmptyPolynomial,
+                    PolynomialBase.EmptyPolynomial,
+                    null,
+                    time
+                )
+            )
+
+            val mPolynomialGroup = withTime(
+                presenterScope.coroutineContext + Dispatchers.Default,
+                time
+            ) { calculation() }
+
+            //if calculation canceled do not do any thing
+            if ((jobMap[time.timeInMillis] ?: return@launch).isCancelled) return@launch
+
+            mPolynomialGroup.time.timeInMillis = time.timeInMillis
+
+            addToDb(mPolynomialGroup)
+
+            uiScope.launch {
+                viewState.calculationCompleted(mPolynomialGroup)
+            }
+        }
+
+        jobMap[time.timeInMillis] = job
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onStart()
+    {
+        viewState.setObserver()
+        if (!isLoaded)
+        {
+            onLoadSavedInstance()
+            isLoaded = true
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume()
+    {
+        updateSettings()
+        if (!isLoaded)
+        {
+            presenterScope.launch(Dispatchers.IO)
+            {
+                uiScope.launch { viewState.startLoadingInRecyclerView() }
+                delay(500)
+                uiScope.launch {
+                    viewState.stopLoadingInRecyclerView()
+                    viewState.restoreFromViewModel()
+                }
+            }
+        }
+        else
+        {
+            onLoadSavedInstance()
+            isLoaded = true
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun onPause()
+    {
+        viewState.setTopPosition()
+        viewState.stopLoadingInRecyclerView()
+        viewState.stopAllCalculations()
+        viewState.saveRecyclerViewToViewModel()
+        viewState.clearRecyclerView()
+
+        //todo:: add saving state of dialog in fragment to reshow it after recreation
+        viewState.dismissPolynomialDialog()
+        isLoaded = !isLoaded
+    }
+
+
+    fun updateSettings()
+    {
+        checkRecyclerViewMode()
+    }
+
+    private fun checkRecyclerViewMode()
+    {
+        if (mSettingsModel.getPolynomialHolderConsistens())
+        {
+            viewState.setImageAdapter()
+        }
+        else
+        {
+            viewState.setTxtAdapter()
+        }
+    }
+
+
+    fun setMaxDialogSize(width: Float, height: Float,screenWidth : Float,screenHeight : Float)
+    {
+        presenterScope.launch(Dispatchers.IO + supJob) {
+            mExceptionRenderModel.inputFormWidth = width
+            mExceptionRenderModel.inputFromHeight = height
+
+            mExceptionRenderModel.screenWidth = screenWidth
+            mExceptionRenderModel.screenHeight = screenHeight
+        }
+    }
+
+    fun onErrorDialogBtnOkPressed()
+    {
+        viewState.dismissErrorDialog()
+    }
 /*
  * Реализация работы с бд
  */
@@ -270,31 +561,37 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>()
         }
     }
 
-    //загрузка созраненного в бд состояния
-    @SuppressLint(value = ["StaticFieldLeak"])
-    fun onLoadSavedInstance()
+    fun restoreInDb(polynomialGroup: PolynomialGroup)
     {
-        object : AsyncTask<Void, Void, List<PolynomialGroup>>()
-        {
-
-            override fun doInBackground(vararg params: Void?): List<PolynomialGroup>
-            {
-                return mPolynomialDataBaseModel.selectAll().reversed()
-            }
-
-            override fun onPostExecute(result: List<PolynomialGroup>?)
-            {
-                viewState.setRecyclerViewList(ArrayList(result))
-            }
-        }.execute()
+        presenterScope.launch(Dispatchers.IO) {
+            mPolynomialDataBaseModel.insert(polynomialGroup)
+            mPolynomialDataBaseModel.addToCache(polynomialGroup)
+        }
     }
 
-
-    fun checkImageMode() = mSettingsModel.getPolynomialHolderConsistens()
-
-    private fun addToDb(result : PolynomialGroup)
+    //загрузка созраненного в бд состояния
+    fun onLoadSavedInstance()
     {
-        ioScope.launch(Dispatchers.IO + errorHandler){
+        presenterScope.launch(Dispatchers.IO + errorHandler) {
+            uiScope.launch {
+                viewState.startLoadingInRecyclerView();Log.d(
+                "loading",
+                "after loading call"
+            )
+            }
+            val result = mPolynomialDataBaseModel.selectAll().sortedBy { s -> s.time }.reversed()
+                .toMutableList()
+            delay(1000)
+            uiScope.launch {
+                viewState.stopLoadingInRecyclerView()
+                viewState.setRecyclerViewList(result)
+            }
+        }
+    }
+
+    private fun addToDb(result: PolynomialGroup)
+    {
+        ioScope.launch(Dispatchers.IO + errorHandler) {
 
             //если включена запись в бд
             if (mSettingsModel.getPolinomConsistens())

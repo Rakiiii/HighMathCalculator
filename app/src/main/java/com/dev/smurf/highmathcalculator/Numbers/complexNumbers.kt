@@ -13,8 +13,8 @@ class ComplexNumber(_re: Fraction = Fraction(), _im: Fraction = Fraction())
         private set
 
     constructor(r: Int, i: Int = 0) : this(
-        Fraction(_upper = r, _lower = 1),
-        Fraction(_upper = i, _lower = 1)
+        Fraction(_upper = r.toLong(), _lower = 1.toLong()),
+        Fraction(_upper = i.toLong(), _lower = 1.toLong())
     )
 
     operator fun plus(secNumber: Any?): ComplexNumber
@@ -45,8 +45,8 @@ class ComplexNumber(_re: Fraction = Fraction(), _im: Fraction = Fraction())
             is ComplexNumber ->
             {
                 val newNum = ComplexNumber(
-                    (this.re * secNumber.re - this.im * secNumber.im),
-                    (this.re * secNumber.im - secNumber.re * this.im)
+                    ((this.re * secNumber.re) - (this.im * secNumber.im)),
+                    ((this.re * secNumber.im) + (secNumber.re * this.im))
                 )
                 return newNum
             }

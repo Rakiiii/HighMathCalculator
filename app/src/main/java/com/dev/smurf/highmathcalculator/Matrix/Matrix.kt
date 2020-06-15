@@ -1,12 +1,16 @@
 package com.dev.smurf.highmathcalculator.Matrix
 
+import android.util.Log
 import com.dev.smurf.highmathcalculator.Exceptions.*
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.DifferentAmountOfElementsInMatrixLineException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongAmountOfBracketsInMatrixException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongElemntAtMatrixInputException
 import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.WrongSymbolAtMatrixInputException
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.DifferentMatrixHeight
+import com.dev.smurf.highmathcalculator.Exceptions.PolynomialSerializeExceptions.DifferentMatrixWidth
 import com.dev.smurf.highmathcalculator.Numbers.ComplexNumber
 import com.dev.smurf.highmathcalculator.Numbers.Fraction
+import com.dev.smurf.highmathcalculator.Polynomials.ExponentialPolynomial
 import com.dev.smurf.highmathcalculator.StringsExtension.*
 
 //реализация работы с матрицей
@@ -82,7 +86,7 @@ open class Matrix private constructor(
             return Matrix(width = matrixWidth, height = matrixHeight, m = matrices)
         }
 
-        fun createDiagonlMatrix(size: Int, elem: ComplexNumber): Matrix
+        fun createDiagonalMatrix(size: Int, elem: ComplexNumber): Matrix
         {
             val matrixWidth = size
             val matrixHeight = size
@@ -109,7 +113,7 @@ open class Matrix private constructor(
             val amountOfRightBrackets = str.count { s -> s == ')' }
             if (amountOfLeftBrackets != amountOfRightBrackets) throw WrongAmountOfBracketsInMatrixException(
                 str,
-                ""
+                if (amountOfLeftBrackets > amountOfRightBrackets) "(" else ")"
             )
 
             val matrixString =
@@ -192,12 +196,13 @@ open class Matrix private constructor(
     }
 
 
-    operator fun get(i:Int,j:Int) = matrices[i][j]
+    operator fun get(i: Int, j: Int) = matrices[i][j]
+    operator fun get(i: Int) = matrices[i]
 
     fun columnIndices() = (0 until width)
     fun rowIndices() = (0 until height)
 
-    fun Number() = this[0,0]
+    fun Number() = this[0, 0]
 
     //функция подсчета определителя
     fun determinant(): ComplexNumber
@@ -206,6 +211,10 @@ open class Matrix private constructor(
         if (width == height && width > 0)
         {
             //если матрица 2х2 то считаем по формуле
+            Log.d(
+                "matrix@",
+                "first ${(matrices[0][0] * matrices[1][1])} second ${matrices[0][1] * matrices[1][0]}"
+            )
             if (width == 2) return matrices[0][0] * matrices[1][1] - matrices[0][1] * matrices[1][0]
             else
             {
@@ -321,6 +330,7 @@ open class Matrix private constructor(
 
 
     //сложение строки по элементно с коэфицентом
+    @Deprecated("Use MatrixLine.plus instead")
     private fun plusLines(firstLine: Int, secondLine: Int, cof: ComplexNumber)
     {
         for (i in 0 until width)
@@ -330,6 +340,7 @@ open class Matrix private constructor(
     }
 
     //вычитание строк с коэффицентом по элементно
+    @Deprecated("Use MatrixLine.minus instead")
     private fun minusLines(firstLine: Int, secondLine: Int, cof: ComplexNumber)
     {
         for (i in 0 until width)
@@ -339,6 +350,7 @@ open class Matrix private constructor(
     }
 
     //деление строки на число
+    @Deprecated("Use MatrixLine.div instead")
     private fun dividLine(line: Int, cof: ComplexNumber)
     {
         for (i in 0 until width)
@@ -347,6 +359,7 @@ open class Matrix private constructor(
 
 
     //умножение матрицы на число
+    @Deprecated("Use MatrixLine.times instead")
     fun matrixTimesNumber(number: ComplexNumber): Matrix
     {
         //копируем матрицу
@@ -402,7 +415,7 @@ open class Matrix private constructor(
     {
 
         //создаем нулевую матрицу
-        val res = createDiagonlMatrix(width - 1, ComplexNumber())
+        val res = createDiagonalMatrix(width - 1, ComplexNumber())
 
         //два счетчика для движение по минору матрицы
         var c = 0
@@ -454,14 +467,14 @@ open class Matrix private constructor(
         }
 
         //если больше чем три на три по заполняем матрицу определителями миноров
-        val res = createDiagonlMatrix(width, ComplexNumber())
+        val res = createDiagonalMatrix(width, ComplexNumber())
 
         for (i in 0 until width)
         {
             for (j in 0 until width)
             {
                 res.matrices[i][j] =
-                    ComplexNumber(Fraction((-1).pow(i + j)), Fraction()) * this.minor(
+                    ComplexNumber(Fraction((-1L).pow((i + j).toLong())), Fraction()) * this.minor(
                         string = i,
                         columne = j
                     ).determinant()
@@ -476,6 +489,46 @@ open class Matrix private constructor(
         if (width != height) throw MatrixNotSquareException()
         if (this.determinant() == ComplexNumber()) throw ZeroDeterminantException()
         return this.minorMatrix().trans().matrixDivideByNumber(this.determinant())
+    }
+
+    fun extendedMatrix(): Matrix
+    {
+        if (width != height) throw MatrixNotSquareException()
+        val extendedMatrixArray = Array(height) { i ->
+            Array(width * 2) { j ->
+                if (j < width) this[i, j] else if (j - width == i) ComplexNumber(1) else ComplexNumber()
+            }
+        }
+
+        return Matrix(m = extendedMatrixArray, width = width * 2, height = height)
+    }
+
+    fun inversByGauseMethod(): Matrix
+    {
+        if (width != height) throw MatrixNotSquareException()
+        if (this.determinant() == ComplexNumber()) throw ZeroDeterminantException()
+
+        val gauseFrom = extendedMatrix().gauseMethod()
+
+        val inversedMatrixArray =
+            Array(height) { i -> Array(width) { j -> gauseFrom[i, j + width] } }
+        return Matrix(width = width, height = height, m = inversedMatrixArray)
+    }
+
+    fun rank(): Matrix
+    {
+        var rank = 0
+        val gauseFrom = gauseMethod()
+
+        for (i in gauseFrom.rowIndices())
+        {
+            var zeroCounter = 0
+            gauseFrom[i].map { if (it == ComplexNumber()) zeroCounter++ }
+
+            if (zeroCounter != width) rank++
+        }
+
+        return Matrix(width = 1, height = 1, m = Array(1) { Array(1) { ComplexNumber(rank) } })
     }
 
     //перегрузка оператора сравнения
@@ -517,6 +570,269 @@ open class Matrix private constructor(
         }
 
         return res
+    }
+
+    fun gauseMethod(): Matrix
+    {
+        val betterMatrixRepresentation = MatrixLine.createArrayOfMatrixLines(this)
+
+        for (majorLine in betterMatrixRepresentation.indices)
+        {
+            betterMatrixRepresentation[majorLine] =
+                betterMatrixRepresentation[majorLine] / (betterMatrixRepresentation[majorLine][majorLine])
+            for (minorLine in betterMatrixRepresentation.indices)
+            {
+                if (majorLine != minorLine)
+                {
+                    betterMatrixRepresentation[minorLine] =
+                        betterMatrixRepresentation[minorLine] -
+                                (betterMatrixRepresentation[majorLine] * betterMatrixRepresentation[minorLine][majorLine])
+                }
+            }
+        }
+
+        val resultArray =
+            Array(betterMatrixRepresentation.size) { i -> Array(betterMatrixRepresentation[i].length) { j -> betterMatrixRepresentation[i][j] } }
+        return Matrix(width = width, height = height, m = resultArray)
+    }
+
+
+    //return fronbeus matrix getted by Danilevski Method
+    fun getFronbeusMatrixByDanilevskiMethod(): Matrix
+    {
+        if (isNotSquare()) throw  MatrixNotSquareException()
+        var subMatrix = Matrix.createMatrixCopy(this)
+        for (i in (subMatrix.height - 1) downTo 1)
+        {
+            if (subMatrix[i][i - 1] == ComplexNumber())
+            {
+                var isNonZeroFounded = false
+                for (k in (0 until i - 1))
+                {
+                    if (subMatrix[i][k] != ComplexNumber())
+                    {
+                        subMatrix = subMatrix.switchColumns(k, i - 1).switchRows(k, i - 1)
+                        isNonZeroFounded = true
+                        break
+                    }
+                }
+                if (!isNonZeroFounded)
+                {
+                    val k = i - 1
+                    val topLeftAngel =
+                        subMatrix.getSubMatrix(Pair(0, 0), Pair(k, k))
+                            .getFronbeusMatrixByDanilevskiMethod()
+                    val rightAngel =
+                        subMatrix.getSubMatrix(Pair(0, k + 1), Pair(k, subMatrix.width - 1))
+                    val bottomLeftAngel = subMatrix.getSubMatrix(
+                        Pair(k + 1, 0),
+                        Pair(subMatrix.height - 1, k)
+                    )
+                    val bottomRightAngel = subMatrix.getSubMatrix(
+                        Pair(k + 1, k + 1),
+                        Pair(subMatrix.height - 1, subMatrix.width - 1)
+                    )
+
+                    return topLeftAngel.horizontalConcatenation(rightAngel).verticalConcatenation(
+                        bottomLeftAngel.horizontalConcatenation(bottomRightAngel)
+                    )
+                }
+            }
+            val B = Matrix.createDiagonalMatrix(subMatrix.width, ComplexNumber(1))
+
+            for (j in 0 until B.width)
+            {
+                if (j != i - 1) B.matrices[i - 1][j] =
+                    ComplexNumber() - (subMatrix[i][j] / subMatrix[i][i - 1])
+                else B.matrices[i - 1][j] = ComplexNumber(1) / subMatrix[i][i - 1]
+            }
+
+            val inversB = B.invers()
+
+            subMatrix = subMatrix * B
+
+            subMatrix = inversB * subMatrix
+        }
+
+        return subMatrix
+    }
+
+    fun getMoveToFronbeusMatrix(): Matrix
+    {
+        if (isNotSquare()) throw  MatrixNotSquareException()
+        var subMatrix = Matrix.createMatrixCopy(this)
+        var overAllB = createDiagonalMatrix(width, ComplexNumber(1))
+        for (i in (subMatrix.height - 1) downTo 1)
+        {
+            if (subMatrix[i][i - 1] == ComplexNumber())
+            {
+                var isNonZeroFounded = false
+                for (k in (0 until i - 1))
+                {
+                    if (subMatrix[i][k] != ComplexNumber())
+                    {
+                        subMatrix = subMatrix.switchColumns(k, i - 1).switchRows(k, i - 1)
+                        isNonZeroFounded = true
+                        break
+                    }
+                }
+                if (!isNonZeroFounded)
+                {
+                    val k = i - 1
+                    val topLeftAngel =
+                        subMatrix.getSubMatrix(Pair(0, 0), Pair(k, k))
+                            .getMoveToFronbeusMatrix()
+                    val rightAngel =
+                        createDiagonalMatrix(width, ComplexNumber(1)).getSubMatrix(
+                            Pair(0, k + 1),
+                            Pair(k, subMatrix.width - 1)
+                        )
+                    val bottomLeftAngel = createDiagonalMatrix(width, ComplexNumber()).getSubMatrix(
+                        Pair(k + 1, 0),
+                        Pair(subMatrix.height - 1, k)
+                    )
+                    val bottomRightAngel =
+                        createDiagonalMatrix(width, ComplexNumber(1)).getSubMatrix(
+                            Pair(k + 1, k + 1),
+                            Pair(subMatrix.height - 1, subMatrix.width - 1)
+                        )
+
+                    return overAllB * topLeftAngel.horizontalConcatenation(rightAngel)
+                        .verticalConcatenation(
+                            bottomLeftAngel.horizontalConcatenation(bottomRightAngel))
+                }
+            }
+            val B = Matrix.createDiagonalMatrix(subMatrix.width, ComplexNumber(1))
+
+            for (j in 0 until B.width)
+            {
+                if (j != i - 1) B.matrices[i - 1][j] =
+                    ComplexNumber() - (subMatrix[i][j] / subMatrix[i][i - 1])
+                else B.matrices[i - 1][j] = ComplexNumber(1) / subMatrix[i][i - 1]
+            }
+
+            overAllB = overAllB * B
+
+            val inversB = B.invers()
+
+            subMatrix = subMatrix * B
+
+            subMatrix = inversB * subMatrix
+        }
+
+        return overAllB
+    }
+
+    fun eigenValue() : Matrix
+    {
+        if(width != height)throw MatrixNotSquareException()
+        if(width > 2) throw NonpermanentException("Matrix is too big for normal solving")
+        val fronbeusMatrix = getFronbeusMatrixByDanilevskiMethod()
+
+        val polString = "x^2+"+fronbeusMatrix[0,0].toString()+"x"+fronbeusMatrix[0,1].toString()
+
+        val polynomail = ExponentialPolynomial.createExponentialPolynomial(polString)
+
+        val roots = polynomail.solveInNumbers()
+
+        val resultArray = Array(height){ p-> Array(1){roots[p]} }
+
+        return Matrix(width=1,height = height,m = resultArray)
+    }
+
+    fun eigenVectors() : Matrix
+    {
+        val number = eigenValue()
+
+        val resultArray = Array(height){ i -> Array(width){ j -> number[j,0].pow(i)} }
+
+        return Matrix(width = width,height = height,m = resultArray)
+    }
+
+    fun asVectors():ArrayList<Matrix>
+    {
+        val vectors = arrayListOf<Matrix>()
+
+        for(i in columnIndices())
+        {
+            val vector = Array(height){p -> Array(1){this[p][i]} }
+            vectors.add(Matrix(height = height,width = 1, m =vector))
+        }
+
+        return vectors
+    }
+
+    private fun switchColumns(k: Int, m: Int): Matrix
+    {
+        val newMatrix = createMatrixCopy(this)
+        for (i in newMatrix.rowIndices())
+        {
+            val tmp = newMatrix.matrices[i][k]
+            newMatrix.matrices[i][k] = newMatrix.matrices[i][m]
+            newMatrix.matrices[i][m] = tmp
+        }
+
+        return newMatrix
+    }
+
+    private fun switchRows(k: Int, m: Int): Matrix
+    {
+        val newMatrix = createMatrixCopy(this)
+        for (i in newMatrix.columnIndices())
+        {
+            val tmp = newMatrix.matrices[k][i]
+            newMatrix.matrices[k][i] = newMatrix.matrices[m][i]
+            newMatrix.matrices[m][i] = tmp
+        }
+
+        return newMatrix
+    }
+
+    //first is vertical second is horizontal
+    //start is first element , end is last element indeces
+    private fun getSubMatrix(start: Pair<Int, Int>, end: Pair<Int, Int>): Matrix
+    {
+        if (start.first < 0 || start.second < 0 || end.first >= height || end.second >= width || end.second - start.second <= 0 || end.first - start.first <= 0) throw WrongDataException()
+        val subArray =
+            Array(end.first - start.first) { i -> Array(end.second - start.second) { j -> this[start.first + i][start.second + j] } }
+
+        return Matrix(
+            width = end.second - start.second,
+            height = end.first - start.first,
+            m = subArray
+        )
+    }
+
+    fun horizontalConcatenation(matrix: Matrix): Matrix
+    {
+        if (height != matrix.height) throw DifferentMatrixHeight()
+        val resultArray =
+            Array(height) { i -> Array(width + matrix.width) { j -> if (j < width) this[i][j] else matrix[i][j - width] } }
+
+        return Matrix(width = width + matrix.width, height = height, m = resultArray)
+    }
+
+    fun verticalConcatenation(matrix: Matrix): Matrix
+    {
+        if (width != matrix.width) throw DifferentMatrixWidth()
+        val resultArray =
+            Array(height + matrix.height) { i -> Array(width) { j -> if (i < height) this[i][j] else matrix[i - height][j] } }
+        return Matrix(width = width, height = height + matrix.height, m = resultArray)
+    }
+
+    fun isSquare() = (width == height)
+    fun isNotSquare() = !isSquare()
+
+    fun solve(): Matrix
+    {
+        //todo::add solving non square matrix (multiple solutions) with better
+        if (width - 1 != height) throw MatrixNotSquareException()
+        val gauseForm = gauseMethod()
+
+        val resultMatrix =
+            Array(height) { pos -> Array(1) { gauseForm[pos].last() } }
+
+        return Matrix(width = 1, height = height, m = resultMatrix)
     }
 
 

@@ -17,4 +17,6 @@ interface MainViewInterface : MvpView
     //установить фрагмент с настройками
     fun setSettingsFragment()
 
+    fun onSuperBack()
+
 }

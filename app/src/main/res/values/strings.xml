@@ -46,7 +46,26 @@
     <string name="matrixFragmentNavigation">matrix</string>
     <string name="polynomialFragmentNavigation">polynomial</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="btnOk" translatable="false">Ok</string>
+    <string name="errorDialogTitle">Oops, input format is wrong</string>
+
+    <!--matrix exceptions extra text-->
+
+    <string name="diffLineLength">All lines must have same length</string>
+    <string name="emptyLineInMatrix">Matrix can not contain empty lines</string>
+    <string name="wrongCofFormat">Matrix can contain only complex numbers</string>
+    <string name="wrongSymbols">You can not use this symbols in matrix</string>
+    <string name="moreLeftBrackets">Too many left brackets</string>
+    <string name="moreRightBrackets">Too many right brackets</string>
+
+    <!-- polynomial exception extra text-->
+    <string name="wrongSymbolAtPolynomial">You can not use this symbols in polynomials</string>
+    <string name="wrongSymbolAtExpPolynomial">You can not use this symbols in polynomials degree</string>
+    <string name="tooManyExpSymbols">Too many degree symbols</string>
+    <string name="wrongSymbolInDioPolynomialVariable">You can not use this symbols in diofant polynomial variable</string>
+    <string name="wrongPositionForExpSymbol">Wrong position for degree symbol, it must be between cof and variable</string>
+    <string name="wrongExpVariableFormat">In exponential polynomial you can use only one-symbol-length variables</string>
+    <string name="wrongPolynomialCofFormat">You can use only complex number as polynomial cof right now</string>
 
 </resources>

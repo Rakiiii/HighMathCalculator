@@ -59,6 +59,7 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface,
 
         mainViewPager.adapter = mViewPagerFragmentStateAdapter
 
+        mainViewPager.isUserInputEnabled = false
 
         supportActionBar?.hide()
 
@@ -85,6 +86,8 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface,
             return@setOnTouchListener true
         }
 
+        //mainViewPager.isUserInputEnabled = false
+
         mainViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback()
         {
             override fun onPageSelected(position: Int)
@@ -104,25 +107,34 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface,
     //Установка фрагмента с матрицами
     override fun setMatrixFragment()
     {
+        /*
         mainViewPager.beginFakeDrag()
         val point = Point()
         windowManager.defaultDisplay.getSize(point)
         mainViewPager.fakeDragBy((point.x.toFloat() + 10.0f))
         mainViewPager.endFakeDrag()
-
+*/
+        mainViewPager.setCurrentItem(0,true)
         //mainViewPager.setCurrentItem(0,false)
     }
 
     //установка фрагмента с полиномами
     override fun setPolinomFragment()
     {
+        /*
         mainViewPager.beginFakeDrag()
         val point = Point()
         windowManager.defaultDisplay.getSize(point)
         mainViewPager.fakeDragBy(-(point.x.toFloat() + 10.0f))
         mainViewPager.endFakeDrag()
-        //mainViewPager.setCurrentItem(1,false)
+        */
+        mainViewPager.setCurrentItem(1,true)
 
+    }
+
+    override fun onBackPressed()
+    {
+        mMainPresenter.onBackPress()
     }
 
 
@@ -138,6 +150,11 @@ class MainActivity : MvpAppCompatActivity(), MainViewInterface,
     override fun updateSettings()
     {
         mViewPagerFragmentStateAdapter.callUpdateSettings()
+    }
+
+    override fun onSuperBack()
+    {
+        super.onBackPressed()
     }
 
 }

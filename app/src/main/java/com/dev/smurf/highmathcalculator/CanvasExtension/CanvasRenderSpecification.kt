@@ -1,8 +1,12 @@
 package com.dev.smurf.highmathcalculator.CanvasExtension
 
+import android.app.Application
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
+import com.dev.smurf.highmathcalculator.CalculatorApplication
+import com.dev.smurf.highmathcalculator.R
+import java.lang.reflect.Type
 
 class CanvasRenderSpecification
 {
@@ -10,27 +14,40 @@ class CanvasRenderSpecification
     {
 
         //Space vertical thickness between separating line and number in fraction
-        val letterVerticalSpacing = 5.0f
+        const val letterVerticalSpacing = 5.0f
 
-        val x = 2.0f
+        const val textSize = 40.0f
 
-        val y = 2.0f
+        const val biggerTextSize = 60.0f
 
-        val textSize = 40.0f
+        const val strokeWidth = 2.0f
 
-        val strokeWidth = 2.0f
+        const val defspaceSize = 5.0f
 
-        val defspaceSize = 5.0f
+        const val PolynomialTopMargin = 6.0f
+        const val PolynomialBottomMargin = 6.0f
 
-        val PolynomialTopMargin = 6.0f
-        val PolynomialBottomMargin = 6.0f
+        fun createRedPainterWithUnderline() : Paint
+        {
+            val redPainter = Paint(Color.RED)
 
-        val deffRadious = 5.0f
+            redPainter.color = Color.RED
+
+            redPainter.typeface = Typeface.SERIF
+
+            redPainter.textSize = biggerTextSize
+
+            redPainter.flags = Paint.UNDERLINE_TEXT_FLAG
+            redPainter.flags = Paint.FAKE_BOLD_TEXT_FLAG
+
+            return redPainter
+        }
 
         fun createBlackPainter() : Paint
         {
             val blackPainter = Paint(Color.BLACK)
-
+            //blackPainter.color = CalculatorApplication.context.getColor(R.color.darker_gray)
+            blackPainter.color = Color.GRAY
             blackPainter.typeface = Typeface.SERIF
 
 
@@ -41,11 +58,6 @@ class CanvasRenderSpecification
                 strokeWidth
 
             return blackPainter
-        }
-
-        fun getHorizontalSpacing(mPaint: Paint) : Float
-        {
-            return mPaint.letterSpacing*5
         }
 
         fun getVerticalSpaceSize(mPaint : Paint) : Float
@@ -76,10 +88,6 @@ class CanvasRenderSpecification
             return high
         }
 
-        fun getBracketWidth(mPaint: Paint, h : Int) : Float
-        {
-            return mPaint.strokeWidth * 10 * (h - 1)
-        }
 
         fun getLineWidth(mPaint: Paint) : Float
         {
