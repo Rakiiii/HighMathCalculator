@@ -76,7 +76,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
 
     private val matrixListenerViewModel: MatrixListenerViewModel<MatrixFragment> by activityViewModels()
 
-    private val onClickMatrixLiveData = MutableLiveData<String>()
+    private val onClickMatrixLiveData = MutableLiveData<Pair<String,String>>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -203,7 +203,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
         mMatrixEdittextViewModel.firstValue = firstMatrix.text.toString()
         mMatrixEdittextViewModel.secondValue = secondMatrix.text.toString()
         onClickMatrixLiveData.removeObservers(this)
-        onClickMatrixLiveData.value = ""
+        onClickMatrixLiveData.value = Pair("","")
         super.onPause()
     }
 

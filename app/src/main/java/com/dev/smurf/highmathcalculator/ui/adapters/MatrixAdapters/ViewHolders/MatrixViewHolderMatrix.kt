@@ -38,6 +38,9 @@ class MatrixViewHolderMatrix constructor(itemView: View, width: Float) :
     lateinit var resMatrixValue: String
         private set
 
+    lateinit var signValue : String
+    private set
+
     override fun bind(group: MatrixGroup)
     {
         save(group)
@@ -72,5 +75,7 @@ class MatrixViewHolderMatrix constructor(itemView: View, width: Float) :
         rightMatrixValue =
             if (matrixGroup.rightMatrix.isEmpty()) matrixGroup.resMatrix.toString() else matrixGroup.rightMatrix.toString()
         resMatrixValue = matrixGroup.resMatrix.toString()
+
+        signValue = matrixGroup.sign
     }
 }

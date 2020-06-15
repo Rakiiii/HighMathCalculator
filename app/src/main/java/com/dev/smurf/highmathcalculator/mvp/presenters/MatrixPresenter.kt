@@ -17,6 +17,7 @@ import com.dev.smurf.highmathcalculator.Exceptions.MatrixSerializeExceptions.Wro
 import com.dev.smurf.highmathcalculator.Exceptions.TimeableException
 import com.dev.smurf.highmathcalculator.Exceptions.WrongDataException
 import com.dev.smurf.highmathcalculator.Matrix.Matrix
+import com.dev.smurf.highmathcalculator.Matrix.Render.MatrixRenderStrategy
 import com.dev.smurf.highmathcalculator.PaintExtension.getMatrixInBracketsSize
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.models.InputFormatExceptionsRenderModel
@@ -277,10 +278,12 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     }
 
     //todo:: move logic to model
-    fun matrixInViewHolderClicked(matrix : String)
+    fun matrixInViewHolderClicked(matrixPair : Pair<String,String>)
     {
         presenterScope.launch(Dispatchers.Default){
-            if (matrix.isEmpty())return@launch
+            val matrix = matrixPair.first
+            val sign = matrixPair.second
+            if (matrix.isEmpty() || sign.isEmpty())return@launch
             val initedMatrix = mMatrixModel.createMatrix(matrix)
 
             val width = mExceptionRenderModel.getErrorDialogWidth()
@@ -288,11 +291,18 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
             val mPaint = CanvasRenderSpecification.createBlackPainter()
 
-            var matrixSize = mPaint.getMatrixInBracketsSize(initedMatrix)
+            val strategy = when(sign)
+            {
+                MatrixGroup.EIGENVECTOR-> MatrixRenderStrategy.getMatrixAsVectorsStrategy ()
+                MatrixGroup.DET -> MatrixRenderStrategy.getFullRenderStrategyInLines()
+                else ->MatrixRenderStrategy.getFullRenderStrategyInBrackets()
+            }
+
+            var matrixSize = strategy.matrixSize(mPaint,initedMatrix)//mPaint.getMatrixInBracketsSize(initedMatrix)
             while (matrixSize.first >= width || matrixSize.second >= height)
             {
                 mPaint.textSize -= 5f
-                matrixSize = mPaint.getMatrixInBracketsSize(initedMatrix)
+                matrixSize = strategy.matrixSize(mPaint,initedMatrix)
             }
 
             val horizontalOffset = (width - matrixSize.first)/2
@@ -302,7 +312,8 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
 
             val canvas = Canvas(matrixBitmap)
 
-            canvas.drawMatrixInBrackets(initedMatrix,horizontalOffset,verticalOffset,mPaint)
+            strategy.renderMatrix(canvas,initedMatrix,horizontalOffset,verticalOffset,mPaint)
+            //canvas.drawMatrixInBrackets(initedMatrix,horizontalOffset,verticalOffset,mPaint)
 
             uiScope.launch {
                 viewState.showMatrixDialog(matrix,width, height, matrixBitmap)
