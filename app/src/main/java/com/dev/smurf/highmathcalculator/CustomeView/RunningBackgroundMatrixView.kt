@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.os.Handler
 import android.util.AttributeSet
 
-//todo::rewrite this shit
+//todo::rewrite this shit [better solution must be found]
 class RunningBackgroundMatrixView(context : Context, attributeSet: AttributeSet?) : BackgroundMatrixView(context, attributeSet)
 {
     var delay : Long = 125

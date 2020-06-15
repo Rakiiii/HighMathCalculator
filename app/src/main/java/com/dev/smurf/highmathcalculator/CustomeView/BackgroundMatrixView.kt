@@ -9,7 +9,7 @@ import com.dev.smurf.highmathcalculator.Numbers.isOdd
 import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.Utils.NumberRepresenter
 
-//todo:: rewrite this shit
+//todo:: rewrite this shit [better solution must be found]
 open class BackgroundMatrixView(context: Context, attributeSet: AttributeSet?) :
     View(context, attributeSet)
 {

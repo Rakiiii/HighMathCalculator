@@ -5,7 +5,7 @@ import android.graphics.Color
 
 //fast render of number in RunnableMatrixView
 //set pixels alot faster then any other way
-//todo:: remove as unnessasery legacy
+//todo:: remove as unnessasery legacy [better solution must be found]
 class NumberRepresenter
 {
     companion object
