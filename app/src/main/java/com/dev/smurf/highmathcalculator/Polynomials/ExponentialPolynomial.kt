@@ -517,6 +517,108 @@ class ExponentialPolynomial private constructor(
         return renderFormat
     }
 
+    fun derivative(): ExponentialPolynomial
+    {
+        val derivativeArray = MutableList(degree() - 1) { pos ->
+            Pair(
+                polynomial[pos].first - 1,
+                polynomial[pos].second * polynomial[pos].first
+            )
+        }
+        return ExponentialPolynomial(ArrayList(derivativeArray))
+    }
+
+    fun sturmSequanse(): MutableList<ExponentialPolynomial>
+    {
+        val sturmSequanse = MutableList(2) { pos -> if (pos == 0) this else derivative() }
+
+        while (sturmSequanse.last().isNotConst())
+        {
+            val newElem =
+                ((sturmSequanse[sturmSequanse.lastIndex] / sturmSequanse[sturmSequanse.lastIndex - 1]).second * -1)
+            if (newElem is ExponentialPolynomial) sturmSequanse.add(newElem)
+            else throw NonpermanentException("fatal exception in realization of sturm method")
+        }
+
+        return sturmSequanse
+    }
+
+    fun amountOfRealRoots(): Int
+    {
+        val sturmSequence = sturmSequanse()
+        val maxMinusInfPosition = (sturmSequence.map { it.minusInf() }
+            .maxWith(Comparator { s1, s2 -> s1.first.compareTo(s2.first) }) ?: Pair(
+            0,
+            ComplexNumber()
+        )).first
+        val minPlusInfPosition = (sturmSequence.map { it.plusInf() }.minWith(
+            Comparator { s1, s2 -> s1.first.compareTo(s2.first) }) ?: Pair(
+            0,
+            ComplexNumber()
+        )).first
+        val sturmMatrix = ArrayList<Array<Boolean>>()
+        sturmMatrix.add(Array(sturmSequence.size){ pos -> sturmSequence[pos].value(ComplexNumber(maxMinusInfPosition)).re > Fraction() })
+        sturmMatrix.add(Array(sturmSequence.size){ pos -> sturmSequence[pos].value(ComplexNumber(minPlusInfPosition)).re > Fraction() })
+
+        val amountOfSignChange = Array(sturmMatrix.size){0}
+        for (i in 0 until sturmMatrix.size)
+        {
+            for (j in 0 until sturmMatrix[i].size-1)
+            {
+                if (sturmMatrix[i][j] != sturmMatrix[i][j+1])amountOfSignChange[i] ++
+            }
+        }
+
+        return amountOfSignChange[0] - amountOfSignChange[1]
+
+    }
+
+    fun plusInf(): Pair<Int, ComplexNumber>
+    {
+        var i = Int.MAX_VALUE
+        while (i > 0)
+        {
+            try
+            {
+                value(ComplexNumber(i))
+                break
+            } catch (E: OverflowException)
+            {
+                i--
+            }
+        }
+        return Pair(i, value(ComplexNumber(i)))
+    }
+
+    fun minusInf(): Pair<Int, ComplexNumber>
+    {
+        var i = Int.MIN_VALUE
+        while (i < 0)
+        {
+            try
+            {
+                value(ComplexNumber(i))
+                break
+            } catch (E: OverflowException)
+            {
+                i++
+            }
+        }
+        return Pair(i, value(ComplexNumber(i)))
+    }
+
+    fun value(x: ComplexNumber): ComplexNumber
+    {
+        var result = ComplexNumber()
+        polynomial.map { s ->
+            result += x.pow(s.first) * s.second
+        }
+        return result
+    }
+
+    fun isConst() = degree() == 0
+    fun isNotConst() = !isConst()
+
     fun solveInNumbers(): MutableList<ComplexNumber>
     {
         polynomial.map { s ->
@@ -533,13 +635,18 @@ class ExponentialPolynomial private constructor(
             {
                 val D =
                     polynomial[1].second.pow(2) - (polynomial[0].second * polynomial[2].second * 4)
-                Log.d("polynomial@","b ${polynomial[1].second} b^2 ${polynomial[1].second.pow(2)} a ${polynomial[0].second} c ${polynomial[2].second}")
-                Log.d("polynomial@","disc ${D}")
+                Log.d(
+                    "polynomial@",
+                    "b ${polynomial[1].second} b^2 ${polynomial[1].second.pow(2)} a ${polynomial[0].second} c ${polynomial[2].second}"
+                )
+                Log.d("polynomial@", "disc ${D}")
                 if (D.re < Fraction()) throw NonpermanentException("Polynomial does not have any real roots")
                 val sqrtD = sqrt(D.re.upper.toDouble() / D.re.lower.toDouble())
 
-                resulrArray[0] = (polynomial[1].second*-1 + sqrtD.toString().toFraction())/(polynomial[0].second*2)
-                resulrArray[1] = (polynomial[1].second*-1 - sqrtD.toString().toFraction())/(polynomial[0].second*2)
+                resulrArray[0] = (polynomial[1].second * -1 + sqrtD.toString()
+                    .toFraction()) / (polynomial[0].second * 2)
+                resulrArray[1] = (polynomial[1].second * -1 - sqrtD.toString()
+                    .toFraction()) / (polynomial[0].second * 2)
             }
             else -> throw NonpermanentException("Only supported polynomials with degree lover then 3")
         }
