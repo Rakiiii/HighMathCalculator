@@ -321,7 +321,6 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         if (left.isEmpty() || right.isEmpty()) return
         doCancelableJob {
             mPolynomialModel.PolynomialPlus(
-                presenterScope,
                 left,
                 right
             )
@@ -336,7 +335,6 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         if (left.isEmpty() || right.isEmpty()) return
         doCancelableJob {
             mPolynomialModel.PolynomialMinus(
-                presenterScope,
                 left,
                 right
             )
@@ -349,8 +347,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
     {
         if (left.isEmpty() || right.isEmpty()) return
         doCancelableJob {
-            delay(4000); mPolynomialModel.PolynomialTimes(
-            presenterScope,
+            mPolynomialModel.PolynomialTimes(
             left,
             right
         )
@@ -364,7 +361,6 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         if (left.isEmpty() || right.isEmpty()) return
         doCancelableJob {
             mPolynomialModel.PolynomialDivision(
-                presenterScope,
                 left,
                 right
             )
@@ -390,7 +386,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         presenterScope.launch(Dispatchers.Default + errorHandler)
         {
 
-            val time = java.util.GregorianCalendar()
+            val time = GregorianCalendar()
             time.timeInMillis = System.currentTimeMillis()
             val result = calculation()
 
@@ -482,7 +478,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         val time = GregorianCalendar()
         time.timeInMillis = System.currentTimeMillis()
 
-        val job = presenterScope.launch(Dispatchers.Default + errorHandler)
+        val job = presenterScope.launch(Dispatchers.Default + errorHandler + supJob)
         {
             uiScope.launch {
                 viewState.startCalculation(

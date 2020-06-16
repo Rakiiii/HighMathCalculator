@@ -220,7 +220,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
         doCancelableJob {
             mMatrixModel.MatrixPlus(
-                presenterScope,
                 firstMatrix,
                 secondMatrix
             )
@@ -233,7 +232,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
         doCancelableJob {
             mMatrixModel.MatrixMinus(
-                presenterScope,
                 firstMatrix,
                 secondMatrix
             )
@@ -246,7 +244,6 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         if (firstMatrix.isEmpty() || secondMatrix.isEmpty()) return
         doCancelableJob {
             mMatrixModel.MatrixTimes(
-                presenterScope,
                 firstMatrix,
                 secondMatrix
             )
@@ -257,14 +254,14 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     fun onInversClick(firstMatrix: String)
     {
         if (firstMatrix.isEmpty()) return
-        doCancelableJob { mMatrixModel.MatrixInverse(presenterScope, firstMatrix) }
+        doCancelableJob { mMatrixModel.MatrixInverse(firstMatrix) }
     }
 
 
     fun onDeterminantClick(firstMatrix: String)
     {
         if (firstMatrix.isEmpty()) return
-        doCancelableJob { mMatrixModel.MatrixDeterminant(presenterScope, firstMatrix) }
+        doCancelableJob { mMatrixModel.MatrixDeterminant( firstMatrix) }
     }
 
     fun btnSwitchClicked(position: Int)
@@ -276,7 +273,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         if (matrix.isEmpty()) return
         doCancelableJob {
-            mMatrixModel.MatrixEigenValue(presenterScope, matrix)
+            mMatrixModel.MatrixEigenValue(matrix)
         }
     }
 
@@ -284,7 +281,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         if (matrix.isEmpty()) return
         doCancelableJob {
-            mMatrixModel.MatrixNegative(presenterScope, matrix)
+            mMatrixModel.MatrixNegative( matrix)
         }
     }
 
@@ -292,7 +289,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         if (matrix.isEmpty()) return
         doCancelableJob {
-            mMatrixModel.MatrixEigenVector(presenterScope, matrix)
+            mMatrixModel.MatrixEigenVector(matrix)
         }
     }
 
@@ -300,14 +297,14 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     {
         if (matrix.isEmpty()) return
         doCancelableJob {
-            mMatrixModel.MatrixPositive(presenterScope, matrix)
+            mMatrixModel.MatrixPositive( matrix)
         }
     }
 
     fun btnRankClicked(matrix: String)
     {
         if (matrix.isEmpty()) return
-        doCancelableJob { mMatrixModel.MatrixRank(presenterScope, matrix) }
+        doCancelableJob { mMatrixModel.MatrixRank( matrix) }
     }
 
     //todo:: move logic to model
@@ -384,7 +381,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
     fun btnSolveSystemClicked(matrix: String)
     {
         if (matrix.isEmpty()) return
-        doCancelableJob { mMatrixModel.MatrixSolve(presenterScope, matrix) }
+        doCancelableJob { mMatrixModel.MatrixSolve(matrix) }
     }
 
     private fun doUncancelableJob(
@@ -417,7 +414,7 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         val time = GregorianCalendar()
         time.timeInMillis = System.currentTimeMillis()
 
-        val job = presenterScope.launch(Dispatchers.Default + errorHandler)
+        val job = presenterScope.launch(Dispatchers.Default + errorHandler + supJob)
         {
             uiScope.launch {
                 viewState.startCalculation(

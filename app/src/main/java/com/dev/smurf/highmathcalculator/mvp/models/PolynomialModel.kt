@@ -90,33 +90,33 @@ class PolynomialModel
         )
     }
 
-    suspend fun PolynomialPlus(coroutineScope: CoroutineScope,left: String, right: String ) : PolynomialGroup
+    suspend fun PolynomialPlus(left: String, right: String ) : PolynomialGroup
     {
-        return withContext(coroutineScope.coroutineContext+Dispatchers.Default)
+        return withContext(Dispatchers.Default)
         {
            plus(left,right)
         }
     }
 
-    suspend fun PolynomialMinus(coroutineScope: CoroutineScope,left: String, right: String ) : PolynomialGroup
+    suspend fun PolynomialMinus(left: String, right: String ) : PolynomialGroup
     {
-        return withContext(coroutineScope.coroutineContext+Dispatchers.Default)
+        return withContext(Dispatchers.Default)
         {
             minus(left,right)
         }
     }
 
-    suspend fun PolynomialTimes(coroutineScope: CoroutineScope,left: String, right: String ) : PolynomialGroup
+    suspend fun PolynomialTimes(left: String, right: String ) : PolynomialGroup
     {
-        return withContext(coroutineScope.coroutineContext+Dispatchers.Default)
+        return withContext(Dispatchers.Default)
         {
             times(left,right)
         }
     }
 
-    suspend fun PolynomialDivision(coroutineScope: CoroutineScope,left: String, right: String ) : PolynomialGroup
+    suspend fun PolynomialDivision(left: String, right: String ) : PolynomialGroup
     {
-        return withContext(coroutineScope.coroutineContext+Dispatchers.Default)
+        return withContext(Dispatchers.Default)
         {
             division(left,right)
         }
