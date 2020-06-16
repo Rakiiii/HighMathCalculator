@@ -155,6 +155,10 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
 
 
         polynomialScroller.setOnScrollChangeListener(ExtraScroller(this))
+
+        onClickPolynomialLiveData.observe(this, { polynomial ->
+            mPolynomialPresenter.onClickPolynomial(polynomial)
+        })
     }
 
     private class ExtraScroller(val polynomialFragment: PolynomialFragment) :
@@ -196,10 +200,6 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     {
         Log.d("lifecycle@", "onResume")
         isPaused = false
-
-        onClickPolynomialLiveData.observe(this, { polynomial ->
-            mPolynomialPresenter.onClickPolynomial(polynomial)
-        })
         super.onResume()
     }
 
@@ -209,8 +209,6 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
         isPaused = true
         mPolynomialEditTextViewModel.firstValue = firstPolinom.text.toString()
         mPolynomialEditTextViewModel.secondValue = secondPolinom.text.toString()
-
-        onClickPolynomialLiveData.removeObservers(this)
         onClickPolynomialLiveData.value = ""
         super.onPause()
     }
