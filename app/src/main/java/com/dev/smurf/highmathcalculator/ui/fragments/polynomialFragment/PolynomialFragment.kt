@@ -17,18 +17,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.smurf.highmathcalculator.CalculatorApplication
 import com.dev.smurf.highmathcalculator.R
 import com.dev.smurf.highmathcalculator.mvp.presenters.PolynomialPresenter
 import com.dev.smurf.highmathcalculator.mvp.views.PolynomialViewInterface
 import com.dev.smurf.highmathcalculator.ui.CustomRecylerViewLayoutManagers.LayoutManagerWithOffableScroll
-import com.dev.smurf.highmathcalculator.ui.POJO.MatrixGroup
 import com.dev.smurf.highmathcalculator.ui.Snackbar.DropSnackbar
 import com.dev.smurf.highmathcalculator.ui.ViewModels.EditTextViewModel
 import com.dev.smurf.highmathcalculator.ui.ViewModels.PolynomialListenerViewModel
-import com.dev.smurf.highmathcalculator.ui.adapters.MatrixAdapters.ViewHolders.OnMatrixCalculationGoingViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.PolynomialImageAdapter
 import com.dev.smurf.highmathcalculator.ui.adapters.PolynomialAdapters.ViewHolder.OnPolynomialCalculationGoingViewHolder
 import com.dev.smurf.highmathcalculator.ui.adapters.ViewPagersAdapters.BtnViewPagerFragmentStateAdapter
@@ -41,7 +38,6 @@ import com.example.smurf.mtarixcalc.PolynomialTxtAdapter
 import com.example.smurf.mtarixcalc.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
-import kotlinx.android.synthetic.main.fragment_matrix.*
 import kotlinx.android.synthetic.main.fragment_polinom.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import moxy.MvpAppCompatFragment
@@ -123,7 +119,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
                 override fun onGlobalLayout()
                 {
                     getMaxSizeOfErrorDialog()
-                    ltPolynomialInput.viewTreeObserver.removeOnGlobalLayoutListener(this);
+                    ltPolynomialInput.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
             })
         }
@@ -166,7 +162,7 @@ class PolynomialFragment : MvpAppCompatFragment(), PolynomialViewInterface, Sett
     {
         private val someScrollConst = 300
         override fun onScrollChange(
-            v: androidx.core.widget.NestedScrollView?,
+            v: NestedScrollView?,
             scrollX: Int,
             scrollY: Int,
             oldScrollX: Int,

@@ -112,7 +112,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
                 override fun onGlobalLayout()
                 {
                     getMaxSizeOfErrorDialog()
-                    ltMatrixInput.viewTreeObserver.removeOnGlobalLayoutListener(this);
+                    ltMatrixInput.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
             })
         }
@@ -160,7 +160,7 @@ class MatrixFragment : MvpAppCompatFragment(), MatrixViewInterface, Settingable,
     {
         private val someScrollConst = 300
         override fun onScrollChange(
-            v: androidx.core.widget.NestedScrollView?,
+            v: NestedScrollView?,
             scrollX: Int,
             scrollY: Int,
             oldScrollX: Int,

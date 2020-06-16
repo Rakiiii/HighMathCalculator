@@ -245,7 +245,7 @@ fun String.removePluses(): String
 {
     var result = ""
     var flagOfClose = true
-    for (i in (this as CharSequence))
+    for (i in this)
     {
         when (i)
         {

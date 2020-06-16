@@ -63,15 +63,15 @@ abstract class SwipeToDeleteCallback(context : Context) : ItemTouchHelper.Callba
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         }
 
-        var itemView = viewHolder!!.itemView
+        var itemView = viewHolder.itemView
         var itemHeight = itemView.height
 
         var isCanceled : Boolean = (dX == 0.0f) && !isCurrentlyActive
 
         if(isCanceled)
         {
-            clearCanvas( c!! , itemView.right + dX , itemView.top.toFloat(), itemView.right.toFloat() , itemView.bottom.toFloat() )
-            super.onChildDraw(c, recyclerView!!, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            clearCanvas(c, itemView.right + dX , itemView.top.toFloat(), itemView.right.toFloat() , itemView.bottom.toFloat() )
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             return
         }
 
@@ -89,7 +89,7 @@ abstract class SwipeToDeleteCallback(context : Context) : ItemTouchHelper.Callba
         deleteDrawable!!.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom)
         deleteDrawable!!.draw(c)
 
-        super.onChildDraw(c!!, recyclerView!!, viewHolder, dX, dY, actionState, isCurrentlyActive)
+        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
     }
 
     private fun clearCanvas(c: Canvas, left: Float?, top: Float?, right: Float?, bottom: Float?) {

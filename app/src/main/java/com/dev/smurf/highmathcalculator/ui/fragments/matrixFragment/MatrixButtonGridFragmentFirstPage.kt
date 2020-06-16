@@ -79,10 +79,6 @@ class MatrixButtonGridFragmentFirstPage() : Fragment(),Observable
         fun btnSwitchFPClicked()
     }
 
-    override fun onAttach(context: Context)
-    {
-        super.onAttach(context)
-    }
 
     override fun setListener(l : Fragment)
     {

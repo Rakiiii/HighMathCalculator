@@ -28,12 +28,7 @@ class SettingBottomSheetDialogFragment : MvpBottomSheetDialogFragment(), Setting
     //вставляем презентер
     @InjectPresenter
     lateinit var mSettingsPresenter: SettingsPresenter
-
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-    }
+    
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -236,9 +236,9 @@ class MatrixAdapter(val context: Context, val firstMatrix : EditText, val second
                 sign.text = group.sign
 
                 group.time.let{
-                    var fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
+                    val fmt = SimpleDateFormat(" HH:mm:ss dd MMM yyyy")
                     fmt.calendar = it
-                    timeMatrix.text = fmt.format(it?.time)
+                    timeMatrix.text = fmt.format(it.time)
                 }
             }
 
