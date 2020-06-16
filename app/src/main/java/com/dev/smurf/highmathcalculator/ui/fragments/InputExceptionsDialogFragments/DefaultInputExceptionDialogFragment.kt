@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
+import com.dev.smurf.highmathcalculator.CanvasExtension.CanvasRenderSpecification
 import com.dev.smurf.highmathcalculator.R
 import kotlinx.android.synthetic.main.error_dialog_layout.view.*
 import org.jetbrains.anko.imageBitmap
@@ -24,6 +26,7 @@ class DefaultInputExceptionDialogFragment(
     private val errorText : String
 ) : DialogFragment()
 {
+    private val mPaint =CanvasRenderSpecification.createBlackPainter()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -46,6 +49,7 @@ class DefaultInputExceptionDialogFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
+
         view.ivError.imageBitmap = errorBitmap
         view.btnOk.setOnClickListener {
             listener.btnOkPressed()
