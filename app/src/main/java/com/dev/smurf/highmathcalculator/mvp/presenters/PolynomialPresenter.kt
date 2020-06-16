@@ -387,7 +387,7 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         -> PolynomialGroup
     )
     {
-        presenterScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Default + errorHandler)
         {
 
             val time = java.util.GregorianCalendar()
@@ -482,20 +482,21 @@ class PolynomialPresenter : MvpPresenter<PolynomialViewInterface>(), LifecycleOb
         val time = GregorianCalendar()
         time.timeInMillis = System.currentTimeMillis()
 
-        val job = presenterScope.launch(Dispatchers.Main + errorHandler)
+        val job = presenterScope.launch(Dispatchers.Default + errorHandler)
         {
-
-            viewState.startCalculation(
-                PolynomialGroup(
-                    PolynomialBase.EmptyPolynomial,
-                    PolynomialBase.EmptyPolynomial,
-                    PolynomialGroup.CALCULATION,
-                    PolynomialBase.EmptyPolynomial,
-                    PolynomialBase.EmptyPolynomial,
-                    null,
-                    time
+            uiScope.launch {
+                viewState.startCalculation(
+                    PolynomialGroup(
+                        PolynomialBase.EmptyPolynomial,
+                        PolynomialBase.EmptyPolynomial,
+                        PolynomialGroup.CALCULATION,
+                        PolynomialBase.EmptyPolynomial,
+                        PolynomialBase.EmptyPolynomial,
+                        null,
+                        time
+                    )
                 )
-            )
+            }
 
             val mPolynomialGroup = withTime(
                 presenterScope.coroutineContext + Dispatchers.Default,

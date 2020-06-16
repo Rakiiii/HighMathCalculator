@@ -392,10 +392,10 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         -> MatrixGroup
     )
     {
-        presenterScope.launch(Dispatchers.Main + errorHandler)
+        presenterScope.launch(Dispatchers.Default + errorHandler)
         {
 
-            val time = java.util.GregorianCalendar()
+            val time = GregorianCalendar()
             time.timeInMillis = System.currentTimeMillis()
             val mMatrixGroup = calculation()
 
@@ -417,18 +417,19 @@ class MatrixPresenter : MvpPresenter<MatrixViewInterface>(), LifecycleObserver
         val time = GregorianCalendar()
         time.timeInMillis = System.currentTimeMillis()
 
-        val job = presenterScope.launch(Dispatchers.Main + errorHandler)
+        val job = presenterScope.launch(Dispatchers.Default + errorHandler)
         {
-
-            viewState.startCalculation(
-                MatrixGroup(
-                    Matrix.EmptyMatrix,
-                    Matrix.EmptyMatrix,
-                    MatrixGroup.CALCULATION,
-                    Matrix.EmptyMatrix,
-                    time
+            uiScope.launch {
+                viewState.startCalculation(
+                    MatrixGroup(
+                        Matrix.EmptyMatrix,
+                        Matrix.EmptyMatrix,
+                        MatrixGroup.CALCULATION,
+                        Matrix.EmptyMatrix,
+                        time
+                    )
                 )
-            )
+            }
 
             val mMatrixGroup = withTime(
                 presenterScope.coroutineContext + Dispatchers.Default,
